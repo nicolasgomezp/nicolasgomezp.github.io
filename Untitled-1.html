@@ -3,40 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recetas de Comida</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Recetas de Cocina Italiana</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Enlazamos a una hoja de estilos externa -->
+    <style>
+        /* Estilos básicos para la página */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #d9534f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        nav {
+            margin: 20px 0;
+        }
+        nav a {
+            margin: 0 15px;
+            color: #d9534f;
+            text-decoration: none;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .receta {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #d9534f;
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <h1>Bienvenido a Recetas de Comida</h1>
-        <nav>
-            <ul>
-                <li><a href="#inicio">Inicio</a></li>
-                <li><a href="#recetas">Recetas</a></li>
-                <li><a href="#contacto">Contacto</a></li>
-            </ul>
-        </nav>
-    </header>
-    <main>
-        <section id="inicio">
-            <h2>Descubre Nuevas Recetas</h2>
-            <p>Explora una variedad de recetas deliciosas y fáciles de preparar.</p>
-        </section>
-        <section id="recetas">
-            <h2>Recetas Destacadas</h2>
-            <article>
-                <h3>Ensalada César</h3>
-                <p>Una ensalada clásica con pollo, lechuga y aderezo César.</p>
-            </article>
-            <article>
-                <h3>Spaghetti a la Boloñesa</h3>
-                <p>Un plato italiano tradicional con salsa de carne.</p>
-            </article>
-        </section>
-    </main>
-    <footer>
-        <h2>Contacto</h2>
-        <p>Para más información, envíanos un correo a: info@recetas.com</p>
-    </footer>
+
+<header>
+    <h1>Bienvenido a Recetas de Cocina Italiana</h1>
+    <p>Descubre las mejores recetas de la cocina italiana</p>
+</header>
+
+<nav>
+    <a href="#home">Inicio</a>
+    <a href="#recetas">Recetas</a>
+    <a href="#sobre-nosotros">Sobre Nosotros</a>
+    <a href="#contacto">Contacto</a>
+</nav>
+
+<div class="container">
+    <section id="home">
+        <h2>Las Mejores Recetas Italianas</h2>
+        <div class="receta">
+            <h3>Pasta Carbonara</h3>
+            <p>Una deliciosa receta clásica de Roma, hecha con huevo, queso, panceta y pimienta negra.</p>
+        </div>
+        <div class="receta">
+            <h3>Lasagna</h3>
+            <p>Capas de pasta intercaladas con carne, salsa de tomate y queso, horneadas a la perfección.</p>
+        </div>
+        <div class="receta">
+            <h3>Risotto alla Milanese</h3>
+            <p>Un cremoso risotto con azafrán, típico de la región de Lombardía.</p>
+        </div>
+    </section>
+</div>
+
+<footer>
+    <p>&copy; 2023 Recetas de Cocina Italiana. Todos los derechos reservados.</p>
+</footer>
+
 </body>
 </html>
