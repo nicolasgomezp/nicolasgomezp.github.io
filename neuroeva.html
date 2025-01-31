@@ -5,21 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbot</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             height: 100vh;
-            margin: 0;
             background-color: #f4f4f9;
             padding: 10px;
+            overflow: hidden;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 500px;
+            height: 100%;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-top: auto; /* Esto mantiene los botones en la parte inferior */
         }
 
         input[type="text"] {
-            width: 90%;
-            max-width: 400px;
+            width: 100%;
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 5px;
@@ -29,8 +51,7 @@
         }
 
         button {
-            width: 90%;
-            max-width: 400px;
+            width: 100%;
             padding: 10px;
             background-color: #007bff;
             color: white;
@@ -50,7 +71,11 @@
             font-size: 18px;
             color: #333;
             word-wrap: break-word;
-            margin-top: 20px;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            margin-bottom: 10px;
         }
 
         #copyButton {
@@ -64,24 +89,37 @@
     </style>
 </head>
 <body>
-    <input type="text" id="userInput" placeholder="Escribe tu pregunta aquí" />
-    <button onclick="askChatbot()">Enviar</button>
-    <p id="response"></p>
-    <button id="copyButton" onclick="copyToClipboard()">Copiar respuesta</button>
+    <div class="chat-container">
+        <div id="responseContainer"></div>
+        <div class="chat-input-container">
+            <input type="text" id="userInput" placeholder="Escribe tu pregunta aquí" />
+            <button onclick="askChatbot()">Enviar</button>
+            <button id="copyButton" onclick="copyToClipboard()">Copiar respuesta</button>
+        </div>
+    </div>
 
     <script src="https://js.puter.com/v2/"></script>
     <script>
         function askChatbot() {
             const userInput = document.getElementById("userInput").value;
             puter.ai.chat(userInput).then(response => {
-                document.getElementById("response").innerText = response;
+                const responseContainer = document.getElementById("responseContainer");
+                const responseParagraph = document.createElement("p");
+                responseParagraph.innerText = response;
+                responseContainer.appendChild(responseParagraph);
+                document.getElementById("userInput").value = ""; // Limpiar campo de entrada
+                responseContainer.scrollTop = responseContainer.scrollHeight; // Desplazar hacia abajo
             }).catch(err => {
-                document.getElementById("response").innerText = "Hubo un error. Intenta de nuevo.";
+                const responseContainer = document.getElementById("responseContainer");
+                const responseParagraph = document.createElement("p");
+                responseParagraph.innerText = "Hubo un error. Intenta de nuevo.";
+                responseContainer.appendChild(responseParagraph);
+                responseContainer.scrollTop = responseContainer.scrollHeight;
             });
         }
 
         function copyToClipboard() {
-            const responseText = document.getElementById("response").innerText;
+            const responseText = document.querySelector("#responseContainer p:last-child").innerText;
             if (responseText) {
                 navigator.clipboard.writeText(responseText).then(() => {
                     alert('Texto copiado al portapapeles');
