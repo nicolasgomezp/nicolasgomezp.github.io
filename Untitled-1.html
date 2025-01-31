@@ -1,9 +1,18 @@
+<!DOCTYPE html>
 <html>
 <body>
+    <input type="text" id="userInput" placeholder="Escribe tu pregunta aquí">
+    <button onclick="askChatbot()">Enviar</button>
+    <p id="response"></p>
+    
     <script src="https://js.puter.com/v2/"></script>
     <script>
-        // Chat with GPT-4o mini
-        puter.ai.chat(`What is life?`).then(puter.print);
+        function askChatbot() {
+            const userInput = document.getElementById("userInput").value;
+            puter.ai.chat(userInput).then(response => {
+                document.getElementById("response").innerText = response;
+            });
+        }
     </script>
 </body>
 </html>
