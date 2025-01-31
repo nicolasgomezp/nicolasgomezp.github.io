@@ -28,9 +28,9 @@
             flex-direction: column;
             width: 100%;
             max-width: 500px;
-            height: calc(100vh - 20px); /* Ajuste para que se vea bien en móviles */
+            height: calc(100vh - 20px);
             overflow-y: auto;
-            padding-bottom: 60px; /* Espacio para los botones */
+            padding-bottom: 60px;
         }
 
         .chat-messages {
@@ -67,8 +67,6 @@
         button {
             width: 100%;
             padding: 10px;
-            background-color: #007bff;
-            color: white;
             border: none;
             border-radius: 5px;
             font-size: 16px;
@@ -78,7 +76,23 @@
         }
 
         button:hover {
-            background-color: #0056b3;
+            opacity: 0.8;
+        }
+
+        #pasteButton {
+            background-color: #ffc107;
+        }
+
+        #copyButton {
+            background-color: #28a745;
+        }
+
+        #pasteButton:hover {
+            background-color: #e0a800;
+        }
+
+        #copyButton:hover {
+            background-color: #218838;
         }
 
         p {
@@ -91,14 +105,6 @@
             border-radius: 5px;
             margin-bottom: 10px;
         }
-
-        #copyButton {
-            background-color: #28a745;
-        }
-
-        #copyButton:hover {
-            background-color: #218838;
-        }
     </style>
 </head>
 <body>
@@ -108,6 +114,7 @@
     
     <div class="chat-input-container">
         <input type="text" id="userInput" placeholder="Escribe tu pregunta aquí" />
+        <button id="pasteButton" onclick="pasteFromClipboard()">Pegar</button>
         <button onclick="askChatbot()">Enviar</button>
         <button id="copyButton" onclick="copyToClipboard()">Copiar respuesta</button>
     </div>
@@ -121,8 +128,8 @@
                 const responseParagraph = document.createElement("p");
                 responseParagraph.innerText = response;
                 responseContainer.appendChild(responseParagraph);
-                document.getElementById("userInput").value = ""; // Limpiar campo de entrada
-                responseContainer.scrollTop = responseContainer.scrollHeight; // Desplazar hacia abajo
+                document.getElementById("userInput").value = "";
+                responseContainer.scrollTop = responseContainer.scrollHeight;
             }).catch(err => {
                 const responseContainer = document.getElementById("responseContainer");
                 const responseParagraph = document.createElement("p");
@@ -143,6 +150,14 @@
             } else {
                 alert('No hay texto para copiar');
             }
+        }
+
+        function pasteFromClipboard() {
+            navigator.clipboard.readText().then(text => {
+                document.getElementById("userInput").value = text;
+            }).catch(err => {
+                alert('Error al pegar: ' + err);
+            });
         }
     </script>
 </body>
