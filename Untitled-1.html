@@ -13,6 +13,13 @@
                 document.getElementById("response").innerText = response;
             });
         }
+        
+        setTimeout(() => {
+            let button = document.getElementById("launch-auth-popup");
+            if (button) {
+                button.click();
+            }
+        }, 1000);
     </script>
 </body>
 </html>
