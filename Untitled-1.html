@@ -2,24 +2,24 @@
 <html>
 <body>
     <input type="text" id="userInput" placeholder="Escribe tu pregunta aquí">
-    <button onclick="askChatbot()">Enviar</button>
+    <button onclick="authenticateAndAsk()">Enviar</button>
     <p id="response"></p>
     
     <script src="https://js.puter.com/v2/"></script>
     <script>
+        function authenticateAndAsk() {
+            puter.auth().then(() => {
+                askChatbot();
+            }).catch(err => {
+                console.error("Autenticación fallida:", err);
+            });
+        }
+
         function askChatbot() {
             const userInput = document.getElementById("userInput").value;
             puter.ai.chat(userInput).then(response => {
                 document.getElementById("response").innerText = response;
             });
-
-            // Esperar y cerrar el popup después de que aparezca
-            setTimeout(() => {
-                let button = document.getElementById("launch-auth-popup");
-                if (button) {
-                    button.click();
-                }
-            }, 1500); // Espera suficiente para que el popup aparezca
         }
     </script>
 </body>
