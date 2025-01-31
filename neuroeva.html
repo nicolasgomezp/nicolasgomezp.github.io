@@ -9,6 +9,7 @@
     <script>
         function authenticateAndAsk() {
             puter.auth().then(() => {
+                console.log("Autenticación exitosa");
                 askChatbot();
             }).catch(err => {
                 console.error("Autenticación fallida:", err);
@@ -17,8 +18,17 @@
 
         function askChatbot() {
             const userInput = document.getElementById("userInput").value;
+            if (!userInput.trim()) {
+                alert("Por favor, ingresa una pregunta antes de enviar.");
+                return;
+            }
+            console.log("Enviando pregunta:", userInput);
             puter.ai.chat(userInput).then(response => {
+                console.log("Respuesta recibida:", response);
                 document.getElementById("response").innerText = response;
+            }).catch(err => {
+                console.error("Error al obtener respuesta:", err);
+                document.getElementById("response").innerText = "Error al obtener respuesta";
             });
         }
     </script>
