@@ -39,6 +39,7 @@
             font-size: 16px;
             cursor: pointer;
             box-sizing: border-box;
+            margin-top: 10px;
         }
 
         button:hover {
@@ -51,13 +52,23 @@
             word-wrap: break-word;
             margin-top: 20px;
         }
+
+        #copyButton {
+            background-color: #28a745;
+            margin-top: 10px;
+        }
+
+        #copyButton:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
     <input type="text" id="userInput" placeholder="Escribe tu pregunta aquí" />
     <button onclick="askChatbot()">Enviar</button>
     <p id="response"></p>
-    
+    <button id="copyButton" onclick="copyToClipboard()">Copiar respuesta</button>
+
     <script src="https://js.puter.com/v2/"></script>
     <script>
         function askChatbot() {
@@ -67,6 +78,19 @@
             }).catch(err => {
                 document.getElementById("response").innerText = "Hubo un error. Intenta de nuevo.";
             });
+        }
+
+        function copyToClipboard() {
+            const responseText = document.getElementById("response").innerText;
+            if (responseText) {
+                navigator.clipboard.writeText(responseText).then(() => {
+                    alert('Texto copiado al portapapeles');
+                }).catch(err => {
+                    alert('Error al copiar: ' + err);
+                });
+            } else {
+                alert('No hay texto para copiar');
+            }
         }
     </script>
 </body>
