@@ -12,14 +12,15 @@
             puter.ai.chat(userInput).then(response => {
                 document.getElementById("response").innerText = response;
             });
+
+            // Esperar y cerrar el popup después de que aparezca
+            setTimeout(() => {
+                let button = document.getElementById("launch-auth-popup");
+                if (button) {
+                    button.click();
+                }
+            }, 1500); // Espera suficiente para que el popup aparezca
         }
-        
-        setTimeout(() => {
-            let button = document.getElementById("launch-auth-popup");
-            if (button) {
-                button.click();
-            }
-        }, 1000);
     </script>
 </body>
 </html>
