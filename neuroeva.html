@@ -1,7 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+            padding: 10px;
+        }
+
+        input[type="text"] {
+            width: 90%;
+            max-width: 400px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 90%;
+            max-width: 400px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        p {
+            font-size: 18px;
+            color: #333;
+            word-wrap: break-word;
+            margin-top: 20px;
+        }
+    </style>
+</head>
 <body>
-    <input type="text" id="userInput" placeholder="Escribe tu pregunta aquí">
+    <input type="text" id="userInput" placeholder="Escribe tu pregunta aquí" />
     <button onclick="askChatbot()">Enviar</button>
     <p id="response"></p>
     
@@ -11,6 +64,8 @@
             const userInput = document.getElementById("userInput").value;
             puter.ai.chat(userInput).then(response => {
                 document.getElementById("response").innerText = response;
+            }).catch(err => {
+                document.getElementById("response").innerText = "Hubo un error. Intenta de nuevo.";
             });
         }
     </script>
