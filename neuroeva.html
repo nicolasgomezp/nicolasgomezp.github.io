@@ -31,6 +31,12 @@
             return imageDataURL;
         }
 
+        function speak(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(utterance);
+        }
+
+
         async function analyzeImage() {
             const imageBase64 = captureImage();
             outputDiv.textContent = "Analyzing...";
@@ -41,9 +47,12 @@
                     imageBase64
                 );
                 outputDiv.textContent = response;
+                speak(response); // Speak the response
+
             } catch (error) {
                 console.error("Error analyzing image:", error);
                 outputDiv.textContent = "Error analyzing image.";
+                speak("Error analyzing image."); // Speak the error
             }
         }
 
