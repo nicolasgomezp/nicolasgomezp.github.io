@@ -252,7 +252,7 @@
                 handleStream(stream);
             } catch (err) {
                 console.error("Error accessing webcam:", err);
-                outputDiv.textContent = "Error al acceder a la cámara. Por favor, verifica los permisos.";
+                outputDiv.textContent = "Error al acceder a la cámara. Por favor, verifica los permisos.  Asegúrate de haber otorgado los permisos necesarios.";
             }
         }
 
@@ -414,7 +414,7 @@
                 await startWebcam();
             } catch (err) {
                 console.error("Error switching camera:", err);
-                outputDiv.textContent = "Error al cambiar la cámara. Por favor, verifica los permisos.";
+                outputDiv.textContent = "Error al cambiar la cámara. Por favor, verifica los permisos. Asegúrate de haber otorgado los permisos necesarios.";
             }
         }
 
