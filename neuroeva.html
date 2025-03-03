@@ -34,6 +34,7 @@
     let selectedAnalysisType = null;
     let typingSpeed = 20;
     let recognition;
+    let conversationHistory = []; // Array to store conversation history
 
     async function startWebcam() {
         try {
@@ -133,7 +134,13 @@
         try {
             const imageBase64 = captureImage();
             const userText = inputText.value;
-            const combinedPrompt = prompt + " Adicionalmente, considera el siguiente contexto proporcionado por el usuario: " + userText;
+
+            // Construct the combined prompt with conversation history
+            let combinedPrompt = prompt + " Adicionalmente, considera el siguiente contexto proporcionado por el usuario: " + userText;
+
+            if (conversationHistory.length > 0) {
+                combinedPrompt += " Aquí está el historial de conversación anterior: " + conversationHistory.join("\n");
+            }
 
             console.log("Combined Prompt:", combinedPrompt);
 
@@ -145,6 +152,16 @@
             await typeWriter(response, outputDiv);
 
             await speak(response);
+
+            // Add the user input and AI response to the conversation history
+            conversationHistory.push("Usuario: " + userText);
+            conversationHistory.push("AI: " + response);
+
+            // Limit the history to prevent it from growing too large (optional)
+            if (conversationHistory.length > 10) {
+                conversationHistory = conversationHistory.slice(-10);
+            }
+
         } catch (error) {
             console.error("", error);
             await typeWriter("", outputDiv);
