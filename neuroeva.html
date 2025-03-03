@@ -2,28 +2,33 @@
 <body>
     <div style="position: relative;">
         <video id="webcam" width="640" height="480" autoplay style="position: relative; z-index: 1;"></video>
-        <div id="output" style="position: absolute; top: 10px; left: 10px; color: white; background-color: rgba(0, 0, 0, 0.5); padding: 5px; z-index: 2;">Loading...</div>
+        <div id="output" style="position: absolute; top: 10px; left: 10px; color: white; background-color: rgba(0, 0, 0, 0.5); padding: 5px; z-index: 2;"></div>
     </div>
     <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
-    <button id="captureButton">Capture and Analyze</button>
+    <button id="analyzeDetailedButton">Detailed Analysis</button>
+    <button id="analyzeShortButton">Short Description</button>
+    <button id="analyzeResolveButton">Resolve</button>
     <button id="switchCameraButton">Switch Camera</button>
 
     <script src="https://js.puter.com/v2/"></script>
     <script>
         const video = document.getElementById('webcam');
         const canvas = document.getElementById('canvas');
-        const captureButton = document.getElementById('captureButton');
         const outputDiv = document.getElementById('output');
+        const analyzeDetailedButton = document.getElementById('analyzeDetailedButton');
+        const analyzeShortButton = document.getElementById('analyzeShortButton');
+        const analyzeResolveButton = document.getElementById('analyzeResolveButton');
         const switchCameraButton = document.getElementById('switchCameraButton');
         const context = canvas.getContext('2d');
 
         let currentStream = null;
-        let facingMode = 'environment'; // 'user' for front camera, 'environment' for back camera
+        let facingMode = 'environment';
+        let isSpeaking = false;
 
         async function startWebcam() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: facingMode } 
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: facingMode }
                 });
                 handleStream(stream);
             } catch (err) {
@@ -34,41 +39,59 @@
 
         function handleStream(stream) {
             if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop()); // Stop existing stream
+                currentStream.getTracks().forEach(track => track.stop());
             }
             video.srcObject = stream;
             currentStream = stream;
         }
 
-
         function captureImage() {
             context.drawImage(video, 0, 0, 640, 480);
-            const imageDataURL = canvas.toDataURL('image/jpeg'); // Get image as Base64
+            const imageDataURL = canvas.toDataURL('image/jpeg');
             return imageDataURL;
         }
 
         function speak(text) {
+            if (isSpeaking) {
+                window.speechSynthesis.cancel();
+            }
+
             const utterance = new SpeechSynthesisUtterance(text);
+
+            utterance.onstart = () => {
+                isSpeaking = true;
+            };
+
+            utterance.onend = () => {
+                isSpeaking = false;
+            };
+
+            utterance.onerror = () => {
+                isSpeaking = false;
+                console.error("Speech synthesis error.");
+            };
+
             window.speechSynthesis.speak(utterance);
         }
 
+        async function analyzeImage(prompt) {
+            if (isSpeaking) {
+                window.speechSynthesis.cancel();
+            }
 
-        async function analyzeImage() {
-            const imageBase64 = captureImage();
             outputDiv.textContent = "Analyzing...";
-
             try {
+                const imageBase64 = captureImage();
                 const response = await puter.ai.chat(
-                    "Que ves?",
+                    prompt,
                     imageBase64
                 );
                 outputDiv.textContent = response;
-                speak(response); // Speak the response
-
+                speak(response);
             } catch (error) {
                 console.error("Error analyzing image:", error);
                 outputDiv.textContent = "Error analyzing image.";
-                speak("Error analyzing image."); // Speak the error
+                speak("Error analyzing image.");
             }
         }
 
@@ -77,11 +100,14 @@
             await startWebcam();
         }
 
+        // Event listeners for each button
+        analyzeDetailedButton.addEventListener('click', () => analyzeImage("Describe la escena detalladamente."));
+        analyzeShortButton.addEventListener('click', () => analyzeImage("Que ves? Maximo 3 palabras."));
+        analyzeResolveButton.addEventListener('click', () => analyzeImage("Resuelve"));
+        switchCameraButton.addEventListener('click', switchCamera);
+
         // Start the webcam when the page loads
         startWebcam();
-
-        captureButton.addEventListener('click', analyzeImage);
-        switchCameraButton.addEventListener('click', switchCamera);
     </script>
 </body>
 </html>
