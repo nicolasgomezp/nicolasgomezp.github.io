@@ -5,108 +5,181 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Webcam Analysis</title>
     <style>
+        /* General Styles */
         body {
-            font-family: sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             overflow: hidden; /* Prevent scrollbars */
-            background-color: #333; /* Darker background */
-            color: #fff;
+            background-color: #222; /* Darker background */
+            color: #eee; /* Lighter text */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             height: 100vh;
+            transition: background-color 0.3s ease;
         }
 
         #container {
             position: relative;
-            width: 100%; /* Adjust as needed */
-            max-width: 640px;
+            width: 90%; /* More responsive width */
+            max-width: 720px; /* Increased max width */
             margin: 0 auto;
             padding: 10px;
             box-sizing: border-box;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Softer shadow */
+            background-color: rgba(40, 40, 40, 0.8); /* Semi-transparent dark background */
+            transition: all 0.3s ease; /* Smooth transition */
         }
 
+        /* Webcam Styles */
         #webcam {
-            width: 100%; /* Responsive width */
+            width: 100%;
             height: auto;
             display: block;
-            border-radius: 8px; /* Rounded corners */
+            border-radius: 12px;
+            object-fit: cover; /* Cover the area */
+            transition: transform 0.2s ease; /* Zoom effect */
         }
 
+        #webcam:hover {
+            transform: scale(1.02); /* Slight zoom on hover */
+        }
+
+        /* Input Text Styles */
         #inputText {
             position: absolute;
             top: 10px;
             left: 10px;
-            color: black;
-            background-color: rgba(255, 255, 255, 0.7);
-            padding: 5px;
+            color: #333; /* Dark text */
+            background-color: rgba(255, 255, 255, 0.9); /* Less transparent */
+            padding: 8px;
             z-index: 3;
-            width: 40%; /* Adjust width */
-            height: 50px;
+            width: 45%; /* Slightly wider */
+            height: 60px; /* Taller input */
             border: none;
-            border-radius: 4px;
-            resize: none; /* Disable textarea resizing */
-            outline: none; /* Remove default focus outline */
+            border-radius: 8px;
+            resize: none;
+            outline: none;
+            font-size: 16px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease; /* Smooth transition */
         }
 
+        #inputText:focus {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transform: scale(1.01);
+        }
+
+        /* Output Styles */
         #output {
             position: absolute;
-            top: 70px;
+            top: 80px;
             left: 10px;
-            color: white;
-            background-color: rgba(0, 0, 0, 0.5);
-            padding: 5px;
+            color: #eee;
+            background-color: rgba(0, 0, 0, 0.7); /* Less transparent */
+            padding: 8px;
             z-index: 2;
-            border-radius: 4px;
-            width: 40%; /* Adjust width */
-            word-wrap: break-word; /* Prevents overflow */
+            border-radius: 8px;
+            width: 45%; /* Slightly wider */
+            word-wrap: break-word;
+            font-size: 16px;
+            line-height: 1.4;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease; /* Smooth transition */
         }
 
+        /* Button Styles */
         button {
-            padding: 8px 12px;
+            padding: 12px 18px; /* Larger buttons */
             margin: 5px;
             border: none;
-            border-radius: 4px;
-            background-color: #4CAF50;
+            border-radius: 8px;
+            background-color: #5cb85c; /* A more modern green */
             color: white;
             cursor: pointer;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
+            font-size: 16px; /* Larger font */
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         button:hover {
-            background-color: #367c39;
+            background-color: #449d44; /* Darker green on hover */
+            transform: translateY(-2px); /* Slight lift on hover */
         }
 
         button:focus {
             outline: none; /* Remove button focus outline */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0); /* No lift on active */
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         #analyzeSingleButton {
-            background-color: #f44336;
+            background-color: #d9534f; /* A more modern red */
         }
 
         #analyzeSingleButton:hover {
-            background-color: #d32f2f;
+            background-color: #c9302c; /* Darker red on hover */
         }
 
+        /* Canvas Styles */
         #canvas {
             display: none;
         }
+
+        /* Touch feedback */
+        button.active {
+            background-color: #337ab7;
+        }
+
 
         /* Media query for smaller screens (e.g., phones) */
         @media (max-width: 600px) {
             #inputText, #output {
                 width: 90%;
                 left: 5%;
+                font-size: 14px; /* Adjusted font size */
             }
 
             button {
-                font-size: 12px;
-                padding: 6px 10px;
+                font-size: 14px; /* Adjusted font size */
+                padding: 8px 12px; /* Adjusted padding */
             }
         }
+
+        /* Animation Styles */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Apply animation to elements */
+        #container, #controls {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        #controls {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+
     </style>
 </head>
 <body>
@@ -128,6 +201,7 @@
 
     <script src="https://js.puter.com/v2/"></script>
     <script>
+        // Get references to DOM elements
         const video = document.getElementById('webcam');
         const canvas = document.getElementById('canvas');
         const outputDiv = document.getElementById('output');
@@ -139,6 +213,7 @@
         const analyzeSingleButton = document.getElementById('analyzeSingleButton');
         const context = canvas.getContext('2d');
 
+        // Initialize variables
         let currentStream = null;
         let facingMode = 'environment';
         let isSpeaking = false;
@@ -149,18 +224,19 @@
         let selectedAnalysisType = null;
         let typingSpeed = 20;
 
-        // Add touch event listeners to buttons
+        // Touch Feedback on Buttons
         const buttons = document.querySelectorAll('button');
         buttons.forEach(button => {
             button.addEventListener('touchstart', (e) => {
-                button.classList.add('active'); // Add a class for visual feedback
+                button.classList.add('active');
             });
 
             button.addEventListener('touchend', (e) => {
-                button.classList.remove('active'); // Remove the class
+                button.classList.remove('active');
             });
         });
 
+        // Function to start the webcam
         async function startWebcam() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
@@ -173,6 +249,7 @@
             }
         }
 
+        // Function to handle the webcam stream
         function handleStream(stream) {
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
@@ -187,6 +264,7 @@
             });
         }
 
+        // Function to capture an image from the webcam
         function captureImage() {
             canvas.width = video.videoWidth; //Match canvas size to video size
             canvas.height = video.videoHeight;
@@ -195,6 +273,7 @@
             return imageDataURL;
         }
 
+        // Function to speak the given text
         function speak(text) {
             return new Promise((resolve, reject) => {
                 if (isSpeaking) {
@@ -241,6 +320,7 @@
             });
         }
 
+        // Function for typewriter effect
         async function typeWriter(text, element) {
             element.textContent = "";
             let i = 0;
@@ -258,6 +338,7 @@
             });
         }
 
+        // Function to analyze the image and get a description
         async function analyzeImage(prompt) {
             if (analysisInProgress) {
                 console.log("Analysis already in progress. Skipping.");
@@ -307,6 +388,7 @@
             }
         }
 
+        // Function to select an analysis type
         function selectAnalysisType(button, prompt) {
             analyzeDetailedButton.style.backgroundColor = '';
             analyzeShortButton.style.backgroundColor = '';
@@ -318,11 +400,13 @@
             selectedAnalysisType = { button: button, prompt: prompt };
         }
 
+        // Function to switch between cameras
         async function switchCamera() {
             facingMode = (facingMode === 'user') ? 'environment' : 'user';
             await startWebcam();
         }
 
+        // Function to start voice recognition
         function startRecognition() {
             if ('webkitSpeechRecognition' in window && !isSpeaking) {
                 recognition = new webkitSpeechRecognition();
@@ -367,6 +451,7 @@
             }
         }
 
+        // Function to stop voice recognition
         function stopRecognition() {
             if (recognition) {
                 recognition.stop();
@@ -374,6 +459,7 @@
             }
         }
 
+        // Event listeners for buttons
         analyzeDetailedButton.addEventListener('click', () => selectAnalysisType(analyzeDetailedButton, "Describe la escena detalladamente."));
         analyzeShortButton.addEventListener('click', () => selectAnalysisType(analyzeShortButton, "Muy brevemente, usa lenguaje natural."));
         analyzeResolveButton.addEventListener('click', () => selectAnalysisType(analyzeResolveButton, "Usa lenguaje natural"));
@@ -386,6 +472,7 @@
             }
         });
 
+        // Start webcam and voice recognition on page load
         startWebcam();
         startRecognition();
     </script>
