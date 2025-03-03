@@ -7,9 +7,10 @@
     <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
     <button id="analyzeDetailedButton">Detailed Analysis</button>
     <button id="analyzeShortButton">Short Description</button>
-    <button id="analyzeResolveButton">Resolve</button>
+    <button id="analyzeResolveButton">Lee</button>
     <button id="toggleContinuousButton">Start Continuous</button>
     <button id="switchCameraButton">Switch Camera</button>
+    <button id="analyzeSingleButton" style="background-color: red; color: white;">Single Analysis</button>
 
     <script src="https://js.puter.com/v2/"></script>
     <script>
@@ -21,6 +22,7 @@
         const analyzeResolveButton = document.getElementById('analyzeResolveButton');
         const toggleContinuousButton = document.getElementById('toggleContinuousButton');
         const switchCameraButton = document.getElementById('switchCameraButton');
+        const analyzeSingleButton = document.getElementById('analyzeSingleButton');  // Added
         const context = canvas.getContext('2d');
 
         let currentStream = null;
@@ -162,6 +164,7 @@
             analyzeDetailedButton.style.backgroundColor = '';
             analyzeShortButton.style.backgroundColor = '';
             analyzeResolveButton.style.backgroundColor = '';
+            analyzeSingleButton.style.backgroundColor = ''; // Reset color for the single analysis button.
 
             // Highlight selected button
             button.style.backgroundColor = 'lightgreen';
@@ -180,9 +183,17 @@
         // Event listeners
         analyzeDetailedButton.addEventListener('click', () => selectAnalysisType(analyzeDetailedButton, "Describe la escena detalladamente."));
         analyzeShortButton.addEventListener('click', () => selectAnalysisType(analyzeShortButton, "Que ves? Maximo 3 palabras, puedes usar menos(1, 2), usa lenguaje natural."));
-        analyzeResolveButton.addEventListener('click', () => selectAnalysisType(analyzeResolveButton, "Resuelve"));
+        analyzeResolveButton.addEventListener('click', () => selectAnalysisType(analyzeResolveButton, "Lee este texto, traduce al espanol si es necesario"));
         toggleContinuousButton.addEventListener('click', toggleContinuousAnalysis);
         switchCameraButton.addEventListener('click', switchCamera);
+        analyzeSingleButton.addEventListener('click', async () => { // New event listener
+            //Check to see that a prompt exists.
+            if (selectedAnalysisType) {
+                await analyzeImage(selectedAnalysisType.prompt);
+            }else{
+              outputDiv.textContent = "Por favor, selecciona un tipo de análisis primero.";
+            }
+        });
 
         // Start the webcam when the page loads
         startWebcam();
