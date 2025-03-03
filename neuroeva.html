@@ -64,6 +64,18 @@
 
                 const utterance = new SpeechSynthesisUtterance(text);
 
+                // Here's where you can improve the voice:
+                utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.lang === 'es-ES' || voice.lang === 'es'); // Try Spanish voice
+                if (!utterance.voice){
+                    utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.lang === 'en-US' || voice.lang === 'en');
+                    if (!utterance.voice){
+                        console.warn("No suitable voice found. Using default.");
+                    }
+                }
+                utterance.pitch = 1;    // Default: 1 (0 to 2) - Can experiment with values around 0.8 to 1.2
+                utterance.rate = 1;     // Default: 1 (0.1 to 10) - Can experiment with values around 0.9 to 1.1
+                utterance.volume = 1;   // Default: 1 (0 to 1)
+
                 utterance.onstart = () => {
                     isSpeaking = true;
                 };
