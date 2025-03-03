@@ -22,15 +22,16 @@
         const analyzeResolveButton = document.getElementById('analyzeResolveButton');
         const toggleContinuousButton = document.getElementById('toggleContinuousButton');
         const switchCameraButton = document.getElementById('switchCameraButton');
-        const analyzeSingleButton = document.getElementById('analyzeSingleButton');  // Added
+        const analyzeSingleButton = document.getElementById('analyzeSingleButton');
         const context = canvas.getContext('2d');
 
         let currentStream = null;
         let facingMode = 'environment';
         let isSpeaking = false;
         let continuousAnalysisInterval;
-        let selectedAnalysisType = null; // Store selected button
-        let typingSpeed = 20; // Velocidad de escritura (milisegundos por letra)
+        let selectedAnalysisType = null;
+        let typingSpeed = 20;
+        let lastAnalysis = ""; // Store the last analysis result
 
         async function startWebcam() {
             try {
@@ -59,24 +60,22 @@
         }
 
         function speak(text) {
-            return new Promise((resolve, reject) => { // Return a Promise
+            return new Promise((resolve, reject) => {
                 if (isSpeaking) {
                     window.speechSynthesis.cancel();
                 }
 
                 const utterance = new SpeechSynthesisUtterance(text);
-
-                // Here's where you can improve the voice:
-                utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.lang === 'es-ES' || voice.lang === 'es'); // Try Spanish voice
+                utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.lang === 'es-ES' || voice.lang === 'es');
                 if (!utterance.voice){
                     utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.lang === 'en-US' || voice.lang === 'en');
                     if (!utterance.voice){
                         console.warn("No suitable voice found. Using default.");
                     }
                 }
-                utterance.pitch = 1;    // Default: 1 (0 to 2) - Can experiment with values around 0.8 to 1.2
-                utterance.rate = 1;     // Default: 1 (0.1 to 10) - Can experiment with values around 0.9 to 1.1
-                utterance.volume = 1;   // Default: 1 (0 to 1)
+                utterance.pitch = 1;
+                utterance.rate = 1;
+                utterance.volume = 1;
 
                 utterance.onstart = () => {
                     isSpeaking = true;
@@ -84,13 +83,13 @@
 
                 utterance.onend = () => {
                     isSpeaking = false;
-                    resolve(); // Resolve the Promise when speech ends
+                    resolve();
                 };
 
                 utterance.onerror = () => {
                     isSpeaking = false;
                     console.error("Speech synthesis error.");
-                    reject("Speech synthesis error.");  // Reject the Promise if there's an error
+                    reject("Speech synthesis error.");
                 };
 
                 window.speechSynthesis.speak(utterance);
@@ -98,7 +97,7 @@
         }
 
         async function typeWriter(text, element) {
-            element.textContent = ""; // Clear the outputDiv
+            element.textContent = "";
             let i = 0;
             return new Promise((resolve) => {
                 function next() {
@@ -114,9 +113,34 @@
             });
         }
 
+         // Function to compare strings for similarity
+        function areSimilar(str1, str2, similarityThreshold = 0.7) {
+            str1 = str1.toLowerCase().trim();
+            str2 = str2.toLowerCase().trim();
+
+            if (str1 === str2) {
+                return true; // Exact match
+            }
+
+            const words1 = str1.split(/\s+/);
+            const words2 = str2.split(/\s+/);
+
+            let commonWords = 0;
+            for (const word1 of words1) {
+                if (words2.includes(word1)) {
+                    commonWords++;
+                }
+            }
+
+            const similarityRatio = commonWords / Math.max(words1.length, words2.length);
+
+            return similarityRatio >= similarityThreshold;
+        }
+
+
         async function analyzeImage(prompt) {
             if (isSpeaking) {
-                return; //Don't start a new analysis if one is already in progress.
+                return;
             }
 
             outputDiv.textContent = "Analizando...";
@@ -127,20 +151,26 @@
                     imageBase64
                 );
 
-                await typeWriter(response, outputDiv); // Use the typewriter effect
+                if (!areSimilar(response, lastAnalysis)) {
+                    await typeWriter(response, outputDiv);
+                    await speak(response);
+                    lastAnalysis = response; // Update lastAnalysis
+                } else {
+                    outputDiv.textContent = "Resultado similar al anterior, omitiendo.";
+                    console.log("Similar result, skipping.");
+                }
 
-                await speak(response); // Await the speech to finish
             } catch (error) {
                 console.error("", error);
                 await typeWriter("", outputDiv);
-                await speak(""); // Await error speech to finish
+                await speak("");
             }
         }
 
         function startContinuousAnalysis() {
             if (selectedAnalysisType) {
-                continuousAnalysisInterval = setInterval(async () => {  //Make it async
-                    await analyzeImage(selectedAnalysisType.prompt); //Await the execution
+                continuousAnalysisInterval = setInterval(async () => {
+                    await analyzeImage(selectedAnalysisType.prompt);
                 }, 2000);
             }
         }
@@ -160,17 +190,15 @@
         }
 
         function selectAnalysisType(button, prompt) {
-            // Reset background color for all buttons
             analyzeDetailedButton.style.backgroundColor = '';
             analyzeShortButton.style.backgroundColor = '';
             analyzeResolveButton.style.backgroundColor = '';
-            analyzeSingleButton.style.backgroundColor = ''; // Reset color for the single analysis button.
+            analyzeSingleButton.style.backgroundColor = '';
 
-            // Highlight selected button
             button.style.backgroundColor = 'lightgreen';
 
-            selectedAnalysisType = { button: button, prompt: prompt }; //Store the button and it's prompt.
-            stopContinuousAnalysis(); //If you click a new analysis mode, continuous analysis will be automatically stopped.
+            selectedAnalysisType = { button: button, prompt: prompt };
+            stopContinuousAnalysis();
             toggleContinuousButton.textContent = "Start Continuous"
 
         }
@@ -186,8 +214,7 @@
         analyzeResolveButton.addEventListener('click', () => selectAnalysisType(analyzeResolveButton, "Lee el texto(si esta en otro idioma traduce al espanol) no agregues simbolos inncesarios ya que se usara para un texto a voz asi que debe ser generado en lenguaje natural"));
         toggleContinuousButton.addEventListener('click', toggleContinuousAnalysis);
         switchCameraButton.addEventListener('click', switchCamera);
-        analyzeSingleButton.addEventListener('click', async () => { // New event listener
-            //Check to see that a prompt exists.
+        analyzeSingleButton.addEventListener('click', async () => {
             if (selectedAnalysisType) {
                 await analyzeImage(selectedAnalysisType.prompt);
             }else{
