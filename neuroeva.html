@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>Webcam Analysis</title>
+</head>
 <body>
     <div style="position: relative;">
         <video id="webcam" width="640" height="480" autoplay style="position: relative; z-index: 1;"></video>
@@ -12,6 +15,7 @@
     <button id="analyzeResolveButton">Normal</button>
     <button id="switchCameraButton">Switch Camera</button>
     <button id="analyzeSingleButton" style="background-color: red; color: white;">Single Analysis</button>
+
 <script src="https://js.puter.com/v2/"></script>
 <script>
     const video = document.getElementById('webcam');
@@ -21,7 +25,6 @@
     const analyzeDetailedButton = document.getElementById('analyzeDetailedButton');
     const analyzeShortButton = document.getElementById('analyzeShortButton');
     const analyzeResolveButton = document.getElementById('analyzeResolveButton');
-    const toggleContinuousButton = document.getElementById('toggleContinuousButton');
     const switchCameraButton = document.getElementById('switchCameraButton');
     const analyzeSingleButton = document.getElementById('analyzeSingleButton');
     const context = canvas.getContext('2d');
@@ -34,7 +37,8 @@
     let selectedAnalysisType = null;
     let typingSpeed = 20;
     let recognition;
-    let conversationHistory = []; // Array to store conversation history
+    let conversationHistory = [];
+    let analysisInProgress = false; // Flag to prevent overlapping analysis
 
     async function startWebcam() {
         try {
@@ -62,7 +66,7 @@
         return imageDataURL;
     }
 
-    function speak(text) {
+   function speak(text) {
         return new Promise((resolve, reject) => {
             if (isSpeaking) {
                 window.speechSynthesis.cancel();
@@ -126,10 +130,17 @@
     }
 
     async function analyzeImage(prompt) {
+         if (analysisInProgress) {
+            console.log("Analysis already in progress. Skipping.");
+            return;
+        }
+
         if (isSpeaking) {
             return;
         }
 
+
+        analysisInProgress = true;
         outputDiv.textContent = "Analizando...";
         try {
             const imageBase64 = captureImage();
@@ -161,35 +172,18 @@
             if (conversationHistory.length > 10) {
                 conversationHistory = conversationHistory.slice(-10);
             }
+            inputText.value = ''; // Clear the input after analysis
 
         } catch (error) {
-            console.error("", error);
-            await typeWriter("", outputDiv);
-            await speak("");
+            console.error("Analysis error:", error);
+            await typeWriter("Error en el análisis.", outputDiv);
+            await speak("Error en el análisis.");
+        } finally {
+            analysisInProgress = false;
         }
     }
 
-    function startContinuousAnalysis() {
-        if (selectedAnalysisType) {
-            continuousAnalysisInterval = setInterval(async () => {
-                analyzeImage(selectedAnalysisType.prompt);
-            }, 2000);
-        }
-    }
 
-    function stopContinuousAnalysis() {
-        clearInterval(continuousAnalysisInterval);
-    }
-
-    function toggleContinuousAnalysis() {
-        if (continuousAnalysisInterval) {
-            stopContinuousAnalysis();
-            toggleContinuousButton.textContent = "Start Continuous";
-        } else {
-            startContinuousAnalysis();
-            toggleContinuousButton.textContent = "Stop Continuous";
-        }
-    }
 
     function selectAnalysisType(button, prompt) {
         analyzeDetailedButton.style.backgroundColor = '';
@@ -201,7 +195,6 @@
 
         selectedAnalysisType = { button: button, prompt: prompt };
         stopContinuousAnalysis();
-        toggleContinuousButton.textContent = "Start Continuous";
     }
 
     async function switchCamera() {
@@ -212,8 +205,8 @@
     function startRecognition() {
         if ('webkitSpeechRecognition' in window && !isSpeaking) {
             recognition = new webkitSpeechRecognition();
-            recognition.continuous = true;
-            recognition.interimResults = true;
+            recognition.continuous = false; // Change to false for single phrase
+            recognition.interimResults = false; // Change to false for final result only
             recognition.lang = 'es-ES';
 
             recognition.onstart = () => {
@@ -221,30 +214,30 @@
                 console.log("Voice recognition started");
             };
 
-            recognition.onresult = (event) => {
-                let final_transcript = '';
-                let interim_transcript = '';
+            recognition.onresult = async (event) => {
+                const transcript = event.results[0][0].transcript;
+                inputText.value = transcript;
 
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        final_transcript += event.results[i][0].transcript;
-                    } else {
-                        interim_transcript += event.results[i][0].transcript;
-                    }
+                if (selectedAnalysisType) {
+                    await analyzeImage(selectedAnalysisType.prompt); // Trigger analysis
+                } else {
+                    outputDiv.textContent = "Por favor, selecciona un tipo de análisis primero.";
                 }
-                inputText.value = final_transcript || interim_transcript;
+
+                stopRecognition(); // Stop recognition after processing
+                setTimeout(startRecognition, 1000); //Restart after 1 sec
             };
+
 
             recognition.onerror = (event) => {
                 console.error("Recognition error:", event.error);
+                setTimeout(startRecognition, 1000); //Restart after 1 sec
             };
 
             recognition.onend = () => {
                 isListening = false;
                 console.log("Voice recognition ended");
-                if (!isSpeaking) {
-                    recognition.start();
-                }
+
             };
 
             recognition.start();
