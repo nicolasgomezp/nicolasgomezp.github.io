@@ -1,3 +1,16 @@
+<html>
+<body>
+    <div style="position: relative;">
+        <video id="webcam" width="640" height="480" autoplay style="position: relative; z-index: 1;"></video>
+        <div id="output" style="position: absolute; top: 10px; left: 10px; color: white; background-color: rgba(0, 0, 0, 0.5); padding: 5px; z-index: 2;"></div>
+    </div>
+    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+    <button id="analyzeDetailedButton">Detailed Analysis</button>
+    <button id="analyzeShortButton">Short Description</button>
+    <button id="analyzeResolveButton">Leer</button>
+    <button id="toggleContinuousButton">Start Continuous</button>
+    <button id="switchCameraButton">Switch Camera</button>
+    <button id="analyzeSingleButton" style="background-color: red; color: white;">Single Analysis</button>
 <script src="https://js.puter.com/v2/"></script>
 <script>
     const video = document.getElementById('webcam');
@@ -167,7 +180,7 @@
     }
 
     // Event listeners
-    analyzeDetailedButton.addEventListener('click', () => selectAnalysisType(analyzeDetailedButton, "Describe la escena detalladamente a un ciego."));
+    analyzeDetailedButton.addEventListener('click', () => selectAnalysisType(analyzeDetailedButton, "Describe la escena detalladamente."));
     analyzeShortButton.addEventListener('click', () => selectAnalysisType(analyzeShortButton, "Que ves? Maximo 3 palabras, puedes usar menos(1, 2), usa lenguaje natural."));
     analyzeResolveButton.addEventListener('click', () => selectAnalysisType(analyzeResolveButton, "Lee el texto(si esta en otro idioma traduce al espanol) no agregues simbolos inncesarios ya que se usara para un texto a voz asi que debe ser generado en lenguaje natural"));
     toggleContinuousButton.addEventListener('click', toggleContinuousAnalysis);
