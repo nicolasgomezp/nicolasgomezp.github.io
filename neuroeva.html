@@ -239,9 +239,16 @@
         // Function to start the webcam
         async function startWebcam() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: facingMode, width: { ideal: 640 }, height: { ideal: 480 } } // Added ideal resolution
-                });
+                const constraints = {
+                    video: {
+                        facingMode: facingMode,
+                        width: { ideal: 640 },
+                        height: { ideal: 480 }
+                    },
+                    audio: false // Disable audio to avoid permission issues on some mobile devices
+                };
+
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 handleStream(stream);
             } catch (err) {
                 console.error("Error accessing webcam:", err);
@@ -403,7 +410,12 @@
         // Function to switch between cameras
         async function switchCamera() {
             facingMode = (facingMode === 'user') ? 'environment' : 'user';
-            await startWebcam();
+            try {
+                await startWebcam();
+            } catch (err) {
+                console.error("Error switching camera:", err);
+                outputDiv.textContent = "Error al cambiar la cámara. Por favor, verifica los permisos.";
+            }
         }
 
         // Function to start voice recognition
