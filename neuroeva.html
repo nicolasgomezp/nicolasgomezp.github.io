@@ -1,14 +1,15 @@
+<!DOCTYPE html>
 <html>
 <body>
     <div style="position: relative;">
         <video id="webcam" width="640" height="480" autoplay style="position: relative; z-index: 1;"></video>
-        <div id="output" style="position: absolute; top: 10px; left: 10px; color: white; background-color: rgba(0, 0, 0, 0.5); padding: 5px; z-index: 2;"></div>
+        <textarea id="inputText" style="position: absolute; top: 10px; left: 10px; color: black; background-color: rgba(255, 255, 255, 0.7); padding: 5px; z-index: 3; width: 300px; height: 50px;"></textarea>
+        <div id="output" style="position: absolute; top: 70px; left: 10px; color: white; background-color: rgba(0, 0, 0, 0.5); padding: 5px; z-index: 2;"></div>
     </div>
     <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
     <button id="analyzeDetailedButton">Detailed Analysis</button>
     <button id="analyzeShortButton">Short Description</button>
     <button id="analyzeResolveButton">Leer</button>
-    <button id="toggleContinuousButton">Start Continuous</button>
     <button id="switchCameraButton">Switch Camera</button>
     <button id="analyzeSingleButton" style="background-color: red; color: white;">Single Analysis</button>
 <script src="https://js.puter.com/v2/"></script>
@@ -16,20 +17,23 @@
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('canvas');
     const outputDiv = document.getElementById('output');
+    const inputText = document.getElementById('inputText');
     const analyzeDetailedButton = document.getElementById('analyzeDetailedButton');
     const analyzeShortButton = document.getElementById('analyzeShortButton');
     const analyzeResolveButton = document.getElementById('analyzeResolveButton');
     const toggleContinuousButton = document.getElementById('toggleContinuousButton');
     const switchCameraButton = document.getElementById('switchCameraButton');
-    const analyzeSingleButton = document.getElementById('analyzeSingleButton');  // Added
+    const analyzeSingleButton = document.getElementById('analyzeSingleButton');
     const context = canvas.getContext('2d');
 
     let currentStream = null;
     let facingMode = 'environment';
     let isSpeaking = false;
+    let isListening = false;
     let continuousAnalysisInterval;
-    let selectedAnalysisType = null; // Store selected button
-    let typingSpeed = 20; // Velocidad de escritura (milisegundos por letra)
+    let selectedAnalysisType = null;
+    let typingSpeed = 20;
+    let recognition;
 
     async function startWebcam() {
         try {
@@ -58,46 +62,53 @@
     }
 
     function speak(text) {
-        return new Promise((resolve, reject) => { // Return a Promise
+        return new Promise((resolve, reject) => {
             if (isSpeaking) {
                 window.speechSynthesis.cancel();
             }
 
             const utterance = new SpeechSynthesisUtterance(text);
 
-            // Here's where you can improve the voice:
-            utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.lang === 'es-ES' || voice.lang === 'es'); // Try Spanish voice
-            if (!utterance.voice){
+            utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.lang === 'es-ES' || voice.lang === 'es');
+            if (!utterance.voice) {
                 utterance.voice = window.speechSynthesis.getVoices().find(voice => voice.lang === 'en-US' || voice.lang === 'en');
-                if (!utterance.voice){
+                if (!utterance.voice) {
                     console.warn("No suitable voice found. Using default.");
                 }
             }
-            utterance.pitch = 1;    // Default: 1 (0 to 2) - Can experiment with values around 0.8 to 1.2
-            utterance.rate = 1;     // Default: 1 (0.1 to 10) - Can experiment with values around 0.9 to 1.1
-            utterance.volume = 1;   // Default: 1 (0 to 1)
+            utterance.pitch = 1;
+            utterance.rate = 1;
+            utterance.volume = 1;
 
             utterance.onstart = () => {
                 isSpeaking = true;
+                stopRecognition();
             };
 
             utterance.onend = () => {
                 isSpeaking = false;
-                resolve(); // Resolve the Promise when speech ends
+                startRecognition();
+                resolve();
             };
 
             utterance.onerror = () => {
                 isSpeaking = false;
+                startRecognition();
                 console.error("Speech synthesis error.");
-                reject("Speech synthesis error.");  // Reject the Promise if there's an error
+                reject("Speech synthesis error.");
             };
 
-            window.speechSynthesis.speak(utterance);
+            try {
+              window.speechSynthesis.speak(utterance);
+            } catch (error) {
+              console.error("Error calling speechSynthesis.speak:", error);
+              reject(error);
+            }
         });
     }
 
     async function typeWriter(text, element) {
-        element.textContent = ""; // Clear the outputDiv
+        element.textContent = "";
         let i = 0;
         return new Promise((resolve) => {
             function next() {
@@ -115,31 +126,36 @@
 
     async function analyzeImage(prompt) {
         if (isSpeaking) {
-            return; //Don't start a new analysis if one is already in progress.
+            return;
         }
 
         outputDiv.textContent = "Analizando...";
         try {
             const imageBase64 = captureImage();
+            const userText = inputText.value;
+            const combinedPrompt = prompt + " Adicionalmente, considera el siguiente contexto proporcionado por el usuario: " + userText;
+
+            console.log("Combined Prompt:", combinedPrompt);
+
             const response = await puter.ai.chat(
-                prompt,
+                combinedPrompt,
                 imageBase64
             );
 
-            await typeWriter(response, outputDiv); // Use the typewriter effect
+            await typeWriter(response, outputDiv);
 
-            await speak(response); // Await the speech to finish
+            await speak(response);
         } catch (error) {
             console.error("", error);
             await typeWriter("", outputDiv);
-            await speak(""); // Await error speech to finish
+            await speak("");
         }
     }
 
     function startContinuousAnalysis() {
         if (selectedAnalysisType) {
-            continuousAnalysisInterval = setInterval(async () => {  //Make it async
-                await analyzeImage(selectedAnalysisType.prompt); //Await the execution
+            continuousAnalysisInterval = setInterval(async () => {
+                analyzeImage(selectedAnalysisType.prompt);
             }, 2000);
         }
     }
@@ -159,19 +175,16 @@
     }
 
     function selectAnalysisType(button, prompt) {
-        // Reset background color for all buttons
         analyzeDetailedButton.style.backgroundColor = '';
         analyzeShortButton.style.backgroundColor = '';
         analyzeResolveButton.style.backgroundColor = '';
-        analyzeSingleButton.style.backgroundColor = ''; // Reset color for the single analysis button.
+        analyzeSingleButton.style.backgroundColor = '';
 
-        // Highlight selected button
         button.style.backgroundColor = 'lightgreen';
 
-        selectedAnalysisType = { button: button, prompt: prompt }; //Store the button and it's prompt.
-        stopContinuousAnalysis(); //If you click a new analysis mode, continuous analysis will be automatically stopped.
-        toggleContinuousButton.textContent = "Start Continuous"
-
+        selectedAnalysisType = { button: button, prompt: prompt };
+        stopContinuousAnalysis();
+        toggleContinuousButton.textContent = "Start Continuous";
     }
 
     async function switchCamera() {
@@ -179,21 +192,72 @@
         await startWebcam();
     }
 
-    // Event listeners
+    function startRecognition() {
+        if ('webkitSpeechRecognition' in window && !isSpeaking) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = true;
+            recognition.lang = 'es-ES';
+
+            recognition.onstart = () => {
+                isListening = true;
+                console.log("Voice recognition started");
+            };
+
+            recognition.onresult = (event) => {
+                let final_transcript = '';
+                let interim_transcript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        final_transcript += event.results[i][0].transcript;
+                    } else {
+                        interim_transcript += event.results[i][0].transcript;
+                    }
+                }
+                inputText.value = final_transcript || interim_transcript;
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Recognition error:", event.error);
+            };
+
+            recognition.onend = () => {
+                isListening = false;
+                console.log("Voice recognition ended");
+                if (!isSpeaking) {
+                    recognition.start();
+                }
+            };
+
+            recognition.start();
+
+        } else {
+            outputDiv.textContent = "Speech recognition not supported in this browser.";
+        }
+    }
+
+    function stopRecognition() {
+        if (recognition) {
+            recognition.stop();
+            isListening = false;
+        }
+    }
+
     analyzeDetailedButton.addEventListener('click', () => selectAnalysisType(analyzeDetailedButton, "Describe la escena detalladamente."));
     analyzeShortButton.addEventListener('click', () => selectAnalysisType(analyzeShortButton, "Que ves? Maximo 3 palabras, puedes usar menos(1, 2), usa lenguaje natural."));
     analyzeResolveButton.addEventListener('click', () => selectAnalysisType(analyzeResolveButton, "Lee el texto(si esta en otro idioma traduce al espanol) no agregues simbolos inncesarios ya que se usara para un texto a voz asi que debe ser generado en lenguaje natural"));
-    toggleContinuousButton.addEventListener('click', toggleContinuousAnalysis);
     switchCameraButton.addEventListener('click', switchCamera);
-    analyzeSingleButton.addEventListener('click', async () => { // New event listener
-        //Check to see that a prompt exists.
+    analyzeSingleButton.addEventListener('click', async () => {
         if (selectedAnalysisType) {
             await analyzeImage(selectedAnalysisType.prompt);
-        }else{
-          outputDiv.textContent = "Por favor, selecciona un tipo de análisis primero.";
+        } else {
+            outputDiv.textContent = "Por favor, selecciona un tipo de análisis primero.";
         }
     });
 
-    // Start the webcam when the page loads
     startWebcam();
+    startRecognition();
 </script>
+</body>
+</html>
