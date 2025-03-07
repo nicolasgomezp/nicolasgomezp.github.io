@@ -12,623 +12,433 @@ button {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Roboto', sans-serif; /* Fuente moderna y legible */
+    -webkit-font-smoothing: antialiased; /* Mejora la legibilidad en algunos navegadores */
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-    background-color: #f0f8f7;
-    /* Fondo general */
+    background-color: #f9f9f9; /* Fondo más suave */
     color: #333;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centrar horizontalmente */
-    min-height: 100vh; /* Asegurar que ocupe al menos la altura de la ventana */
+    min-height: 100vh; /* Full viewport height */
+    transition: background-color 0.3s ease; /* Transición suave para cambios de tema */
 }
 
+/* --- Top Bar --- */
+.top-bar {
+    background-color: #3498db; /* Azul más profesional */
+    color: white;
+    padding: 20px 30px; /* Más espacio */
+    text-align: center;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra más pronunciada */
+    transition: background-color 0.3s ease;
+}
+
+.top-bar h1 {
+    font-size: 2.5em; /* Más grande */
+    font-weight: 700; /* Más audaz */
+    margin-bottom: 10px;
+    letter-spacing: -0.03em; /* Ajuste fino del espaciado */
+}
+
+.top-bar p {
+    font-size: 1.1em;
+    color: #ecf0f1; /* Gris más claro */
+}
+
+/* --- Main Content --- */
+.main-content {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en pantallas más pequeñas */
+    justify-content: space-around; /* Distribuye el espacio alrededor de los elementos */
+    padding: 30px;
+    flex-grow: 1; /* Permite que el contenido principal crezca para llenar el espacio */
+    max-width: 1200px; /* Limita el ancho máximo */
+    margin: 0 auto; /* Centra el contenido */
+    width: 100%;
+    transition: padding 0.3s ease; /* Transición suave para el relleno */
+}
 
 /* --- Estilos generales de contenedores --- */
 .container {
-    background-color: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-bottom: 20px;
-    width: 90%;
-    max-width: 450px; /* Ancho máximo estilo app móvil */
-
+    background-color: #fff;
+    border-radius: 12px; /* Más redondeado */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08); /* Sombra más suave */
+    padding: 25px;
+    margin-bottom: 25px;
+    width: calc(50% - 30px); /* Dos columnas en pantallas más grandes */
+    max-width: 550px; /* Ancho máximo aumentado */
+    box-sizing: border-box; /* Incluye el relleno en el cálculo del ancho */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transiciones suaves */
 }
 
-
-/* --- Encabezados --- */
-.app-header {
-    text-align: center;
-    margin-bottom: 30px;
-    width: 100%;
+.container:hover {
+    transform: translateY(-3px); /* Eleva el contenedor al pasar el ratón */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
+/* --- Media query para pantallas más pequeñas --- */
+@media (max-width: 768px) {
+    .main-content{
+        flex-direction: column; /* Apila los elementos verticalmente */
+        align-items: center;
+    }
 
-.app-header h1 {
-    font-size: 3em;
-    font-weight: bold;
-    color: #00c7b7; /* Color principal vibrante */
-     /* Sombra con estilo "glitch" (opcional) */
-    text-shadow:  2px 2px 0px #f5f5f5, 4px 4px 0px #ff4081;
-    margin-bottom: 10px;
-     position: relative;
-    top: 20px;
-
-
-}
-
-.app-header p {
-     font-size: 1.1em;
-     color: #666;
-     line-height: 1.4;
-     position: relative;
-     top: 5px;
-
-
+    .container {
+        width: 95%; /* Ancho completo en pantallas más pequeñas */
+        max-width: none; /* Elimina la restricción de ancho máximo */
+        margin-left: auto; /* Centra el contenedor */
+        margin-right: auto;
+    }
 }
 
 /* --- Botones --- */
 .btn {
-    display: inline-block; /* Para que se ajusten al contenido y padding */
-    padding: 10px 18px;
+    display: inline-block;
+    padding: 12px 22px; /* Más relleno */
     border: none;
-    border-radius: 25px; /* Bordes redondeados */
-    font-size: 1em;
+    border-radius: 30px; /* Más redondeado */
+    font-size: 1.1em;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease; /* Transición suave */
-    text-align: center; /* Centrar texto dentro del botón*/
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+}
+
+.btn:hover {
+    transform: translateY(-2px); /* Eleva el botón al pasar el ratón */
 }
 
 .btn-primary {
-    background-color: #00c7b7;
+    background-color: #3498db; /* Azul más profesional */
     color: white;
 }
 
 .btn-primary:hover {
-    background-color: #00a699;  /* Un tono más oscuro al hacer hover */
+    background-color: #2980b9; /* Azul más oscuro */
 }
 
-  .btn-secondary {
-    background-color: #ff4081; /* Color secundario */
+.btn-secondary {
+    background-color: #e74c3c; /* Rojo más suave */
     color: white;
 }
 
 .btn-secondary:hover {
-    background-color: #e03573; /* Un tono más oscuro al hacer hover */
+    background-color: #c0392b; /* Rojo más oscuro */
 }
-
 
 .btn-outline {
     background-color: transparent;
-    color: #00c7b7;
-    border: 2px solid #00c7b7;
-
+    color: #3498db; /* Azul más profesional */
+    border: 2px solid #3498db; /* Borde azul */
 }
 
 .btn-outline:hover {
-     background-color:  rgba(0, 199, 183, 0.1);  /* Ligero fondo al hacer hover */
+    background-color: rgba(52, 152, 219, 0.1); /* Azul más claro */
 }
 
 .btn-block {
     display: block;
-    width: 100%;  /* Ocupa todo el ancho disponible */
+    width: 100%;
 }
-
 
 /* --- Secciones de la app --- */
 .section-title {
-    font-size: 1.5em;
+    font-size: 1.8em; /* Más grande */
     font-weight: bold;
-    color: #00c7b7;
-    margin-bottom: 10px;
-    border-bottom: 2px solid #00c7b7;
-    padding-bottom: 5px;
+    color: #3498db; /* Azul más profesional */
+    margin-bottom: 15px;
+    border-bottom: 3px solid #3498db; /* Borde más grueso */
+    padding-bottom: 8px;
     display: inline-block;
+    letter-spacing: -0.02em; /* Ajuste fino del espaciado */
+    transition: color 0.3s ease, border-bottom-color 0.3s ease; /* Transiciones suaves */
 }
 
+/* --- Modal --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5); /* Más oscuro */
+    backdrop-filter: blur(5px); /* Efecto de desenfoque */
+}
 
-/* Resumen */
-.resumen-item {
-    display: flex; /* Usar flexbox para alinear icono y texto */
-    align-items: center; /* Centrar verticalmente */
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto; /* Más espacio alrededor */
+    padding: 30px; /* Más relleno */
+    border-radius: 15px; /* Más redondeado */
+    width: 90%;
+    max-width: 600px; /* Ancho máximo aumentado */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Sombra más fuerte */
+    animation: modal-open 0.3s ease; /* Animación suave */
+}
+
+/* Modal Animation */
+@keyframes modal-open {
+    from {
+        opacity: 0;
+        transform: translateY(-30px); /* Comienza un poco más arriba */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cerrar-modal {
+    color: #999;
+    float: right;
+    font-size: 32px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.cerrar-modal:hover,
+.cerrar-modal:focus {
+    color: #333;
+    text-decoration: none;
+}
+
+/* --- Form Styles (inside modal) --- */
+.modal-content label {
+    display: block;
+    margin-top: 15px;
     margin-bottom: 8px;
-
+    color: #555;
+    font-weight: 600;
+    transition: color 0.3s ease; /* Transición suave */
 }
 
-.resumen-item i { /* Iconos */
-     font-size: 1.2em;
-    margin-right: 10px;
-    color: #00c7b7;
-}
-
-.resumen-item span { /* El texto al lado del icono */
+.modal-content input[type="text"],
+.modal-content input[type="date"],
+.modal-content input[type="time"],
+.modal-content input[type="number"] {
+    width: 100%;
+    padding: 12px; /* Más relleno */
+    border: 1px solid #ddd;
+    border-radius: 10px; /* Más redondeado */
+    box-sizing: border-box;
     font-size: 1.1em;
+    margin-bottom: 20px;
+    transition: border-color 0.3s ease;
 }
 
+.modal-content input[type="text"]:focus,
+.modal-content input[type="date"]:focus,
+.modal-content input[type="time"]:focus,
+.modal-content input[type="number"]:focus {
+    border-color: #3498db; /* Azul más profesional */
+    outline: none;
+}
 
-/* Pacientes por día (simulación) */
+.modal-content button[type="submit"] {
+    margin-top: 20px;
+}
+
+/* --- Patient List Styles --- */
+#lista-pacientes {
+    margin-top: 30px; /* Más espacio */
+    width: 100%;
+}
+
+#pacientes-container {
+    border-radius: 12px; /* Más redondeado */
+    background-color: #fff;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08); /* Sombra más suave */
+    padding: 20px;
+    width: 100%; /* Toma todo el ancho de su contenedor */
+}
+
+#lista-pacientes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#lista-pacientes li {
+    background-color: transparent;
+    padding: 15px;
+    margin-bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s ease; /* Transición suave */
+}
+
+#lista-pacientes li:hover {
+    background-color: #f5f5f5; /* Color de fondo al pasar el ratón */
+}
+
+#lista-pacientes li:last-child {
+    border-bottom: none;
+}
+
+.patient-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-right: 15px;
+}
+
+.patient-info .name {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #3498db; /* Azul más profesional */
+    margin-bottom: 5px;
+    transition: color 0.3s ease;
+}
+
+.patient-info .rut {
+    font-size: 0.9em;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+.patient-details {
+    font-size: 1em;
+    color: #666;
+}
+
+.patient-date {
+    font-size: 0.9em;
+    color: #777;
+    white-space: nowrap;
+}
+
+.delete-button {
+    background-color: #e74c3c; /* Rojo más suave */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 25px; /* Más redondeado */
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Sombra sutil */
+}
+
+.delete-button:hover {
+    background-color: #c0392b; /* Rojo más oscuro */
+    transform: scale(1.05); /* Escala el botón al pasar el ratón */
+}
+
+/* --- Resumen Styles --- */
+#resumen {
+    margin-top: 30px;
+    width: 100%; /* Ancho completo */
+}
+
+.resumen-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    color: #495057;
+    transition: color 0.3s ease;
+}
+
+.resumen-item:hover {
+    color: #3498db; /* Azul al pasar el ratón */
+}
+
+.resumen-item span:first-child {
+    font-weight: bold;
+}
+
+.resumen-item:last-child {
+    margin-bottom: 0;
+}
+
+/* --- Backup and Restore --- */
+#backup-restore {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center; /* Centra los botones */
+}
+
+#btn-restore {
+    display: none;
+}
+
+/* (Optional) Pacientes por día (simulated) */
 .pacientes-dia {
     display: flex;
     justify-content: space-between;
-    align-items: flex-end; /* Alinear barras abajo */
-    height: 60px; /* Altura fija para las barras */
-    margin-top: 15px;
+    align-items: flex-end;
+    height: 70px;
+    margin-top: 20px;
 }
 
- .pacientes-dia div {
-    width: 12%;  /* Ancho relativo para cada barra */
-    background-color: #00c7b7;
-    border-radius: 5px 5px 0 0;
-    position: relative; /* Para poder poner el día abajo */
-    text-align: center; /* Para centrar el texto del día */
-
+.pacientes-dia div {
+    width: 12%;
+    background-color: #3498db; /* Azul más profesional */
+    border-radius: 6px 6px 0 0;
+    position: relative;
+    text-align: center;
+    transition: background-color 0.3s ease, height 0.3s ease;
 }
 
-.pacientes-dia div:nth-child(2){ height: 80%;} /* Martes */
-.pacientes-dia div:nth-child(3){ height: 100%;} /* Miércoles */
-.pacientes-dia div:nth-child(4){ height: 90%;} /*Jueves */
-.pacientes-dia div:nth-child(5){ height: 70%;} /* Viernes*/
-.pacientes-dia div:nth-child(6){ height: 50%; background-color: #30b8ac;} /*Sábado*/
-.pacientes-dia div:nth-child(7){ height: 40%;  background-color: #30b8ac;}/* Domingo*/
+.pacientes-dia div:hover {
+    background-color: #2980b9; /* Azul más oscuro al pasar el ratón */
+}
 
+/* Example heights - you would dynamically set these with JS */
+.pacientes-dia div:nth-child(2) {
+    height: 80%;
+} /* Martes */
+
+.pacientes-dia div:nth-child(3) {
+    height: 100%;
+} /* Miércoles */
+
+.pacientes-dia div:nth-child(4) {
+    height: 90%;
+} /* Jueves */
+
+.pacientes-dia div:nth-child(5) {
+    height: 70%;
+} /* Viernes */
+
+.pacientes-dia div:nth-child(6) {
+    height: 50%;
+    background-color: #5dade2; /* Azul más claro */
+} /* Sábado */
+
+.pacientes-dia div:nth-child(7) {
+    height: 40%;
+    background-color: #5dade2; /* Azul más claro */
+} /* Domingo */
 
 .pacientes-dia div span {
-     position: absolute;
-     bottom: -20px; /* Separación del texto */
-    left: 0;
-     width: 100%; /* Para que ocupe todo el ancho */
-     font-size: 0.9em;
-     color: #555;
-}
-
-
-/* Información de Salud (Detalles del Paciente) */
- .profile-pic {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%; /* Forma circular */
-    background-image: url('https://via.placeholder.com/80'); /* Imagen de placeholder, reemplaza por la real */
-    background-size: cover;
-    background-position: center;
-    border: 3px solid #00c7b7;
-    position: relative;
-    margin: -40px auto 10px;  /* Centrar y subir un poco por encima del borde */
-
-}
-
-
-.profile-pic::after { /* Para la edad */
-    content: '35'; /*  La edad.  Hazlo dinámico con JS si es posible */
     position: absolute;
-    bottom: -10px;
-    right: -10px;
-    background-color: #ff4081;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 50%;
-    font-size: 0.8em;
-    font-weight: bold;
-    border: 2px solid white; /* Borde para que resalte */
-
-}
-
-
-.user-info {
-     margin-bottom: 15px;
-     text-align: center;
-}
-
-.user-info h2 {
-     font-size: 1.4em;
-     font-weight: bold;
-     color: #00c7b7;
-
-}
-.user-info p {
-    color: #777;
-    margin-top: 3px;
-}
-
-
- .health-info-item {
-     display: flex;
-     align-items: center;
-     margin-bottom: 5px;
-     padding: 5px;
-}
-.health-info-item i {
-    margin-right: 10px;
-     color: #00c7b7;
-     width: 20px; /* Ancho fijo para que todos se alineen*/
-     text-align: center; /* Centrar el ícono */
-}
-
-.health-info-item span {
-     font-size: 1em;
-     color: #555;
-}
-
-
-
-/* Input de Pregunta*/
-.pregunta-input-container {
-    position: relative; /* Para posicionar el icono y el botón */
-    margin-bottom: 20px;
-
-}
-
-.pregunta-input {
+    bottom: -25px;
+    left: 0;
     width: 100%;
-    padding: 12px 45px 12px 15px; /* Espacio para el icono y margen */
-    border: 2px solid #00c7b7;
-    border-radius: 25px;
     font-size: 1em;
-    outline: none; /* Quitar el borde al enfocar */
-    transition: border-color 0.3s ease; /* Transición suave */
-
+    color: #555;
+    transition: color 0.3s ease;
 }
 
-.pregunta-input:focus {
-    border-color: #00a699; /* Cambiar color al enfocar */
+.pacientes-dia div:hover span {
+    color: #333; /* Color más oscuro al pasar el ratón */
 }
 
-.pregunta-input-icon {
-   position: absolute; /* Posicionar el icono */
-   right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #00c7b7;
-     font-size: 1.3em;
-     cursor: pointer; /* Para indicar que es interactivo */
-}
-
-
-
- /* Botones de opciones (Texto breve, Explica en detalle...) */
-
-.options-buttons {
-    display: flex;
-    flex-wrap: wrap; /* Para que se ajusten en varias líneas si no caben */
-    gap: 10px; /* Espacio entre los botones */
-    margin-bottom: 20px;
-    justify-content: center;
-}
-
-.options-buttons .btn {
-     /* Estilos específicos para estos botones, si los necesitas */
-     padding: 8px 15px;
-    font-size: 0.9em;
-}
-
-/* Input de texto y botón Enviar*/
-
-.input-message-container {
-     display: flex; /* Usar flexbox para alinear */
-    align-items: center; /* Centrar verticalmente */
-     gap: 10px;
-    width: 100%;
-}
-.input-message {
-    flex-grow: 1; /* Que el input ocupe todo el espacio disponible */
-    padding: 10px 15px;
-     border: 2px solid #ddd;
-    border-radius: 25px;
-     font-size: 1em;
-     outline: none;
-}
-
- .input-message-container .btn  {
-      /* Estilos para el botón de enviar, si necesitas modificarlo */
-     flex-shrink: 0; /* No encoger el botón */
-}
-   .input-message-container .btn i{
-      margin-right: 10px;
-
-   }
-/* Diagnóstico (tarjeta) */
-.diagnostico-card {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    padding: 15px;
-    display: flex;
-    align-items: center;
-}
-
-.diagnostico-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #f5d9d5; /* Color de fondo, ajústalo */
-    margin-right: 15px;
-     display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 1.5em; /* Tamaño del icono, si usas uno */
-    color: #d67a7a;
-}
-.diagnostico-icon i{
-    color: #d67a7a;
-
-}
-
- .diagnostico-info h3{
-        font-size: 1.3em;
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 5px;
- }
-   .diagnostico-info p {
-     color: #666;
-     font-size: 0.9em;
-     line-height: 1.3;
-   }
-
-
-   /* --- Carrusel (simulado) --- */
-    .carousel-dots {
-        text-align: center;
-        margin: 20px 0;
-    }
-    .dot {
-        display: inline-block;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background-color: #ccc;
-        margin: 0 5px;
-        cursor: pointer; /* Para que parezca interactivo */
-    }
-
-    .dot.active {
-         background-color: #00c7b7; /* Color activo */
-    }
-
-    .image-container {
-        position: relative;
-        width: auto; /* Para que el contenedor se adapte al ancho de la imagen */
-        height: 150px; /* Ajusta según la altura que desees */
-        margin-bottom: 15px;
-        overflow: hidden;
-
-    }
-
-    .image-container img {
-        width: auto; /* Ocupa todo el ancho disponible */
-        height: 150px; /* Para mantener la proporción */
-        display: block; /* Para evitar espacios extra debajo de la imagen */
-         margin-left: auto;  /* Centrar la imagen horizontalmente */
-        margin-right: auto;
-        border-radius: 10px;
-
-    }
-
-    /* --- Modal Styles --- */
-    .modal {
-        display: none;
-        position: fixed;
-        z-index: 1000; /* High z-index to be on top */
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto; /* Scroll if content overflows */
-        background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
-    }
-
-    .modal-content {
-        background-color: #fff;
-        margin: 10% auto;
-        padding: 20px;
-        border: none; /* Remove default border */
-        border-radius: 15px; /* Consistent rounding */
-        width: 90%;
-        max-width: 500px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Stronger shadow */
-        animation: modal-open 0.3s ease; /* Smooth opening */
-    }
-
-    /* Modal Animation */
-    @keyframes modal-open {
-        from {
-            opacity: 0;
-            transform: translateY(-20px); /* Start slightly above */
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    .cerrar-modal {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .cerrar-modal:hover,
-    .cerrar-modal:focus {
-        color: #000;
-        text-decoration: none;
-    }
-/* --- Form Styles --- */
-    .modal-content label {
-        display: block; /* Labels on their own line */
-        margin-top: 10px;
-        margin-bottom: 5px;
-        color: #555;
-        font-weight: 600; /* Slightly bolder labels */
-    }
-
-    .modal-content input[type="text"],
-    .modal-content input[type="date"],
-    .modal-content input[type="time"],
-    .modal-content input[type="number"]
-    {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd; /* Lighter border */
-        border-radius: 8px; /* More rounded inputs */
-        box-sizing: border-box;
-        font-size: 1em;
-        margin-bottom: 15px; /* More space between inputs */
-        transition: border-color 0.3s ease; /* Smooth transition */
-    }
-
-    .modal-content input[type="text"]:focus,
-    .modal-content input[type="date"]:focus,
-    .modal-content input[type="time"]:focus,
-    .modal-content input[type="number"]:focus {
-        border-color: #00c7b7; /* Highlight on focus */
-        outline: none; /* Remove default outline */
-    }
-
-    .modal-content button[type="submit"] {
-        margin-top: 15px; /* Space above the button */
-    }
-
-    /* --- Patient List Styles --- */
-    #lista-pacientes {
-        margin-top: 20px;
-        width: 100%; /* Ensure it takes full width */
-    }
-
-    #pacientes-container {
-        border-radius: 15px;
-        background-color: #fff;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 15px;
-        width: 90%;
-        max-width: 450px;  /* Consistent max-width */
-        margin-left: auto;  /* Center the container */
-        margin-right: auto;
-
-    }
-
-    #lista-pacientes ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    #lista-pacientes li {
-        background-color: transparent;
-        padding: 12px;
-        margin-bottom: 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-bottom: 1px solid #eee; /* Subtle separator */
-    }
-
-    #lista-pacientes li:last-child {
-        border-bottom: none;
-    }
-
-    .patient-info {
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-        margin-right: 10px; /* Spacing before date/button */
-    }
-
-    .patient-info .name {
-        font-weight: bold;
-        font-size: 1.1em;
-        color: #007bff; /* Or your primary color */
-        margin-bottom: 4px;
-    }
-
-    .patient-info .rut {
-        font-size: 0.8em;
-        color: #777;
-        margin-bottom: 4px;
-    }
-
-    .patient-details {
-        font-size: 0.9em;
-        color: #666;
-    }
-
-    .patient-date {
-        font-size: 0.8em;
-        color: #777;
-        white-space: nowrap;
-    }
-    /* --- Delete Button --- */
-    .delete-button {
-        background-color: #ff4081; /* Consistent with secondary color */
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 0.8em;
-        transition: background-color 0.3s ease;
-        white-space: nowrap;
-    }
-
-    .delete-button:hover {
-        background-color: #e03573;
-    }
-     /* --- Backup and Restore --- */
-
-    #backup-restore {
-        margin-top: 15px;
-        margin-bottom: 15px;
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        justify-content: center; /* Center buttons */
-        width: 90%; /* Consistent width */
-        max-width: 450px;
-        margin-left: auto;  /* Center */
-        margin-right: auto;
-
-    }
-
-      #btn-restore {
-        display: none; /* Hide the actual file input */
-    }
-      /* --- Summary Section Styles --- */
-    #resumen {
-        background-color: #fff;
-        border-radius: 15px;
-        padding: 15px;
-        margin-top: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: 90%;        /* Make sure it matches other containers */
-        max-width: 450px;  /* Consistent max-width */
-        margin-left: auto;  /* Center the section */
-        margin-right: auto;
-    }
-
-    .resumen-item {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-        font-size: 1em;
-        color: #495057;
-    }
-    .resumen-item span:first-child {
-        font-weight: bold;
-    }
-
-    .resumen-item:last-child {
-        margin-bottom: 0; /* Remove margin from last item */
-    }
-     .logo-container {
-        display: flex;            /* Use flexbox */
-        justify-content: center; /* Center horizontally */
-        align-items: center;     /* Center vertically */
-        gap: 10px;               /* Space between logo and text */
-    }
-      .logo {
-        width: 50px; /* Adjust the size as needed */
-        height: auto; /* Maintain aspect ratio */
-    }
+/* Fuentes */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
