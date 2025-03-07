@@ -5,11 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ficha Clínica NeuroEVA</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Basic Styling (You can customize this in style.css) */
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .cerrar-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .cerrar-modal:hover,
+        .cerrar-modal:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #lista-pacientes ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #lista-pacientes li {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        /* Style for the delete button */
+        .delete-button {
+          background-color: #ff6347; /* Red color */
+          color: white;
+          border: none;
+          padding: 5px 10px;
+          cursor: pointer;
+          margin-left: 10px;
+        }
+    </style>
 </head>
 <body>
     <header>
         <h1>NeuroEVA</h1>
-        <p>Inteligencia Artificial aplicada a la evaluación neurológica.</p>  </header>
+        <p>Inteligencia Artificial aplicada a la evaluación neurológica.</p>
+    </header>
 
     <main>
         <section id="agregar-paciente">
@@ -19,7 +83,7 @@
         <section id="lista-pacientes">
             <h2>Pacientes Ingresados</h2>
             <ul id="pacientes">
-                <!-- Aquí se insertarán los pacientes dinámicamente con JavaScript -->
+                <!-- Pacientes se insertarán aquí -->
             </ul>
         </section>
     </main>
@@ -46,6 +110,158 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // --- IndexedDB Setup ---
+        let db;
+        const request = indexedDB.open("NeuroEVADB", 1); // Increased version number
+
+        request.onerror = function(event) {
+            console.error("Error opening database:", event);
+        };
+
+        request.onupgradeneeded = function(event) {
+            db = event.target.result;
+            // Create an object store (like a table)
+            if (!db.objectStoreNames.contains('pacientes')) {  //Check if 'pacientes' store exists
+               const objectStore = db.createObjectStore("pacientes", { keyPath: "rut" });  // Use RUT as the key
+                // Create indexes (optional, but useful for searching)
+                objectStore.createIndex("nombre", "nombre", { unique: false });
+                objectStore.createIndex("fecha", "fecha", { unique: false }); // Add index for fecha
+            }
+
+        };
+
+        request.onsuccess = function(event) {
+            db = event.target.result;
+            cargarPacientes(); // Load patients when DB is ready
+        };
+
+
+
+        // --- Modal Logic ---
+        const modal = document.getElementById("modal-agregar");
+        const btnAgregar = document.getElementById("btn-agregar");
+        const spanCerrar = document.getElementsByClassName("cerrar-modal")[0];
+
+        btnAgregar.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        spanCerrar.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // --- Form Submission and Data Handling ---
+        const form = document.getElementById("formulario-paciente");
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const nombre = document.getElementById("nombre").value;
+            const rut = document.getElementById("rut").value;
+            const fecha = document.getElementById("fecha").value;
+            const hora = document.getElementById("hora").value;
+
+             // Check for duplicate RUT before adding
+             const transactionCheck = db.transaction(["pacientes"], "readonly");
+            const objectStoreCheck = transactionCheck.objectStore("pacientes");
+            const requestCheck = objectStoreCheck.get(rut);
+
+            requestCheck.onsuccess = () => {
+              if (requestCheck.result) {
+                alert("Error: Ya existe un paciente con este RUT.");
+                return; // Stop the process if RUT exists
+
+              }else{
+                // Add new patient
+                const paciente = { nombre, rut, fecha, hora };
+                const transaction = db.transaction(["pacientes"], "readwrite");
+                const objectStore = transaction.objectStore("pacientes");
+                const request = objectStore.add(paciente);  //Añadir
+
+                request.onsuccess = function() {
+                    cargarPacientes(); // Reload the patient list
+                    modal.style.display = "none";
+                    form.reset(); // Clear the form
+                };
+
+                request.onerror = function(event) {
+                    console.error("Error adding patient:", event);
+                    alert("Error al guardar el paciente.  Revisa la consola para más detalles.");
+                };
+
+              }
+
+            }
+           requestCheck.onerror = (event) => {
+              console.error("Error checking for duplicate RUT:", event);
+              alert("Error al verificar si el RUT existe.");
+           }
+        });
+
+
+        // --- Load Patients from IndexedDB ---
+       function cargarPacientes() {
+          const listaPacientes = document.getElementById("pacientes");
+          listaPacientes.innerHTML = ""; // Clear current list
+
+          const transaction = db.transaction(["pacientes"], "readonly");
+          const objectStore = transaction.objectStore("pacientes");
+          const request = objectStore.openCursor(); // Use a cursor to iterate
+
+          request.onsuccess = function(event) {
+            const cursor = event.target.result;
+            if (cursor) {
+                const paciente = cursor.value;
+                const listItem = document.createElement("li");
+
+                // Display patient information
+                listItem.textContent = `${paciente.nombre} (RUT: ${paciente.rut}) - Ingreso: ${paciente.fecha} ${paciente.hora}`;
+
+                // Add delete button
+                const deleteButton = document.createElement("button");
+                deleteButton.textContent = "Eliminar";
+                deleteButton.className = "delete-button";
+                deleteButton.onclick = () => eliminarPaciente(paciente.rut); // Pass RUT for deletion
+                listItem.appendChild(deleteButton);
+
+                listaPacientes.appendChild(listItem);
+                cursor.continue(); // Move to the next item
+            }
+          };
+
+          request.onerror = function(event) {
+            console.error("Error loading patients:", event);
+          };
+        }
+
+
+
+    // --- Delete Patient ---
+    function eliminarPaciente(rut) {
+      if (!confirm("¿Estás seguro de que quieres eliminar este paciente?")) {
+        return; // Do nothing if the user cancels
+      }
+
+      const transaction = db.transaction(["pacientes"], "readwrite");
+      const objectStore = transaction.objectStore("pacientes");
+      const request = objectStore.delete(rut);
+
+      request.onsuccess = function() {
+        cargarPacientes(); // Reload the patient list after deletion
+      };
+
+      request.onerror = function(event) {
+        console.error("Error deleting patient:", event);
+        alert("Error al eliminar el paciente. Revisa la consola.");
+      };
+    }
+
+    </script>
 </body>
 </html>
