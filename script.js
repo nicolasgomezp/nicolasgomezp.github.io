@@ -1,140 +1,142 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js";
-import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js";
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, push, set, onValue } from "firebase/database";
 
-document.addEventListener('DOMContentLoaded', function() {
+// Configuración de Firebase (reemplaza con la tuya)
+const firebaseConfig = {
+apiKey: "AIzaSyCgVRfZijmjhIh6UFCTC5l7gjud_SQEjS4",
+  authDomain: "neuroeva-258ae.firebaseapp.com",
+  databaseURL: "https://neuroeva-258ae-default-rtdb.firebaseio.com",
+  projectId: "neuroeva-258ae",
+  storageBucket: "neuroeva-258ae.firebasestorage.app",
+  messagingSenderId: "817146369774",
+  appId: "1:817146369774:web:002a5e6167eeb9970b05ff",
+  measurementId: "G-MBWL2J9QE8"
+};
 
-    const btnAgregar = document.getElementById('btn-agregar');
-    const modal = document.getElementById('modal-agregar');
-    const cerrarModal = document.getElementsByClassName('cerrar-modal')[0];
-    const formulario = document.getElementById('formulario-paciente');
-    const listaPacientes = document.getElementById('pacientes');
+// Inicializa Firebase
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-    // Configuración de Firebase (¡REEMPLAZA CON TU CONFIGURACIÓN!)
-    const firebaseConfig = {
-        apiKey: "AIzaSyCgVRfZijmjhIh6UFCTC5l7gjud_SQEjS4",
-        authDomain: "neuroeva-258ae.firebaseapp.com",
-        databaseURL: "https://neuroeva-258ae-default-rtdb.firebaseio.com/", // ¡MUY IMPORTANTE!
-        projectId: "neuroeva-258ae",
-        storageBucket: "neuroeva-258ae.firebasestorage.app",
-        messagingSenderId: "817146369774",
-        appId: "1:817146369774:web:002a5e6167eeb9970b05ff"
-    };
+// Referencia a la lista de pacientes en la base de datos
+const pacientesRef = ref(db, 'pacientes');
 
-    // Inicializar Firebase
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-    const pacientesRef = ref(database, 'pacientes');
 
-    // Función para mostrar el modal
-    function mostrarModal() {
-        modal.style.display = 'block';
-    }
+// --- Elementos del DOM ---
+const btnAgregar = document.getElementById('btn-agregar');
+const modalAgregar = document.getElementById('modal-agregar');
+const cerrarModal = document.querySelector('.cerrar-modal'); //  Usa querySelector para el span
+const formularioPaciente = document.getElementById('formulario-paciente');
+const listaPacientes = document.getElementById('pacientes');
 
-    // Función para cerrar el modal
-    function ocultarModal() {
-        modal.style.display = 'none';
-    }
 
-    // Función para agregar un paciente al DOM
-    function agregarPacienteDOM(pacienteId, paciente) {
-        const li = document.createElement('li');
-        const infoPacienteDiv = document.createElement('div');
-        infoPacienteDiv.classList.add('paciente-info');
-        const fechaHoraDiv = document.createElement('div');
-        fechaHoraDiv.classList.add('paciente-fecha');
-        const nombreSpan = document.createElement('span');
-        nombreSpan.textContent = `${paciente.nombre} (RUT: ${paciente.rut})`;
-        const fechaHoraSpan = document.createElement('span');
+// --- Funciones ---
 
-        const fecha = new Date(paciente.fechaIngreso);
-        fechaHoraSpan.textContent = `${fecha.toLocaleDateString()} ${paciente.horaIngreso}`;
+// Mostrar modal para agregar paciente
+function mostrarModal() {
+    modalAgregar.style.display = 'block';
+}
 
-        infoPacienteDiv.appendChild(nombreSpan);
-        fechaHoraDiv.appendChild(fechaHoraSpan);
-        li.appendChild(infoPacienteDiv);
-        li.appendChild(fechaHoraDiv);
+// Ocultar modal
+function ocultarModal() {
+    modalAgregar.style.display = 'none';
+}
 
-        // Botón para eliminar
-        const btnEliminar = document.createElement('button');
-        btnEliminar.textContent = 'Eliminar';
-        btnEliminar.style.backgroundColor = 'red';
-        btnEliminar.style.color = 'white';
-        btnEliminar.style.border = 'none';
-        btnEliminar.style.padding = '5px 10px';
-        btnEliminar.style.borderRadius = '4px';
-        btnEliminar.style.cursor = 'pointer';
+// Guardar paciente en Firebase
+function guardarPaciente(event) {
+    event.preventDefault(); // Evita que el formulario se envíe de forma tradicional
 
-        btnEliminar.addEventListener('click', () => {
-            eliminarPaciente(pacienteId);
-        });
+    const nombre = document.getElementById('nombre').value;
+    const rut = document.getElementById('rut').value;
+    const fecha = document.getElementById('fecha').value;
+    const hora = document.getElementById('hora').value;
 
-        li.appendChild(btnEliminar);
-        listaPacientes.appendChild(li);
-    }
+    // Crea una nueva referencia con un ID único (push)
+    const nuevoPacienteRef = push(pacientesRef);
 
-    // Función para eliminar un paciente
-    function eliminarPaciente(pacienteId) {
-        const pacienteRef = ref(database, `pacientes/${pacienteId}`);
-        remove(pacienteRef)
-            .then(() => console.log("Paciente eliminado"))
-            .catch(error => console.error("Error al eliminar:", error));
-    }
+    // Guarda los datos en la nueva referencia
+    set(nuevoPacienteRef, {
+        nombre: nombre,
+        rut: rut,
+        fecha: fecha,
+        hora: hora
+    })
+    .then(() => {
+        console.log("Paciente guardado correctamente");
+        formularioPaciente.reset(); // Limpia el formulario
+        ocultarModal(); // Cierra el modal
+    })
+    .catch((error) => {
+        console.error("Error al guardar el paciente:", error);
+        alert("Error al guardar el paciente.  Revisa la consola para más detalles.");
+    });
+}
 
-    // Cargar pacientes y escuchar cambios
+// Mostrar pacientes en la lista (actualización en tiempo real)
+function mostrarPacientes() {
     onValue(pacientesRef, (snapshot) => {
-        listaPacientes.innerHTML = ''; // Limpiar la lista
-        if (snapshot.exists()) {
-            snapshot.forEach((childSnapshot) => {
-                const pacienteId = childSnapshot.key;
-                const paciente = childSnapshot.val();
-                agregarPacienteDOM(pacienteId, paciente);
-            });
-        }
+        listaPacientes.innerHTML = ''; // Limpia la lista actual
+
+        snapshot.forEach((childSnapshot) => {
+            const paciente = childSnapshot.val();
+            const pacienteId = childSnapshot.key; //  Obtiene el ID único
+
+            const li = document.createElement('li');
+            li.textContent = `${paciente.nombre} (${paciente.rut}) - ${paciente.fecha} ${paciente.hora}`;
+
+          // Botón eliminar
+            const botonEliminar = document.createElement('button');
+            botonEliminar.textContent = 'Eliminar';
+            botonEliminar.classList.add('boton-eliminar');  //Añadí una clase
+            botonEliminar.addEventListener('click', () => eliminarPaciente(pacienteId));
+            li.appendChild(botonEliminar);
+
+            listaPacientes.appendChild(li);
+        });
+    }, {
+        onlyOnce: false //  Para que se actualice en tiempo real
     });
+}
 
-    // Eventos para el modal
-    btnAgregar.addEventListener('click', mostrarModal);
-    cerrarModal.addEventListener('click', ocultarModal);
-    window.addEventListener('click', event => {
-        if (event.target === modal) ocultarModal();
-    });
 
-    // Validación básica del formulario
-    function validarFormulario(nombre, rut, fecha, hora) {
-        if (!nombre || !rut || !fecha || !hora) {
-            alert("Por favor, complete todos los campos.");
-            return false;
-        }
-        // Agregar más validaciones aquí (formato de RUT, etc.)
-        return true;
-    }
+// --- Event Listeners ---
+btnAgregar.addEventListener('click', mostrarModal);
+cerrarModal.addEventListener('click', ocultarModal);
+formularioPaciente.addEventListener('submit', guardarPaciente);
 
-    // Evento: Guardar paciente
-    formulario.addEventListener('submit', event => {
-        event.preventDefault();
+//Cargar pacientes al inicio
+mostrarPacientes();
 
-        const nombre = document.getElementById('nombre').value;
-        const rut = document.getElementById('rut').value;
-        const fecha = document.getElementById('fecha').value;
-        const hora = document.getElementById('hora').value;
 
-        if (!validarFormulario(nombre, rut, fecha, hora)) return;
+// -----  NUEVA FUNCIÓN: Eliminar Paciente -----
+function eliminarPaciente(pacienteId) {
+    const pacienteRef = ref(db, `pacientes/${pacienteId}`); // Referencia al paciente específico
 
-        const nuevoPaciente = {
-            nombre,
-            rut,
-            fechaIngreso: fecha,
-            horaIngreso: hora
-        };
-
-        // Guardar en Firebase
-        const nuevaRef = push(pacientesRef); // Generar ID único
-        nuevaRef.set(nuevoPaciente)
+    if (confirm(`¿Estás seguro de eliminar este paciente?`)) {
+        set(pacienteRef, null) // Elimina el nodo (establece el valor en null)
             .then(() => {
-                console.log('Paciente guardado');
-                ocultarModal();
-                formulario.reset();
+                console.log("Paciente eliminado correctamente");
             })
-            .catch(error => console.error('Error:', error));
-    });
-});
+            .catch((error) => {
+                console.error("Error al eliminar el paciente:", error);
+                alert("Error al eliminar el paciente.");
+            });
+    }
+}
+
+//Añade estilos al botón eliminar:
+const style = document.createElement('style');
+style.textContent = `
+    .boton-eliminar {
+        background-color: #ff4444;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        margin-left: 10px;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    .boton-eliminar:hover {
+        background-color: #cc0000;
+    }
+`;
+document.head.appendChild(style);
