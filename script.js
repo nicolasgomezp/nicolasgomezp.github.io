@@ -1,3 +1,29 @@
+// script.js
+
+// Function to show content after successful login
+function showAppContent() {
+    document.getElementById("sign-in-section").style.display = "none";
+    document.getElementById("agregar-paciente").style.display = "block";
+    document.getElementById("backup-restore").style.display = "block";
+    document.getElementById("lista-pacientes").style.display = "block";
+    document.getElementById("resumen").style.display = "block";
+}
+
+// Function to handle sign-out
+function signOut() {
+    google.accounts.id.disableAutoSelect();
+    // Optional: Revoke access token (more advanced, consult Google documentation)
+    //  See: https://developers.google.com/identity/gsi/web/guides/revoke
+    localStorage.removeItem('userLoggedIn'); // Clear local storage
+    window.location.reload(); // Refresh the page
+}
+
+// Check if the user is already logged in based on a stored flag
+document.addEventListener('DOMContentLoaded', function() {
+  if (localStorage.getItem('userLoggedIn')) {
+    showAppContent();
+  }
+});
 
 // --- IndexedDB Setup ---
 let db;
@@ -13,15 +39,18 @@ request.onupgradeneeded = function(event) {
         const objectStore = db.createObjectStore("pacientes", { keyPath: "rut" });
         objectStore.createIndex("nombre", "nombre", { unique: false });
         objectStore.createIndex("fecha", "fecha", { unique: false });
-        objectStore.createIndex("edad", "edad", { unique: false });         // New index
-        objectStore.createIndex("ocupacion", "ocupacion", { unique: false }); // New index
-        objectStore.createIndex("diagnostico", "diagnostico", { unique: false }); // New index
+        objectStore.createIndex("edad", "edad", { unique: false });
+        objectStore.createIndex("ocupacion", "ocupacion", { unique: false });
+        objectStore.createIndex("diagnostico", "diagnostico", { unique: false });
     }
 };
 
 request.onsuccess = function(event) {
     db = event.target.result;
-    cargarPacientes();
+    // Only load patients if user is logged in
+    if (localStorage.getItem('userLoggedIn')) {
+        cargarPacientes();
+    }
 };
 
 // --- Modal Logic ---
@@ -52,9 +81,9 @@ form.addEventListener("submit", function(event) {
     const rut = document.getElementById("rut").value;
     const fecha = document.getElementById("fecha").value;
     const hora = document.getElementById("hora").value;
-    const edad = document.getElementById("edad").value; // Get edad
-    const ocupacion = document.getElementById("ocupacion").value; // Get ocupacion
-    const diagnostico = document.getElementById("diagnostico").value; // Get diagnostico
+    const edad = document.getElementById("edad").value;
+    const ocupacion = document.getElementById("ocupacion").value;
+    const diagnostico = document.getElementById("diagnostico").value;
 
     const transactionCheck = db.transaction(["pacientes"], "readonly");
     const objectStoreCheck = transactionCheck.objectStore("pacientes");
@@ -65,7 +94,7 @@ form.addEventListener("submit", function(event) {
             alert("Error: Ya existe un paciente con este RUT.");
             return;
         } else {
-            const paciente = { nombre, rut, fecha, hora, edad, ocupacion, diagnostico }; // Include extra fields
+            const paciente = { nombre, rut, fecha, hora, edad, ocupacion, diagnostico };
             const transaction = db.transaction(["pacientes"], "readwrite");
             const objectStore = transaction.objectStore("pacientes");
             const request = objectStore.add(paciente);
@@ -102,8 +131,11 @@ function cargarPacientes() {
         if (cursor) {
             const paciente = cursor.value;
             const listItem = document.createElement("li");
+            listItem.style.cursor = "pointer"; // Change cursor on hover
 
-            // Create elements to display patient information, matching the image structure
+            listItem.addEventListener("click", () => showPatientDetails(paciente)); // Add click event listener
+
+
             const patientInfoDiv = document.createElement("div");
             patientInfoDiv.className = "patient-info";
 
@@ -112,7 +144,7 @@ function cargarPacientes() {
             nameSpan.textContent = paciente.nombre;
             patientInfoDiv.appendChild(nameSpan);
 
-            const rutSpan = document.createElement("span");  // Added for RUT display
+            const rutSpan = document.createElement("span");
             rutSpan.className = "rut";
             rutSpan.textContent = `RUT: ${paciente.rut}`;
             patientInfoDiv.appendChild(rutSpan);
@@ -133,7 +165,10 @@ function cargarPacientes() {
             const deleteButton = document.createElement("button");
             deleteButton.textContent = "Eliminar";
             deleteButton.className = "delete-button";
-            deleteButton.onclick = () => eliminarPaciente(paciente.rut);
+            deleteButton.onclick = (event) => {
+                event.stopPropagation(); // Prevent showing details when deleting
+                eliminarPaciente(paciente.rut);
+            }
             listItem.appendChild(deleteButton);
 
 
@@ -239,4 +274,26 @@ function restoreData(event) {
 
     reader.readAsText(file);
     event.target.value = '';
+}
+
+// --- Patient Detail View ---
+function showPatientDetails(paciente) {
+    // Hide main content and show details
+    document.querySelector('.main-content').classList.add('hidden');
+    document.getElementById('patient-details').style.display = 'block';
+
+    // Populate detail section with data
+    document.getElementById('detail-nombre').textContent = paciente.nombre;
+    document.getElementById('detail-rut').textContent = paciente.rut;
+    document.getElementById('detail-edad').textContent = paciente.edad;
+    document.getElementById('detail-ocupacion').textContent = paciente.ocupacion;
+    document.getElementById('detail-diagnostico').textContent = paciente.diagnostico;
+    document.getElementById('detail-fecha').textContent = paciente.fecha;
+    document.getElementById('detail-hora').textContent = paciente.hora;
+}
+
+function returnToList() {
+    // Show main content and hide details
+    document.querySelector('.main-content').classList.remove('hidden');
+    document.getElementById('patient-details').style.display = 'none';
 }
