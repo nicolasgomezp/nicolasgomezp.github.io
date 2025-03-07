@@ -9,8 +9,7 @@
 <body>
     <header>
         <h1>NeuroEVA</h1>
-        <p>Inteligencia Artificial aplicada a la evaluación neurológica.</p>
-    </header>
+        <p>Inteligencia Artificial aplicada a la evaluación neurológica.</p>  </header>
 
     <main>
         <section id="agregar-paciente">
@@ -20,7 +19,7 @@
         <section id="lista-pacientes">
             <h2>Pacientes Ingresados</h2>
             <ul id="pacientes">
-                <!-- Los pacientes se insertarán aquí dinámicamente -->
+                <!-- Aquí se insertarán los pacientes dinámicamente con JavaScript -->
             </ul>
         </section>
     </main>
@@ -31,23 +30,22 @@
             <h2>Agregar Nuevo Paciente</h2>
             <form id="formulario-paciente">
                 <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" name="nombre"><br>
+                <input type="text" id="nombre" name="nombre" required><br>
 
                 <label for="rut">RUT:</label>
-                <input type="text" id="rut" name="rut"><br>
+                <input type="text" id="rut" name="rut" required><br>
 
                 <label for="fecha">Fecha de Ingreso:</label>
-                <input type="date" id="fecha" name="fecha"><br>
+                <input type="date" id="fecha" name="fecha" required><br>
 
                 <label for="hora">Hora de Ingreso:</label>
-                <input type="time" id="hora" name="hora"><br>
+                <input type="time" id="hora" name="hora" required><br>
 
                 <button type="submit">Guardar Paciente</button>
             </form>
         </div>
     </div>
 
-    <!-- Firebase SDK (Usando módulos) -->
-    <script type="module" src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
