@@ -1,77 +1,140 @@
-document.addEventListener('DOMContentLoaded', function() { // Asegurarse que todo el HTML esté cargado
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-app-compat.js";
+import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/9.6.11/firebase-database-compat.js";
 
-    // 1. Obtener elementos del DOM
+document.addEventListener('DOMContentLoaded', function() {
+
     const btnAgregar = document.getElementById('btn-agregar');
     const modal = document.getElementById('modal-agregar');
-    const cerrarModal = document.getElementsByClassName('cerrar-modal')[0]; //Obtenemos la X
+    const cerrarModal = document.getElementsByClassName('cerrar-modal')[0];
     const formulario = document.getElementById('formulario-paciente');
     const listaPacientes = document.getElementById('pacientes');
 
-    // 2. Función para mostrar el modal
+    // Configuración de Firebase (¡REEMPLAZA CON TU CONFIGURACIÓN!)
+    const firebaseConfig = {
+        apiKey: "AIzaSyCgVRfZijmjhIh6UFCTC5l7gjud_SQEjS4",
+        authDomain: "neuroeva-258ae.firebaseapp.com",
+        databaseURL: "https://neuroeva-258ae-default-rtdb.firebaseio.com/", // ¡MUY IMPORTANTE!
+        projectId: "neuroeva-258ae",
+        storageBucket: "neuroeva-258ae.firebasestorage.app",
+        messagingSenderId: "817146369774",
+        appId: "1:817146369774:web:002a5e6167eeb9970b05ff"
+    };
+
+    // Inicializar Firebase
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const pacientesRef = ref(database, 'pacientes');
+
+    // Función para mostrar el modal
     function mostrarModal() {
         modal.style.display = 'block';
     }
 
-    // 3. Función para cerrar el modal
+    // Función para cerrar el modal
     function ocultarModal() {
         modal.style.display = 'none';
     }
 
-    // 4.  Función para agregar un paciente a la lista
-    function agregarPaciente(nombre, rut, fecha, hora) {
-        const li = document.createElement('li'); // Crea un nuevo elemento <li>
-
-        //Creo un div para almacenar la info y otro para la fecha.
+    // Función para agregar un paciente al DOM
+    function agregarPacienteDOM(pacienteId, paciente) {
+        const li = document.createElement('li');
         const infoPacienteDiv = document.createElement('div');
         infoPacienteDiv.classList.add('paciente-info');
-
         const fechaHoraDiv = document.createElement('div');
         fechaHoraDiv.classList.add('paciente-fecha');
-
-        //Se crea un span, es como un div pero inline (en la misma linea)
         const nombreSpan = document.createElement('span');
-        nombreSpan.textContent = nombre + " (RUT: " + rut + ")";
-
+        nombreSpan.textContent = `${paciente.nombre} (RUT: ${paciente.rut})`;
         const fechaHoraSpan = document.createElement('span');
-        fechaHoraSpan.textContent = fecha + " " + hora;
 
-        infoPacienteDiv.appendChild(nombreSpan); //El nombre dentro del div de info
-        fechaHoraDiv.appendChild(fechaHoraSpan); //La fecha dentro de su div.
+        const fecha = new Date(paciente.fechaIngreso);
+        fechaHoraSpan.textContent = `${fecha.toLocaleDateString()} ${paciente.horaIngreso}`;
 
-
+        infoPacienteDiv.appendChild(nombreSpan);
+        fechaHoraDiv.appendChild(fechaHoraSpan);
         li.appendChild(infoPacienteDiv);
         li.appendChild(fechaHoraDiv);
-        listaPacientes.appendChild(li);       // Lo añade a la lista
+
+        // Botón para eliminar
+        const btnEliminar = document.createElement('button');
+        btnEliminar.textContent = 'Eliminar';
+        btnEliminar.style.backgroundColor = 'red';
+        btnEliminar.style.color = 'white';
+        btnEliminar.style.border = 'none';
+        btnEliminar.style.padding = '5px 10px';
+        btnEliminar.style.borderRadius = '4px';
+        btnEliminar.style.cursor = 'pointer';
+
+        btnEliminar.addEventListener('click', () => {
+            eliminarPaciente(pacienteId);
+        });
+
+        li.appendChild(btnEliminar);
+        listaPacientes.appendChild(li);
     }
 
-    // 5. Evento: Mostrar modal al hacer clic en "Agregar Paciente"
-    btnAgregar.addEventListener('click', mostrarModal);
+    // Función para eliminar un paciente
+    function eliminarPaciente(pacienteId) {
+        const pacienteRef = ref(database, `pacientes/${pacienteId}`);
+        remove(pacienteRef)
+            .then(() => console.log("Paciente eliminado"))
+            .catch(error => console.error("Error al eliminar:", error));
+    }
 
-    // 6. Evento: Cerrar modal al hacer clic en la "x"
-    cerrarModal.addEventListener('click', ocultarModal);
-
-    // 7. Evento: Cerrar modal al hacer clic fuera del modal
-    window.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            ocultarModal();
+    // Cargar pacientes y escuchar cambios
+    onValue(pacientesRef, (snapshot) => {
+        listaPacientes.innerHTML = ''; // Limpiar la lista
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                const pacienteId = childSnapshot.key;
+                const paciente = childSnapshot.val();
+                agregarPacienteDOM(pacienteId, paciente);
+            });
         }
     });
 
-    // 8. Evento:  Guardar paciente al enviar el formulario
-    formulario.addEventListener('submit', function(event) {
-        event.preventDefault(); // Evita que la página se recargue
+    // Eventos para el modal
+    btnAgregar.addEventListener('click', mostrarModal);
+    cerrarModal.addEventListener('click', ocultarModal);
+    window.addEventListener('click', event => {
+        if (event.target === modal) ocultarModal();
+    });
 
-        // Obtener valores del formulario
+    // Validación básica del formulario
+    function validarFormulario(nombre, rut, fecha, hora) {
+        if (!nombre || !rut || !fecha || !hora) {
+            alert("Por favor, complete todos los campos.");
+            return false;
+        }
+        // Agregar más validaciones aquí (formato de RUT, etc.)
+        return true;
+    }
+
+    // Evento: Guardar paciente
+    formulario.addEventListener('submit', event => {
+        event.preventDefault();
+
         const nombre = document.getElementById('nombre').value;
         const rut = document.getElementById('rut').value;
         const fecha = document.getElementById('fecha').value;
         const hora = document.getElementById('hora').value;
 
-        // Agregar paciente a la lista
-        agregarPaciente(nombre, rut, fecha, hora);
+        if (!validarFormulario(nombre, rut, fecha, hora)) return;
 
-        // Cerrar modal y limpiar el formulario
-        ocultarModal();
-        formulario.reset();  //Limpia el formulario
+        const nuevoPaciente = {
+            nombre,
+            rut,
+            fechaIngreso: fecha,
+            horaIngreso: hora
+        };
+
+        // Guardar en Firebase
+        const nuevaRef = push(pacientesRef); // Generar ID único
+        nuevaRef.set(nuevoPaciente)
+            .then(() => {
+                console.log('Paciente guardado');
+                ocultarModal();
+                formulario.reset();
+            })
+            .catch(error => console.error('Error:', error));
     });
 });
