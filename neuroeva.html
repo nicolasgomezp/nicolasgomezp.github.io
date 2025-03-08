@@ -4,397 +4,11 @@
 <head>
     <title>Manos de Poker Hold'em</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* General Styles (Chrome-inspired) */
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #f1f3f4;
-            color: #202124;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #4285f4;
-            /* Google Blue */
-            text-shadow: none;
-            font-weight: 500;
-        }
-
-        /* Button Styles (Chrome-inspired) */
-        button {
-            background-color: #f8f9fa;
-            border: 1px solid #dadce0;
-            color: #3c4043;
-            font-family: Roboto, sans-serif;
-            font-size: 14px;
-            border-radius: 4px;
-            padding: 8px 16px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            outline: none;
-        }
-
-        button:hover {
-            background-color: #e8eaed;
-        }
-
-        button:focus {
-            border-color: #4285f4;
-            box-shadow: 0 0 0 1px #4285f4;
-        }
-
-        /* Input Styles (Chrome-inspired) */
-        input[type="text"],
-        input[type="number"],
-        select {
-            font-family: Roboto, sans-serif;
-            font-size: 14px;
-            padding: 8px;
-            border: 1px solid #dadce0;
-            border-radius: 4px;
-            outline: none;
-            transition: border-color 0.2s;
-            color: #202124;
-        }
-
-        input[type="text"]:focus,
-        input[type="number"]:focus,
-        select:focus {
-            border-color: #4285f4;
-            box-shadow: 0 0 0 1px #4285f4;
-        }
-
-        /* Toggle Badges */
-        .toggle-badge {
-            background-color: #fff;
-            border: 1px solid #dadce0;
-            color: #5f6368;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-bottom: 10px;
-            font-size: 12px;
-            display: inline-flex;
-            align-items: center;
-            transition: background-color 0.2s;
-        }
-
-        .toggle-badge:hover {
-            background-color: #f8f9fa;
-        }
-
-        .toggle-icon {
-            margin-right: 5px;
-        }
-
-        .toggle-close-icon::before {
-            content: "\2715";
-            /* Unicode for X */
-            font-size: 10px;
-            vertical-align: middle;
-            margin-left: 5px;
-        }
-
-        /* Table Styles */
-        #hand-table-container {
-            overflow: auto;
-            max-width: 900px; /* adjust to prefered size */
-            width: 100%;
-        }
-
-        table {
-            border-collapse: collapse;
-            margin: 20px auto;
-            width: 100%;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: #fff;
-        }
-
-        th,
-        td {
-            border: 1px solid #dadce0;
-            padding: 10px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            color: #5f6368;
-            font-weight: 500;
-        }
-
-        .hand {
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        .hand:hover {
-            background-color: #f0f0f5;
-        }
-
-        .selected {
-            background-color: #bbdefb;
-            /* Light Blue */
-            color: #202124;
-        }
-
-        /* Hand Type Colors */
-        .pair {
-            background-color: #ffe0b2;
-        }
-
-        .suited {
-            background-color: #c8e6c9;
-        }
-
-        .offsuit {
-            background-color: #bbdefb;
-        }
-
-        .selected.pair {
-            background-color: #ffb300;
-            color: #202124;
-        }
-
-        .selected.suited {
-            background-color: #43a047;
-            color: #fff;
-        }
-
-        .selected.offsuit {
-            background-color: #1e88e5;
-            color: #fff;
-        }
-
-        /* Percentage Input Styles */
-        .percentage-input-container {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .percentage-input-container label {
-            margin-right: 10px;
-            font-weight: 500;
-            color: #5f6368;
-        }
-
-        .percentage-input-container input {
-            width: 80px;
-            padding: 8px;
-            border: 1px solid #dadce0;
-            border-radius: 4px;
-            text-align: center;
-            font-size: 14px;
-            transition: border-color 0.2s ease;
-        }
-
-        .percentage-input-container span {
-            margin-left: 5px;
-            color: #5f6368;
-        }
-
-        /* Selected Hands List Styles */
-        #selected-hands-list {
-            list-style-type: none;
-            padding: 0;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        #selected-hands-list li {
-            padding: 5px 10px;
-            background-color: #fff;
-            border: 1px solid #dadce0;
-            border-radius: 4px;
-            margin-bottom: 5px;
-            font-size: 14px;
-            color: #202124;
-        }
-
-        #selected-hands-container {
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 700px;
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-        }
-
-        #selected-hands-container h2 {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            color: #4285f4;
-        }
-
-        /* Hand Checker Styles */
-        .hand-checker-container {
-            margin-top: 30px;
-            text-align: center;
-            width: 100%;
-            max-width: 700px;
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-        }
-
-        .hand-checker-container h2 {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            color: #4285f4;
-        }
-
-        .hand-checker-container label {
-            margin: 0 10px;
-            font-weight: 500;
-            color: #5f6368;
-        }
-
-        #handResult {
-            margin-top: 15px;
-            font-size: 16px;
-            font-weight: 500;
-        }
-
-        #handResult.true {
-            color: #1a73e8;
-        }
-
-        #handResult.false {
-            color: #d93025;
-        }
-
-        /* Range Management Styles */
-        .range-management-container {
-            margin-bottom: 20px;
-            text-align: center;
-            width: 100%;
-            max-width: 700px;
-            padding: 15px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-        }
-
-        .range-management-container h2 {
-            font-size: 1.2em;
-            margin-bottom: 10px;
-            color: #4285f4;
-        }
-
-        .range-management-container label {
-            margin-right: 10px;
-            font-weight: 500;
-            color: #5f6368;
-        }
-
-        #saved-ranges-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 10px;
-        }
-
-        .saved-range-button-container {
-            position: relative;
-            margin: 5px;
-        }
-
-        .delete-range-button {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: rgba(220, 53, 69, 0.8);
-            color: white;
-            border: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0;
-            line-height: 1;
-            z-index: 1;
-        }
-
-        .delete-range-button:hover {
-            background-color: #dc3545;
-        }
-
-        /* Card Matrix Styles */
-        .card-matrix {
-            display: grid;
-            grid-template-columns: repeat(13, 1fr);
-            grid-template-rows: repeat(4, 1fr);
-            gap: 2px;
-            width: 400px;
-            margin: 10px auto;
-        }
-
-        .card-button {
-            background-color: #fff;
-            border: 1px solid #dadce0;
-            padding: 5px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 12px;
-            border-radius: 4px;
-            transition: background-color 0.2s ease;
-            font-family: arial, sans-serif;
-            color: #202124;
-        }
-
-        .card-button:hover {
-            background-color: #f8f9fa;
-        }
-
-        .card-button.selected {
-            background-color: #1a73e8;
-            color: white;
-        }
-
-        /* Red Suit Color */
-        .red-suit {
-            color: #d93025;
-        }
-
-        /* Hidden Class */
-        .hidden {
-            display: none;
-        }
-
-        /* Responsive Layout */
-        @media (max-width: 600px) {
-            .card-matrix {
-                width: 100%;
-            }
-
-            th,
-            td {
-                padding: 6px;
-                font-size: 12px;
-            }
-
-            /* Adjust other elements as needed for smaller screens */
-        }
-    </style>
 </head>
 
 <body>
     <h1>Manos de Poker Hold'em</h1>
+
     <!-- Hand Checker -->
     <div class="hand-checker-container">
         <h2>Verificador de Manos</h2>
@@ -404,7 +18,6 @@
         <p id="handResult"></p>
         <button id="checkHand">Verificar</button>
     </div>
-
 
     <!-- Toggle Buttons -->
     <div>
@@ -433,6 +46,21 @@
             <option value="sb">SB</option>
             <option value="bb">BB</option>
         </select>
+
+        <label for="action-select">Acción:</label>
+        <select id="action-select">
+            <option value="open_raise">Open Raise</option>
+            <option value="call">Call</option>
+            <option value="raise_over_limpers">Raise over Limpers</option>
+            <option value="3bet">3-Bet</option>
+            <option value="4bet">4-Bet</option>
+            <option value="call3bet">Call a 3-Bet</option>
+            <option value="Squeeze">Squeeze</option>
+
+            
+            
+        </select>
+
         <label for="range-name">Nombre del Rango:</label>
         <input type="text" id="range-name">
         <button id="save-range">Guardar Rango</button>
@@ -689,7 +317,7 @@
         <ul id="selected-hands-list"></ul>
     </div>
 
-    
+
     <script src="script.js"></script>
 </body>
 
