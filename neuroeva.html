@@ -9,15 +9,71 @@
 <body>
     <h1>Manos de Poker Hold'em</h1>
 
-    <!-- Hand Checker -->
-    <div class="hand-checker-container">
-        <h2>Verificador de Manos</h2>
-        <div class="card-matrix" id="card-buttons-container">
-            <!-- Card buttons will be generated dynamically here -->
+    <!-- Contenedor Principal -->
+    <div class="main-container">
+        <!-- Mesa Interactiva de Poker -->
+        <div id="interactive-table-container">
+            <h2>Mesa Interactiva</h2>
+            <div id="poker-table">
+                <div class="table-top"></div>
+                <!-- El elipse que simula la mesa -->
+                <div class="position" id="utg" data-position="utg">
+                    <span class="no-select">UTG</span>
+                </div>
+                <div class="position" id="utg+1" data-position="utg+1">
+                    <span class="no-select">UTG+1</span>
+                </div>
+                <div class="position" id="mp" data-position="mp">
+                    <span class="no-select">MP</span>
+                </div>
+                <div class="position" id="lj" data-position="lj">
+                    <span class="no-select">LJ</span>
+                </div>
+                <div class="position" id="hj" data-position="hj">
+                    <span class="no-select">HJ</span>
+                </div>
+                <div class="position" id="co" data-position="co">
+                    <span class="no-select">CO</span>
+                </div>
+                <div class="position" id="button" data-position="button">
+                    <span class="no-select">BU</span>
+                </div>
+                <div class="position" id="sb" data-position="sb">
+                    <span class="no-select">SB</span>
+                </div>
+                <div class="position" id="bb" data-position="bb">
+                    <span class="no-select">BB</span>
+                </div>
+            </div>
+            <label for="action-select-interactive">Acción:</label>
+            <select id="action-select-interactive">
+                <option value="open_raise">Open Raise</option>
+                <option value="call">Call</option>
+                <option value="raise_over_limpers">Raise over Limpers</option>
+                <option value="3bet">3-Bet</option>
+                <option value="4bet">4-Bet</option>
+                <option value="call3bet">Call a 3-Bet</option>
+                <option value="Squeeze">Squeeze</option>
+            </select>
+            <h2>Rangos Guardados en Mesa:</h2>
+            <div id="saved-ranges-interactive">
+                <!-- Saved ranges for interactive table will be added here -->
+            </div>
         </div>
-        <p id="handResult"></p>
-        <button id="checkHand">Verificar</button>
+        <!-- Fin Mesa Interactiva de Poker -->
+
+        <!-- Hand Checker -->
+        <div class="hand-checker-container">
+            <h2>Verificador de Manos</h2>
+            <div class="card-matrix" id="card-buttons-container">
+                <!-- Card buttons will be generated dynamically here -->
+            </div>
+            <p id="handResult"></p>
+            <button id="checkHand">Verificar</button>
+        </div>
+        <!-- Fin Hand Checker -->
     </div>
+    <!-- Fin Contenedor Principal -->
 
     <!-- Toggle Buttons -->
     <div>
@@ -56,9 +112,6 @@
             <option value="4bet">4-Bet</option>
             <option value="call3bet">Call a 3-Bet</option>
             <option value="Squeeze">Squeeze</option>
-
-            
-            
         </select>
 
         <label for="range-name">Nombre del Rango:</label>
@@ -316,7 +369,6 @@
         <h2>Manos Seleccionadas:</h2>
         <ul id="selected-hands-list"></ul>
     </div>
-
 
     <script src="script.js"></script>
 </body>
