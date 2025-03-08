@@ -97,7 +97,9 @@ select:focus {
 /* Table Styles */
 #hand-table-container {
     overflow: auto;
-    max-width: 900px; /* adjust to prefered size    width: 100%;
+    max-width: 900px;
+    /* adjust to prefered size */
+    width: 100%;
 }
 
 table {
