@@ -1,147 +1,916 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ficha Clínica NeuroEVA</title>
+    <title>Manos de Poker Hold'em</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Style for patient detail section (hidden by default) */
-        #patient-details {
-            display: none;
-            margin-top: 20px;
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #343a40;
+            margin: 0;
             padding: 20px;
-            background-color: #f0f8ff; /* Light blue background for detail */
-            border: 1px solid #add8e6;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #007bff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 20px auto;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
-        #patient-details h2 {
-            color: #3498db;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 5px;
-            margin-bottom: 15px;
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
         }
 
-        #patient-details p {
-            margin-bottom: 8px;
+        th {
+            background-color: #e9ecef;
+            color: #495057;
+            font-weight: 600;
         }
 
-        /* Button to return to patient list */
-        .return-button {
-            background-color: #5bc0de; /* Softer teal color */
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
+        .hand {
             cursor: pointer;
-            font-size: 1em;
-            transition: background-color 0.3s;
+            transition: background-color 0.2s ease;
         }
 
-        .return-button:hover {
-            background-color: #46a5c1; /* Darker teal on hover */
+        .hand:hover {
+            background-color: #f0f0f5;
         }
 
-        /* Hide the main content when showing patient details */
-        .main-content.hidden {
-            display: none;
+        .selected {
+            background-color: #b3d7ff;
+            color: #212529;
         }
 
+        .percentage-input-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .percentage-input-container label {
+            margin-right: 10px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .percentage-input-container input {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .percentage-input-container input:focus {
+            border-color: #80bdff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .percentage-input-container span {
+            margin-left: 5px;
+            color: #495057;
+        }
+
+        #selected-hands-list {
+            list-style-type: none;
+            padding: 0;
+            max-width: 600px;
+        }
+
+        .pair {
+            background-color: #ffecb3;
+        }
+
+        .suited {
+            background-color: #c8e6c9;
+        }
+
+        .offsuit {
+            background-color: #bbdefb;
+        }
+
+        .selected.pair {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .selected.suited {
+            background-color: #4caf50;
+            color: #fff;
+        }
+
+        .selected.offsuit {
+            background-color: #2196f3;
+            color: #fff;
+        }
+
+        .hand-checker-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .hand-checker-container label {
+            margin: 0 10px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .hand-checker-container select,
+        .hand-checker-container button {
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .hand-checker-container select:focus,
+        .hand-checker-container button:focus {
+            border-color: #80bdff;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .hand-checker-container button {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            border: none;
+            margin-left: 10px;
+        }
+
+        .hand-checker-container button:hover {
+            background-color: #0056b3;
+        }
+
+        #handResult {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        #handResult.true {
+            color: green;
+        }
+
+        #handResult.false {
+            color: red;
+        }
+
+        /* Estilos para el manejo de rangos */
+        .range-management-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .range-management-container label {
+            margin-right: 10px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .range-management-container input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .range-management-container button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .range-management-container button:hover {
+            background-color: #218838;
+        }
+
+        #saved-ranges-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        #saved-ranges-buttons button {
+            margin: 5px;
+            padding: 6px 10px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            background-color: white;
+            color: #007bff;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        #saved-ranges-buttons button:hover {
+            background-color: #f0f8ff;
+        }
     </style>
 </head>
 <body>
-    <div class="top-bar">  <!-- New top bar container -->
-        <h1>NeuroEVA</h1>
-        <p>Inteligencia Artificial aplicada a la evaluación neurológica.</p>
-    </div>
+    <h1>Manos de Poker Hold'em</h1>
 
-    <main class="main-content"> <!-- Main content container -->
-
-        <section id="agregar-paciente" class = "container">
-            <button id="btn-agregar" class="btn btn-primary">Agregar Paciente</button>
-        </section>
-
-        <section id="backup-restore" class="container">
-            <button id="btn-backup" class="btn btn-primary">Respaldar Datos</button>
-            <input type="file" id="btn-restore" accept=".json">
-            <label for="btn-restore" class="btn btn-outline">Restaurar Datos</label>
-        </section>
-
-        <section id="lista-pacientes" class="container">
-            <h2 class = "section-title">Pacientes Ingresados</h2>
-            <div id="pacientes-container">
-                <ul id="pacientes">
-                    <!-- Pacientes se insertarán aquí -->
-                </ul>
-            </div>
-        </section>
-
-        <section id="resumen" class="container">
-            <h2 class = "section-title">Resumen</h2>
-            <div class="resumen-item">
-                <span>Total pacientes:</span>
-                <span id="total-pacientes">0</span>
-            </div>
-            <div class="resumen-item">
-                <span>Edad Promedio:</span>
-                <span id="edad-promedio">0</span>
-            </div>
-            <div class="resumen-item">
-                <span>Diagnóstico más común:</span>
-                <span id="diagnostico-comun">N/A</span>
-            </div>
-            <button class="btn btn-primary btn-block">Ver más estadísticas</button>
-        </section>
-    </main>
-
-     <div id="modal-agregar" class="modal">
-        <div class="modal-content">
-            <span class="cerrar-modal">×</span>
-            <h2 class = "section-title">Agregar Nuevo Paciente</h2>
-            <form id="formulario-paciente">
-                <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" name="nombre" required>
-
-                <label for="rut">RUT:</label>
-                <input type="text" id="rut" name="rut" required>
-
-                <label for="edad">Edad:</label>
-                <input type="number" id="edad" name="edad">
-
-                <label for="ocupacion">Ocupación:</label>
-                <input type="text" id="ocupacion" name="ocupacion">
-
-                <label for="diagnostico">Diagnóstico:</label>
-                <input type="text" id="diagnostico" name="diagnostico">
-
-                <label for="fecha">Fecha de Ingreso:</label>
-                <input type="date" id="fecha" name="fecha" required>
-
-                <label for="hora">Hora de Ingreso:</label>
-                <input type="time" id="hora" name="hora" required>
-
-                <button type="submit" class="btn btn-primary btn-block">Guardar Paciente</button>
-            </form>
+    <!-- Contenedor para guardar/cargar rangos -->
+    <div class="range-management-container">
+        <label for="range-name">Nombre del Rango:</label>
+        <input type="text" id="range-name">
+        <button id="save-range">Guardar Rango</button>
+        <h2>Rangos Guardados:</h2>
+        <div id="saved-ranges-buttons">
+            <!-- Aquí se agregarán los botones dinámicamente -->
         </div>
     </div>
 
-    <!-- Patient Detail Section (initially hidden) -->
-    <section id="patient-details">
-        <h2>Detalles del Paciente</h2>
-        <button class="return-button" onclick="returnToList()">Volver a la Lista</button>
-        <div id="patient-details-content">
-            <p>Nombre: <span id="detail-nombre"></span></p>
-            <p>RUT: <span id="detail-rut"></span></p>
-            <p>Edad: <span id="detail-edad"></span></p>
-            <p>Ocupación: <span id="detail-ocupacion"></span></p>
-            <p>Diagnóstico: <span id="detail-diagnostico"></span></p>
-            <p>Fecha de Ingreso: <span id="detail-fecha"></span></p>
-            <p>Hora de Ingreso: <span id="detail-hora"></span></p>
-        </div>
-    </section>
+    <div class="percentage-input-container">
+        <label for="percentage">Porcentaje:</label>
+        <input type="number" id="percentage" min="0" max="100" value="0" step="0.01">
+        <span>%</span>
+    </div>
 
-    <script src="script.js"></script>
+    <table id="hand-table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>A</th>
+                <th>K</th>
+                <th>Q</th>
+                <th>J</th>
+                <th>T</th>
+                <th>9</th>
+                <th>8</th>
+                <th>7</th>
+                <th>6</th>
+                <th>5</th>
+                <th>4</th>
+                <th>3</th>
+                <th>2</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>A</th>
+                <td class="hand" data-hand="AA">AA</td>
+                <td class="hand suited" data-hand="AKs">AKs</td>
+                <td class="hand suited" data-hand="AQs">AQs</td>
+                <td class="hand suited" data-hand="AJs">AJs</td>
+                <td class="hand suited" data-hand="ATs">ATs</td>
+                <td class="hand suited" data-hand="A9s">A9s</td>
+                <td class="hand suited" data-hand="A8s">A8s</td>
+                <td class="hand suited" data-hand="A7s">A7s</td>
+                <td class="hand suited" data-hand="A6s">A6s</td>
+                <td class="hand suited" data-hand="A5s">A5s</td>
+                <td class="hand suited" data-hand="A4s">A4s</td>
+                <td class="hand suited" data-hand="A3s">A3s</td>
+                <td class="hand suited" data-hand="A2s">A2s</td>
+            </tr>
+            <tr>
+                <th>K</th>
+                <td class="hand offsuit" data-hand="KAo">KAo</td>
+                <td class="hand" data-hand="KK">KK</td>
+                <td class="hand suited" data-hand="KQs">KQs</td>
+                <td class="hand suited" data-hand="KJs">KJs</td>
+                <td class="hand suited" data-hand="KTs">KTs</td>
+                <td class="hand suited" data-hand="K9s">K9s</td>
+                <td class="hand suited" data-hand="K8s">K8s</td>
+                <td class="hand suited" data-hand="K7s">K7s</td>
+                <td class="hand suited" data-hand="K6s">K6s</td>
+                <td class="hand suited" data-hand="K5s">K5s</td>
+                <td class="hand suited" data-hand="K4s">K4s</td>
+                <td class="hand suited" data-hand="K3s">K3s</td>
+                <td class="hand suited" data-hand="K2s">K2s</td>
+            </tr>
+            <tr>
+                <th>Q</th>
+                <td class="hand offsuit" data-hand="QAo">QAo</td>
+                <td class="hand offsuit" data-hand="QKo">QKo</td>
+                <td class="hand" data-hand="QQ">QQ</td>
+                <td class="hand suited" data-hand="QJs">QJs</td>
+                <td class="hand suited" data-hand="QTs">QTs</td>
+                <td class="hand suited" data-hand="Q9s">Q9s</td>
+                <td class="hand suited" data-hand="Q8s">Q8s</td>
+                <td class="hand suited" data-hand="Q7s">Q7s</td>
+                <td class="hand suited" data-hand="Q6s">Q6s</td>
+                <td class="hand suited" data-hand="Q5s">Q5s</td>
+                <td class="hand suited" data-hand="Q4s">Q4s</td>
+                <td class="hand suited" data-hand="Q3s">Q3s</td>
+                <td class="hand suited" data-hand="Q2s">Q2s</td>
+            </tr>
+            <tr>
+                <th>J</th>
+                <td class="hand offsuit" data-hand="JAo">JAo</td>
+                <td class="hand offsuit" data-hand="JKo">JKo</td>
+                <td class="hand offsuit" data-hand="JQo">JQo</td>
+                <td class="hand" data-hand="JJ">JJ</td>
+                <td class="hand suited" data-hand="JTs">JTs</td>
+                <td class="hand suited" data-hand="J9s">J9s</td>
+                <td class="hand suited" data-hand="J8s">J8s</td>
+                <td class="hand suited" data-hand="J7s">J7s</td>
+                <td class="hand suited" data-hand="J6s">J6s</td>
+                <td class="hand suited" data-hand="J5s">J5s</td>
+                <td class="hand suited" data-hand="J4s">J4s</td>
+                <td class="hand suited" data-hand="J3s">J3s</td>
+                <td class="hand suited" data-hand="J2s">J2s</td>
+            </tr>
+            <tr>
+                <th>T</th>
+                <td class="hand offsuit" data-hand="TAo">TAo</td>
+                <td class="hand offsuit" data-hand="TKo">TKo</td>
+                <td class="hand offsuit" data-hand="TQo">TQo</td>
+                <td class="hand offsuit" data-hand="TJo">TJo</td>
+                <td class="hand" data-hand="TT">TT</td>
+                <td class="hand suited" data-hand="T9s">T9s</td>
+                <td class="hand suited" data-hand="T8s">T8s</td>
+                <td class="hand suited" data-hand="T7s">T7s</td>
+                <td class="hand suited" data-hand="T6s">T6s</td>
+                <td class="hand suited" data-hand="T5s">T5s</td>
+                <td class="hand suited" data-hand="T4s">T4s</td>
+                <td class="hand suited" data-hand="T3s">T3s</td>
+                <td class="hand suited" data-hand="T2s">T2s</td>
+            </tr>
+            <tr>
+                <th>9</th>
+                <td class="hand offsuit" data-hand="9Ao">9Ao</td>
+                <td class="hand offsuit" data-hand="9Ko">9Ko</td>
+                <td class="hand offsuit" data-hand="9Qo">9Qo</td>
+                <td class="hand offsuit" data-hand="9Jo">9Jo</td>
+                <td class="hand offsuit" data-hand="9To">9To</td>
+                <td class="hand" data-hand="99">99</td>
+                <td class="hand suited" data-hand="98s">98s</td>
+                <td class="hand suited" data-hand="97s">97s</td>
+                <td class="hand suited" data-hand="96s">96s</td>
+                <td class="hand suited" data-hand="95s">95s</td>
+                <td class="hand suited" data-hand="94s">94s</td>
+                <td class="hand suited" data-hand="93s">93s</td>
+                <td class="hand suited" data-hand="92s">92s</td>
+            </tr>
+            <tr>
+                <th>8</th>
+                <td class="hand offsuit" data-hand="8Ao">8Ao</td>
+                <td class="hand offsuit" data-hand="8Ko">8Ko</td>
+                <td class="hand offsuit" data-hand="8Qo">8Qo</td>
+                <td class="hand offsuit" data-hand="8Jo">8Jo</td>
+                <td class="hand offsuit" data-hand="8To">8To</td>
+                <td class="hand offsuit" data-hand="89o">89o</td>
+                <td class="hand" data-hand="88">88</td>
+                <td class="hand suited" data-hand="87s">87s</td>
+                <td class="hand suited" data-hand="86s">86s</td>
+                <td class="hand suited" data-hand="85s">85s</td>
+                <td class="hand suited" data-hand="84s">84s</td>
+                <td class="hand suited" data-hand="83s">83s</td>
+                <td class="hand suited" data-hand="82s">82s</td>
+            </tr>
+            <tr>
+                <th>7</th>
+                <td class="hand offsuit" data-hand="7Ao">7Ao</td>
+                <td class="hand offsuit" data-hand="7Ko">7Ko</td>
+                <td class="hand offsuit" data-hand="7Qo">7Qo</td>
+                <td class="hand offsuit" data-hand="7Jo">7Jo</td>
+                <td class="hand offsuit" data-hand="7To">7To</td>
+                <td class="hand offsuit" data-hand="79o">79o</td>
+                <td class="hand offsuit" data-hand="78o">78o</td>
+                <td class="hand" data-hand="77">77</td>
+                <td class="hand suited" data-hand="76s">76s</td>
+                <td class="hand suited" data-hand="75s">75s</td>
+                <td class="hand suited" data-hand="74s">74s</td>
+                <td class="hand suited" data-hand="73s">73s</td>
+                <td class="hand suited" data-hand="72s">72s</td>
+            </tr>
+            <tr>
+                <th>6</th>
+                <td class="hand offsuit" data-hand="6Ao">6Ao</td>
+                <td class="hand offsuit" data-hand="6Ko">6Ko</td>
+                <td class="hand offsuit" data-hand="6Qo">6Qo</td>
+                <td class="hand offsuit" data-hand="6Jo">6Jo</td>
+                <td class="hand offsuit" data-hand="6To">6To</td>
+                <td class="hand offsuit" data-hand="69o">69o</td>
+                <td class="hand offsuit" data-hand="68o">68o</td>
+                <td class="hand offsuit" data-hand="67o">67o</td>
+                <td class="hand" data-hand="66">66</td>
+                <td class="hand suited" data-hand="65s">65s</td>
+                <td class="hand suited" data-hand="64s">64s</td>
+                <td class="hand suited" data-hand="63s">63s</td>
+                <td class="hand suited" data-hand="62s">62s</td>
+            </tr>
+            <tr>
+                <th>5</th>
+                <td class="hand offsuit" data-hand="5Ao">5Ao</td>
+                <td class="hand offsuit" data-hand="5Ko">5Ko</td>
+                <td class="hand offsuit" data-hand="5Qo">5Qo</td>
+                <td class="hand offsuit" data-hand="5Jo">5Jo</td>
+                <td class="hand offsuit" data-hand="5To">5To</td>
+                <td class="hand offsuit" data-hand="59o">59o</td>
+                <td class="hand offsuit" data-hand="58o">58o</td>
+                <td class="hand offsuit" data-hand="57o">57o</td>
+                <td class="hand offsuit" data-hand="56o">56o</td>
+                <td class="hand" data-hand="55">55</td>
+                <td class="hand suited" data-hand="54s">54s</td>
+                <td class="hand suited" data-hand="53s">53s</td>
+                <td class="hand suited" data-hand="52s">52s</td>
+            </tr>
+            <tr>
+                <th>4</th>
+                <td class="hand offsuit" data-hand="4Ao">4Ao</td>
+                <td class="hand offsuit" data-hand="4Ko">4Ko</td>
+                <td class="hand offsuit" data-hand="4Qo">4Qo</td>
+                <td class="hand offsuit" data-hand="4Jo">4Jo</td>
+                <td class="hand offsuit" data-hand="4To">4To</td>
+                <td class="hand offsuit" data-hand="49o">49o</td>
+                <td class="hand offsuit" data-hand="48o">48o</td>
+                <td class="hand offsuit" data-hand="47o">47o</td>
+                <td class="hand offsuit" data-hand="46o">46o</td>
+                <td class="hand offsuit" data-hand="45o">45o</td>
+                <td class="hand" data-hand="44">44</td>
+                <td class="hand suited" data-hand="43s">43s</td>
+                <td class="hand suited" data-hand="42s">42s</td>
+            </tr>
+            <tr>
+                <th>3</th>
+                <td class="hand offsuit" data-hand="3Ao">3Ao</td>
+                <td class="hand offsuit" data-hand="3Ko">3Ko</td>
+                <td class="hand offsuit" data-hand="3Qo">3Qo</td>
+                <td class="hand offsuit" data-hand="3Jo">3Jo</td>
+                <td class="hand offsuit" data-hand="3To">3To</td>
+                <td class="hand offsuit" data-hand="39o">39o</td>
+                <td class="hand offsuit" data-hand="38o">38o</td>
+                <td class="hand offsuit" data-hand="37o">37o</td>
+                <td class="hand offsuit" data-hand="36o">36o</td>
+                <td class="hand offsuit" data-hand="35o">35o</td>
+                <td class="hand offsuit" data-hand="34o">34o</td>
+                <td class="hand" data-hand="33">33</td>
+                <td class="hand suited" data-hand="32s">32s</td>
+            </tr>
+            <tr>
+                <th>2</th>
+                <td class="hand offsuit" data-hand="2Ao">2Ao</td>
+                <td class="hand offsuit" data-hand="2Ko">2Ko</td>
+                <td class="hand offsuit" data-hand="2Qo">2Qo</td>
+                <td class="hand offsuit" data-hand="2Jo">2Jo</td>
+                <td class="hand offsuit" data-hand="2To">2To</td>
+                <td class="hand offsuit" data-hand="29o">29o</td>
+                <td class="hand offsuit" data-hand="28o">28o</td>
+                <td class="hand offsuit" data-hand="27o">27o</td>
+                <td class="hand offsuit" data-hand="26o">26o</td>
+                <td class="hand offsuit" data-hand="25o">25o</td>
+                <td class="hand offsuit" data-hand="24o">24o</td>
+                <td class="hand offsuit" data-hand="23o">23o</td>
+                <td class="hand" data-hand="22">22</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="selected-hands-container">
+        <h2>Manos Seleccionadas:</h2>
+        <ul id="selected-hands-list"></ul>
+    </div>
+
+    <div class="hand-checker-container">
+        <h2>Verificador de Manos</h2>
+        <label for="card1">Carta 1:</label>
+        <select id="card1">
+            <option value=""></option>
+            <option value="A">A</option>
+            <option value="K">K</option>
+            <option value="Q">Q</option>
+            <option value="J">J</option>
+            <option value="T">T</option>
+            <option value="9">9</option>
+            <option value="8">8</option>
+            <option value="7">7</option>
+            <option value="6">6</option>
+            <option value="5">5</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2">2</option>
+        </select>
+         <label for="suit1">Palo 1:</label>
+        <select id="suit1">
+            <option value=""></option>
+            <option value="c">♣</option>
+            <option value="d">♦</option>
+            <option value="h">♥</option>
+            <option value="s">♠</option>
+        </select>
+
+        <label for="card2">Carta 2:</label>
+        <select id="card2">
+           <option value=""></option>
+            <option value="A">A</option>
+            <option value="K">K</option>
+            <option value="Q">Q</option>
+            <option value="J">J</option>
+            <option value="T">T</option>
+            <option value="9">9</option>
+            <option value="8">8</option>
+            <option value="7">7</option>
+            <option value="6">6</option>
+            <option value="5">5</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2">2</option>
+        </select>
+
+         <label for="suit2">Palo 2:</label>
+        <select id="suit2">
+            <option value=""></option>
+             <option value="c">♣</option>
+            <option value="d">♦</option>
+            <option value="h">♥</option>
+            <option value="s">♠</option>
+        </select>
+
+
+
+        <p id="handResult"></p>
+        <button id="checkHand">Verificar</button>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const percentageInput = document.getElementById('percentage');
+            const handTable = document.getElementById('hand-table');
+            const handCells = Array.from(handTable.querySelectorAll('.hand'));
+            const selectedHandsList = document.getElementById('selected-hands-list');
+
+            // Función auxiliar para ordenar una mano (asegura que la carta más alta esté primero)
+            function orderHand(hand) {
+                const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+                const rank1 = hand[0];
+                const rank2 = hand[1];
+                const index1 = ranks.indexOf(rank1);
+                const index2 = ranks.indexOf(rank2);
+
+                if (index1 < index2) { // Si rank1 es más alta que rank2
+                    return hand; // Dejar la mano como está
+                } else {
+                    return rank2 + rank1; // Invertir la mano
+                }
+            }
+
+            // 1. Generar todas las combinaciones posibles de manos
+            function generateAllHands() {
+                const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+                const allHands = [];
+
+                // Pares
+                for (let i = 0; i < ranks.length; i++) {
+                    allHands.push(ranks[i] + ranks[i]);
+                }
+
+                // Suited
+                for (let i = 0; i < ranks.length; i++) {
+                    for (let j = i + 1; j < ranks.length; j++) {
+                        allHands.push(orderHand(ranks[i] + ranks[j]) + 's');
+                    }
+                }
+
+                // Offsuit
+                for (let i = 0; i < ranks.length; i++) {
+                    for (let j = i + 1; j < ranks.length; j++) {
+                         allHands.push(orderHand(ranks[i] + ranks[j]) + 'o');
+                    }
+                }
+
+                return allHands;
+            }
+
+            // Lista de manos PRIORIZADA (DEBES REEMPLAZAR CON UNA LISTA REALISTA)
+            //  Este es un ejemplo SIMPLIFICADO. Investiga rangos de póker reales.
+            let allHandsOrdered = [
+                 // Premium
+                 "AA", "KK", "QQ", "JJ", "AKs", "AQs", "AJs", "KQs", "AKo",
+
+                 // Muy fuertes
+                 "TT", "ATs", "KJs", "QTs", "JTs", "AQo", "AJo", "KQo", "KTo",
+
+                 // Fuertes
+                 "99", "88", "A9s", "ATo", "QJs", "J9s", "T9s", "A8s", "A5s", "A4s", "A3s", "A2s", "KJo", "QTo",
+
+                 // Marginales/Especulativas
+                 "77", "66", "55", "44", "33", "22", "A7s", "A6s", "A5o", "A4o", "A3o", "A2o", "K9s", "K8s", "K7s", "Q9s", "J8s", "T8s", "98s", "87s", "76s", "65s", "54s",
+
+                 // Debiles/Para farolear
+                 "K6o", "K5o", "K4o", "K3o", "K2o", "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o", "T7o", "T6o", "T5o", "T4o", "T3o", "T2o", "96o", "95o", "94o", "93o", "92o", "86o", "85o", "84o", "83o", "82o", "75o", "74o", "73o", "72o", "64o", "63o", "62o", "53o", "52o", "43o", "42o", "32o"
+             ];
+
+              // Función para ordenar la lista de prioridades inicial
+            function sortPriorityList(priorityList) {
+              return priorityList.map(hand => {
+                if (hand.length === 3) { // Solo ordenar suited y offsuit
+                  return orderHand(hand.slice(0, 2)) + hand.slice(2);
+                } else {
+                  return hand; // No ordenar pares
+                }
+              });
+            }
+
+            allHandsOrdered = sortPriorityList(allHandsOrdered)
+
+            let manuallySelectedHands = []; // Array para guardar las manos seleccionadas manualmente
+            let isDragging = false; // Variable para rastrear si el mouse está siendo arrastrado
+            let dragSelect = false; // Variable para rastrear si se debe seleccionar o deseleccionar al arrastrar
+
+            // Función para obtener el número de combinaciones de una mano
+            function getNumCombos(hand) {
+                if (hand.length === 2) { // Par
+                    return 6;
+                } else if (hand.endsWith('s')) { // Suited
+                    return 4;
+                } else if (hand.endsWith('o')) {
+                     return 12;
+                } else {
+                   return 12;
+                }
+            }
+
+            function updateTableHighlighting(selectedHands) {
+                handCells.forEach(cell => {
+                    const hand = cell.dataset.hand;
+                    cell.className = 'hand'; // Restablecer las clases
+
+                    if (hand.length === 2) {
+                        cell.classList.add('pair');
+                    } else if (hand.endsWith('s')) {
+                        cell.classList.add('suited');
+                    } else {
+                        cell.classList.add('offsuit');
+                    }
+
+                    if (selectedHands.includes(hand)) {
+                        cell.classList.add('selected');
+                    }
+                });
+            }
+
+            function updateSelectedHandsList() {
+                selectedHandsList.innerHTML = ''; // Limpiar la lista
+                manuallySelectedHands.forEach(hand => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = hand;
+                    selectedHandsList.appendChild(listItem);
+                });
+            }
+
+            function updatePercentageDisplay() {
+                const totalHands = 1326; // Número total de combinaciones posibles en Hold'em
+                let selectedCombos = 0;
+
+                for (const hand of manuallySelectedHands) {
+                    selectedCombos += getNumCombos(hand);
+                }
+
+                // Calcular el porcentaje basado en las combinaciones seleccionadas manualmente
+                const percentage = (selectedCombos / totalHands) * 100;
+
+                // Actualizar el valor en el input
+                percentageInput.value = percentage.toFixed(2); // Muestra dos decimales
+            }
+
+            // Función para manejar la selección de la mano
+            function handleHandSelection(cell) {
+                const hand = cell.dataset.hand;
+                const index = manuallySelectedHands.indexOf(hand);
+
+                if (index === -1) {
+                    // Si no está seleccionada, agregarla
+                    manuallySelectedHands.push(hand);
+                } else {
+                    // Si está seleccionada, quitarla
+                    manuallySelectedHands.splice(index, 1);
+                }
+            }
+
+            // Evento de mousedown para activar el drag select
+            handTable.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                const cell = e.target.closest('.hand');
+                if (!cell) return; // Si no se hizo clic en una celda .hand, salir
+
+                const hand = cell.dataset.hand;
+                dragSelect = !manuallySelectedHands.includes(hand); // Determinar si seleccionar o deseleccionar
+                handleHandSelection(cell);
+                updatePercentageDisplay();
+                updateSelectedHandsList();
+                updateTableHighlighting(manuallySelectedHands);
+
+                e.preventDefault(); // Evitar la selección de texto al arrastrar
+            });
+
+            // Evento de mouseup para desactivar el drag select
+            handTable.addEventListener('mouseup', function() {
+                isDragging = false;
+            });
+
+            // Evento de mouseleave para desactivar el drag select si el mouse sale de la tabla
+            handTable.addEventListener('mouseleave', function() {
+                isDragging = false;
+            });
+
+            // Evento de mouseover para manejar la selección al arrastrar sobre las celdas
+            handTable.addEventListener('mouseover', function(e) {
+                if (!isDragging) return; // Si no se está arrastrando, salir
+
+                const cell = e.target.closest('.hand');
+                if (!cell) return; // Si no se está sobre una celda .hand, salir
+
+                const hand = cell.dataset.hand;
+                const isSelected = manuallySelectedHands.includes(hand);
+
+                if ((dragSelect && !isSelected) || (!dragSelect && isSelected)) {
+                    handleHandSelection(cell);
+                    updatePercentageDisplay();
+                    updateSelectedHandsList();
+                }
+
+                updateTableHighlighting(manuallySelectedHands);
+            });
+
+            // Evento para actualizar la tabla cuando el valor del porcentaje cambia
+            percentageInput.addEventListener('change', function() {
+                const percentage = parseFloat(percentageInput.value);
+
+                //Validación para evitar errores al ingresar valores inválidos
+                if (isNaN(percentage) || percentage < 0 || percentage > 100) {
+                  percentageInput.value = 0;
+                  return;
+                }
+                updateTableHighlighting(manuallySelectedHands);
+            });
+
+            // Inicialización
+
+            const generate = generateAllHands()
+
+                // 3. Ordenar la lista completa según la lista de prioridades inicial
+                function sortHands(allHands, priorityList) {
+                    const sortedHands = [];
+                    const remainingHands = [...allHands]; // Copia para no modificar el original
+
+                    // Agregar las manos de la lista de prioridades primero
+                    for (const hand of priorityList) {
+                        if (allHands.includes(hand)) {
+                            sortedHands.push(hand);
+                            remainingHands.splice(remainingHands.indexOf(hand), 1); // Eliminar de las restantes
+                        }
+                    }
+
+                    // Agregar las manos restantes al final (en orden alfabético)
+                    remainingHands.sort();
+                    return sortedHands.concat(remainingHands);
+                }
+
+           // Llamar a la función para generar todas las manos
+           const allHands = generateAllHands();
+
+           // Ordenar las manos usando la lista de prioridades inicial
+           allHandsOrdered = sortHands(allHands, allHandsOrdered);
+
+            updatePercentageDisplay(); // Inicializar el porcentaje según las manos seleccionadas
+            updateTableHighlighting(manuallySelectedHands);
+
+
+            handCells.forEach(cell => {
+              const hand = cell.dataset.hand;
+              const orderedHand = orderHand(hand.slice(0, 2)) + hand.slice(2);
+              cell.dataset.hand = orderedHand;
+              cell.textContent = orderedHand; // Actualizar el texto de la celda
+            });
+
+             const card1Select = document.getElementById('card1');
+            const card2Select = document.getElementById('card2');
+            const suit1Select = document.getElementById('suit1');
+            const suit2Select = document.getElementById('suit2');
+            const checkHandButton = document.getElementById('checkHand');
+            const handResult = document.getElementById('handResult');
+
+            function orderHandCheck(hand) {
+                const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+                const rank1 = hand[0];
+                const rank2 = hand[1];
+                const index1 = ranks.indexOf(rank1);
+                const index2 = ranks.indexOf(rank2);
+
+                if (index1 < index2) { // Si rank1 es más alta que rank2
+                    return hand; // Dejar la mano como está
+                } else {
+                    return rank2 + rank1; // Invertir la mano
+                }
+            }
+
+            checkHandButton.addEventListener('click', function() {
+                const card1 = card1Select.value;
+                const card2 = card2Select.value;
+                const suit1 = suit1Select.value;
+                const suit2 = suit2Select.value;
+
+                if (!card1 || !card2 || !suit1 || !suit2) {
+                    handResult.textContent = "Por favor, selecciona ambas cartas y palos.";
+                    handResult.className = ''; // Remover clases de resultado anterior
+                    return;
+                }
+
+                let handType = '';
+                if (card1 === card2) {
+                    handType = ''; // Par, no necesita suited/offsuit
+                } else if (suit1 === suit2) {
+                    handType = 's'; // Suited
+                } else {
+                    handType = 'o'; // Offsuit
+                }
+
+                let selectedHand = orderHandCheck(card1 + card2);
+                if (handType) {
+                    selectedHand += handType;
+                }
+
+                let isHandInRange = manuallySelectedHands.includes(selectedHand);  // Usar manuallySelectedHands
+                if (!isHandInRange && handType == 'o'){ //Si es offsuit verificar orden inverso
+                    selectedHand = card2+ card1 + handType
+                     isHandInRange = manuallySelectedHands.includes(selectedHand);
+                }
+
+                // Determinar la clase de resultado y el mensaje
+                let resultClass = isHandInRange ? 'true' : 'false';
+                let resultText = isHandInRange ? 'True' : 'False';
+                handResult.textContent = 'Resultado: ' + resultText;
+                handResult.className = resultClass;
+            });
+
+                const rangeNameInput = document.getElementById('range-name');
+            const saveRangeButton = document.getElementById('save-range');
+            const savedRangesButtons = document.getElementById('saved-ranges-buttons');
+            let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || {}; // Cargar rangos guardados
+
+            // Función para guardar un rango
+            function saveRange() {
+                const rangeName = rangeNameInput.value.trim();
+                if (!rangeName) {
+                    alert("Por favor, ingresa un nombre para el rango.");
+                    return;
+                }
+
+                if (savedRanges[rangeName]) {
+                    if (!confirm("¿Deseas sobrescribir el rango existente?")) {
+                        return;
+                    }
+                }
+
+                savedRanges[rangeName] = [...manuallySelectedHands]; // Guardar una copia del array
+                localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
+                rangeNameInput.value = '';
+                displaySavedRanges(); // Actualizar la visualización de los botones
+            }
+
+            // Función para cargar un rango
+            function loadRange(rangeName) {
+                if (savedRanges[rangeName]) {
+                    manuallySelectedHands = [...savedRanges[rangeName]]; // Cargar una copia del array
+                    updateTableHighlighting(manuallySelectedHands);
+                    updateSelectedHandsList();
+                    updatePercentageDisplay();
+                }
+            }
+
+            // Función para mostrar los rangos guardados como botones
+            function displaySavedRanges() {
+                savedRangesButtons.innerHTML = ''; // Limpiar los botones existentes
+                for (const rangeName in savedRanges) {
+                    const button = document.createElement('button');
+                    button.textContent = rangeName;
+                    button.addEventListener('click', () => loadRange(rangeName));
+                    savedRangesButtons.appendChild(button);
+                }
+            }
+
+            // Evento para el botón "Guardar Rango"
+            saveRangeButton.addEventListener('click', saveRange);
+
+            // Inicialización (mostrar rangos guardados al cargar la página)
+            displaySavedRanges();
+        });
+    </script>
 </body>
 </html>
