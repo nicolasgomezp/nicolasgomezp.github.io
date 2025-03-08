@@ -626,4 +626,40 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize the percentage based on the selected hands
     updatePercentageDisplay();
     updateTableHighlighting(manuallySelectedHands);
+    // Export/Import functions
+        document.getElementById('export-ranges').addEventListener('click', () => {
+            const savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || {};
+            const json = JSON.stringify(savedRanges);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'pokerRanges.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById('import-ranges').addEventListener('click', () => {
+            document.getElementById('import-ranges-file').click();
+        });
+
+        document.getElementById('import-ranges-file').addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const savedRanges = JSON.parse(e.target.result);
+                        localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
+                        alert('Rangos importados exitosamente!');
+                        location.reload(); // Refresh the page to load the imported ranges.
+                    } catch (error) {
+                        alert('Error al importar el archivo JSON: ' + error);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
 });
