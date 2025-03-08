@@ -232,10 +232,10 @@ th {
 
 /* Hand Checker Styles */
 .hand-checker-container {
-    margin-top: 30px;
+    margin-bottom: 20px;
     text-align: center;
     width: 100%;
-    max-width: 700px;
+    max-width: 350px; /* Ajusta el ancho máximo del contenedor */
     padding: 15px;
     background-color: #fff;
     border-radius: 8px;
@@ -334,7 +334,7 @@ th {
     grid-template-columns: repeat(13, 1fr);
     grid-template-rows: repeat(4, 1fr);
     gap: 2px;
-    width: 400px;
+    width: 100%;
     margin: 10px auto;
 }
 
@@ -383,4 +383,144 @@ th {
     }
 
     /* Adjust other elements as needed for smaller screens */
+}
+
+/* Mesa Interactiva Styles */
+#interactive-table-container {
+    margin-bottom: 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 350px; /* Ajusta el ancho máximo del contenedor */
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}#interactive-table-container h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #4285f4;
+}
+
+#poker-table {
+    position: relative;
+    width: 300px;  /* Ajusta el tamaño general de la mesa */
+    height: 200px; /* Ajusta la altura de la mesa */
+    margin: 20px auto;
+}
+
+.table-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #388e3c;  /* Un tono de verde poker */
+    border-radius: 50%;
+    border-bottom: 10%;
+    z-index: 1;
+}
+
+.position {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e8eaed;
+    color: #3c4043;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid #dadce0;
+    font-size: 12px;
+    /* Adjust for better readability */
+    transition: background-color 0.2s;
+    z-index: 2;  /* Asegura que los círculos estén sobre la mesa */
+    user-select: none; /* Evita la selección de texto */
+}
+
+.position:hover {
+    background-color: #d4d7da;
+}
+
+/* Posiciones de la mesa */
+#poker-table #utg {
+    top: 10px;
+    left: 10px;
+
+}
+
+#poker-table #utgplus1 {
+
+   right: 10px;
+   top: 10px;
+}
+
+#poker-table #mp {
+    top: 40%;
+    right: -15px;
+}
+
+#poker-table #lj {
+    bottom: 10%;
+    right: -15px;
+}
+
+#poker-table #hj {
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#poker-table #co {
+    bottom: 10%;
+    left: -15px;
+}
+
+#poker-table #button {
+      bottom: 10%;
+    right: -15px;
+}
+
+#poker-table #sb {
+     bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+#poker-table #bb {
+    bottom: 10px;
+    right: 10px;
+}
+
+#saved-ranges-interactive {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 10px;
+}
+/* Existing CSS (above) */
+
+.position.dragging {
+    opacity: 0.7; /* Transparencia al arrastrar */
+    cursor: grabbing;
+}
+
+.position.selected {
+    background-color: #4CAF50; /* Verde cuando está seleccionado */
+    color: white;
+}
+
+/* Para evitar la selección de texto dentro de los circulos */
+.no-select {
+    user-select: none;
+}
+
+/* Contenedor principal para la mesa y el verificador de manos */
+.main-container {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente los elementos */
+    align-items: flex-start; /* Alinea los elementos en la parte superior */
+    gap: 20px; /* Espacio entre la mesa y el verificador */
+    margin-bottom: 20px; /* Espacio por debajo del contenedor */
 }
