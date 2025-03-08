@@ -228,6 +228,10 @@
         #saved-ranges-buttons button:hover {
             background-color: #f0f8ff;
         }
+
+        .red-suit {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -505,14 +509,12 @@
             <option value="3">3</option>
             <option value="2">2</option>
         </select>
-         <label for="suit1">Palo 1:</label>
-        <select id="suit1">
-            <option value=""></option>
-            <option value="c">♣</option>
-            <option value="d">♦</option>
-            <option value="h">♥</option>
-            <option value="s">♠</option>
-        </select>
+
+        <label>Palo 1:</label>
+        <label><input type="radio" name="suit1" value="c"> ♣</label>
+        <label><input type="radio" name="suit1" value="d" class="red-suit"> <span class="red-suit">♦</span></label>
+        <label><input type="radio" name="suit1" value="h" class="red-suit"> <span class="red-suit">♥</span></label>
+        <label><input type="radio" name="suit1" value="s"> ♠</label>
 
         <label for="card2">Carta 2:</label>
         <select id="card2">
@@ -532,16 +534,11 @@
             <option value="2">2</option>
         </select>
 
-         <label for="suit2">Palo 2:</label>
-        <select id="suit2">
-            <option value=""></option>
-             <option value="c">♣</option>
-            <option value="d">♦</option>
-            <option value="h">♥</option>
-            <option value="s">♠</option>
-        </select>
-
-
+         <label>Palo 2:</label>
+        <label><input type="radio" name="suit2" value="c"> ♣</label>
+        <label><input type="radio" name="suit2" value="d" class="red-suit"> <span class="red-suit">♦</span></label>
+        <label><input type="radio" name="suit2" value="h" class="red-suit"> <span class="red-suit">♥</span></label>
+        <label><input type="radio" name="suit2" value="s"> ♠</label>
 
         <p id="handResult"></p>
         <button id="checkHand">Verificar</button>
@@ -694,223 +691,235 @@
                 const hand = cell.dataset.hand;
                 const index = manuallySelectedHands.indexOf(hand);
 
-                if (index === -1) {
-                    // Si no está seleccionada, agregarla
-                    manuallySelectedHands.push(hand);
-                } else {
-                    // Si está seleccionada, quitarla
-                    manuallySelectedHands.splice(index, 1);
-                }
+            if (index === -1) {
+                // Si no está seleccionada, agregarla
+                manuallySelectedHands.push(hand);
+            } else {
+                // Si está seleccionada, quitarla
+                manuallySelectedHands.splice(index, 1);
             }
+        }
 
-            // Evento de mousedown para activar el drag select
-            handTable.addEventListener('mousedown', function(e) {
-                isDragging = true;
-                const cell = e.target.closest('.hand');
-                if (!cell) return; // Si no se hizo clic en una celda .hand, salir
+        // Evento de mousedown para activar el drag select
+        handTable.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            const cell = e.target.closest('.hand');
+            if (!cell) return; // Si no se hizo clic en una celda .hand, salir
 
-                const hand = cell.dataset.hand;
-                dragSelect = !manuallySelectedHands.includes(hand); // Determinar si seleccionar o deseleccionar
+            const hand = cell.dataset.hand;
+            dragSelect = !manuallySelectedHands.includes(hand); // Determinar si seleccionar o deseleccionar
+            handleHandSelection(cell);
+            updatePercentageDisplay();
+            updateSelectedHandsList();
+            updateTableHighlighting(manuallySelectedHands);
+
+            e.preventDefault(); // Evitar la selección de texto al arrastrar
+        });
+
+        // Evento de mouseup para desactivar el drag select
+        handTable.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+
+        // Evento de mouseleave para desactivar el drag select si el mouse sale de la tabla
+        handTable.addEventListener('mouseleave', function() {
+            isDragging = false;
+        });
+
+        // Evento de mouseover para manejar la selección al arrastrar sobre las celdas
+        handTable.addEventListener('mouseover', function(e) {
+            if (!isDragging) return; // Si no se está arrastrando, salir
+
+            const cell = e.target.closest('.hand');
+            if (!cell) return; // Si no se está sobre una celda .hand, salir
+
+            const hand = cell.dataset.hand;
+            const isSelected = manuallySelectedHands.includes(hand);
+
+            if ((dragSelect && !isSelected) || (!dragSelect && isSelected)) {
                 handleHandSelection(cell);
                 updatePercentageDisplay();
                 updateSelectedHandsList();
-                updateTableHighlighting(manuallySelectedHands);
+            }
 
-                e.preventDefault(); // Evitar la selección de texto al arrastrar
-            });
-
-            // Evento de mouseup para desactivar el drag select
-            handTable.addEventListener('mouseup', function() {
-                isDragging = false;
-            });
-
-            // Evento de mouseleave para desactivar el drag select si el mouse sale de la tabla
-            handTable.addEventListener('mouseleave', function() {
-                isDragging = false;
-            });
-
-            // Evento de mouseover para manejar la selección al arrastrar sobre las celdas
-            handTable.addEventListener('mouseover', function(e) {
-                if (!isDragging) return; // Si no se está arrastrando, salir
-
-                const cell = e.target.closest('.hand');
-                if (!cell) return; // Si no se está sobre una celda .hand, salir
-
-                const hand = cell.dataset.hand;
-                const isSelected = manuallySelectedHands.includes(hand);
-
-                if ((dragSelect && !isSelected) || (!dragSelect && isSelected)) {
-                    handleHandSelection(cell);
-                    updatePercentageDisplay();
-                    updateSelectedHandsList();
-                }
-
-                updateTableHighlighting(manuallySelectedHands);
-            });
-
-            // Evento para actualizar la tabla cuando el valor del porcentaje cambia
-            percentageInput.addEventListener('change', function() {
-                const percentage = parseFloat(percentageInput.value);
-
-                //Validación para evitar errores al ingresar valores inválidos
-                if (isNaN(percentage) || percentage < 0 || percentage > 100) {
-                  percentageInput.value = 0;
-                  return;
-                }
-                updateTableHighlighting(manuallySelectedHands);
-            });
-
-            // Inicialización
-
-            const generate = generateAllHands()
-
-                // 3. Ordenar la lista completa según la lista de prioridades inicial
-                function sortHands(allHands, priorityList) {
-                    const sortedHands = [];
-                    const remainingHands = [...allHands]; // Copia para no modificar el original
-
-                    // Agregar las manos de la lista de prioridades primero
-                    for (const hand of priorityList) {
-                        if (allHands.includes(hand)) {
-                            sortedHands.push(hand);
-                            remainingHands.splice(remainingHands.indexOf(hand), 1); // Eliminar de las restantes
-                        }
-                    }
-
-                    // Agregar las manos restantes al final (en orden alfabético)
-                    remainingHands.sort();
-                    return sortedHands.concat(remainingHands);
-                }
-
-           // Llamar a la función para generar todas las manos
-           const allHands = generateAllHands();
-
-           // Ordenar las manos usando la lista de prioridades inicial
-           allHandsOrdered = sortHands(allHands, allHandsOrdered);
-
-            updatePercentageDisplay(); // Inicializar el porcentaje según las manos seleccionadas
             updateTableHighlighting(manuallySelectedHands);
+        });
 
+        // Evento para actualizar la tabla cuando el valor del porcentaje cambia
+        percentageInput.addEventListener('change', function() {
+            const percentage = parseFloat(percentageInput.value);
 
-            handCells.forEach(cell => {
-              const hand = cell.dataset.hand;
-              const orderedHand = orderHand(hand.slice(0, 2)) + hand.slice(2);
-              cell.dataset.hand = orderedHand;
-              cell.textContent = orderedHand; // Actualizar el texto de la celda
-            });
-
-             const card1Select = document.getElementById('card1');
-            const card2Select = document.getElementById('card2');
-            const suit1Select = document.getElementById('suit1');
-            const suit2Select = document.getElementById('suit2');
-            const checkHandButton = document.getElementById('checkHand');
-            const handResult = document.getElementById('handResult');
-
-            function orderHandCheck(hand) {
-                const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
-                const rank1 = hand[0];
-                const rank2 = hand[1];
-                const index1 = ranks.indexOf(rank1);
-                const index2 = ranks.indexOf(rank2);
-
-                if (index1 < index2) { // Si rank1 es más alta que rank2
-                    return hand; // Dejar la mano como está
-                } else {
-                    return rank2 + rank1; // Invertir la mano
-                }
+            //Validación para evitar errores al ingresar valores inválidos
+            if (isNaN(percentage) || percentage < 0 || percentage > 100) {
+              percentageInput.value = 0;
+              return;
             }
+            updateTableHighlighting(manuallySelectedHands);
+        });
 
-            checkHandButton.addEventListener('click', function() {
-                const card1 = card1Select.value;
-                const card2 = card2Select.value;
-                const suit1 = suit1Select.value;
-                const suit2 = suit2Select.value;
+        // Inicialización
 
-                if (!card1 || !card2 || !suit1 || !suit2) {
-                    handResult.textContent = "Por favor, selecciona ambas cartas y palos.";
-                    handResult.className = ''; // Remover clases de resultado anterior
-                    return;
-                }
+        const generate = generateAllHands()
 
-                let handType = '';
-                if (card1 === card2) {
-                    handType = ''; // Par, no necesita suited/offsuit
-                } else if (suit1 === suit2) {
-                    handType = 's'; // Suited
-                } else {
-                    handType = 'o'; // Offsuit
-                }
+            // 3. Ordenar la lista completa según la lista de prioridades inicial
+            function sortHands(allHands, priorityList) {
+                const sortedHands = [];
+                const remainingHands = [...allHands]; // Copia para no modificar el original
 
-                let selectedHand = orderHandCheck(card1 + card2);
-                if (handType) {
-                    selectedHand += handType;
-                }
-
-                let isHandInRange = manuallySelectedHands.includes(selectedHand);  // Usar manuallySelectedHands
-                if (!isHandInRange && handType == 'o'){ //Si es offsuit verificar orden inverso
-                    selectedHand = card2+ card1 + handType
-                     isHandInRange = manuallySelectedHands.includes(selectedHand);
-                }
-
-                // Determinar la clase de resultado y el mensaje
-                let resultClass = isHandInRange ? 'true' : 'false';
-                let resultText = isHandInRange ? 'True' : 'False';
-                handResult.textContent = 'Resultado: ' + resultText;
-                handResult.className = resultClass;
-            });
-
-                const rangeNameInput = document.getElementById('range-name');
-            const saveRangeButton = document.getElementById('save-range');
-            const savedRangesButtons = document.getElementById('saved-ranges-buttons');
-            let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || {}; // Cargar rangos guardados
-
-            // Función para guardar un rango
-            function saveRange() {
-                const rangeName = rangeNameInput.value.trim();
-                if (!rangeName) {
-                    alert("Por favor, ingresa un nombre para el rango.");
-                    return;
-                }
-
-                if (savedRanges[rangeName]) {
-                    if (!confirm("¿Deseas sobrescribir el rango existente?")) {
-                        return;
+                // Agregar las manos de la lista de prioridades primero
+                for (const hand of priorityList) {
+                    if (allHands.includes(hand)) {
+                        sortedHands.push(hand);
+                        remainingHands.splice(remainingHands.indexOf(hand), 1); // Eliminar de las restantes
                     }
                 }
 
-                savedRanges[rangeName] = [...manuallySelectedHands]; // Guardar una copia del array
-                localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
-                rangeNameInput.value = '';
-                displaySavedRanges(); // Actualizar la visualización de los botones
+                // Agregar las manos restantes al final (en orden alfabético)
+                remainingHands.sort();
+                return sortedHands.concat(remainingHands);
             }
 
-            // Función para cargar un rango
-            function loadRange(rangeName) {
-                if (savedRanges[rangeName]) {
-                    manuallySelectedHands = [...savedRanges[rangeName]]; // Cargar una copia del array
-                    updateTableHighlighting(manuallySelectedHands);
-                    updateSelectedHandsList();
-                    updatePercentageDisplay();
-                }
-            }
+       // Llamar a la función para generar todas las manos
+       const allHands = generateAllHands();
 
-            // Función para mostrar los rangos guardados como botones
-            function displaySavedRanges() {
-                savedRangesButtons.innerHTML = ''; // Limpiar los botones existentes
-                for (const rangeName in savedRanges) {
-                    const button = document.createElement('button');
-                    button.textContent = rangeName;
-                    button.addEventListener('click', () => loadRange(rangeName));
-                    savedRangesButtons.appendChild(button);
-                }
-            }
+       // Ordenar las manos usando la lista de prioridades inicial
+       allHandsOrdered = sortHands(allHands, allHandsOrdered);
 
-            // Evento para el botón "Guardar Rango"
-            saveRangeButton.addEventListener('click', saveRange);
+        updatePercentageDisplay(); // Inicializar el porcentaje según las manos seleccionadas
+        updateTableHighlighting(manuallySelectedHands);
 
-            // Inicialización (mostrar rangos guardados al cargar la página)
-            displaySavedRanges();
+
+        handCells.forEach(cell => {
+          const hand = cell.dataset.hand;
+          const orderedHand = orderHand(hand.slice(0, 2)) + hand.slice(2);
+          cell.dataset.hand = orderedHand;
+          cell.textContent = orderedHand; // Actualizar el texto de la celda
         });
-    </script>
+
+         const card1Select = document.getElementById('card1');
+        const card2Select = document.getElementById('card2');
+        const checkHandButton = document.getElementById('checkHand');
+        const handResult = document.getElementById('handResult');
+
+        function orderHandCheck(hand) {
+            const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+            const rank1 = hand[0];
+            const rank2 = hand[1];
+            const index1 = ranks.indexOf(rank1);
+            const index2 = ranks.indexOf(rank2);
+
+            if (index1 < index2) { // Si rank1 es más alta que rank2
+                return hand; // Dejar la mano como está
+            } else {
+                return rank2 + rank1; // Invertir la mano
+            }
+        }
+
+        checkHandButton.addEventListener('click', function() {
+            const card1 = card1Select.value;
+            const card2 = card2Select.value;
+            const suit1Elements = document.getElementsByName('suit1');
+            let suit1 = '';
+            for (let i = 0; i < suit1Elements.length; i++) {
+                if (suit1Elements[i].checked) {
+                    suit1 = suit1Elements[i].value;
+                    break;
+                }
+            }
+            const suit2Elements = document.getElementsByName('suit2');
+            let suit2 = '';
+            for (let i = 0; i < suit2Elements.length; i++) {
+                if (suit2Elements[i].checked) {
+                    suit2 = suit2Elements[i].value;
+                    break;
+                }
+            }
+
+            if (!card1 || !card2 || !suit1 || !suit2) {
+                handResult.textContent = "Por favor, selecciona ambas cartas y palos.";
+                handResult.className = ''; // Remover clases de resultado anterior
+                return;
+            }
+
+            let handType = '';
+            if (card1 === card2) {
+                handType = ''; // Par, no necesita suited/offsuit
+            } else if (suit1 === suit2) {
+                handType = 's'; // Suited
+            } else {
+                handType = 'o'; // Offsuit
+            }
+
+            let selectedHand = orderHandCheck(card1 + card2);
+            if (handType) {
+                selectedHand += handType;
+            }
+
+            let isHandInRange = manuallySelectedHands.includes(selectedHand);  // Usar manuallySelectedHands
+            if (!isHandInRange && handType == 'o'){ //Si es offsuit verificar orden inverso
+                selectedHand = card2+ card1 + handType
+                 isHandInRange = manuallySelectedHands.includes(selectedHand);
+            }
+
+            // Determinar la clase de resultado y el mensaje
+            let resultClass = isHandInRange ? 'true' : 'false';
+            let resultText = isHandInRange ? 'True' : 'False';
+            handResult.textContent = 'Resultado: ' + resultText;
+            handResult.className = resultClass;
+        });
+
+            const rangeNameInput = document.getElementById('range-name');
+        const saveRangeButton = document.getElementById('save-range');
+        const savedRangesButtons = document.getElementById('saved-ranges-buttons');
+        let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || {}; // Cargar rangos guardados
+
+        // Función para guardar un rango
+        function saveRange() {
+            const rangeName = rangeNameInput.value.trim();
+            if (!rangeName) {
+                alert("Por favor, ingresa un nombre para el rango.");
+                return;
+            }
+
+            if (savedRanges[rangeName]) {
+                if (!confirm("¿Deseas sobrescribir el rango existente?")) {
+                    return;
+                }
+            }
+
+            savedRanges[rangeName] = [...manuallySelectedHands]; // Guardar una copia del array
+            localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
+            rangeNameInput.value = '';
+            displaySavedRanges(); // Actualizar la visualización de los botones
+        }
+
+        // Función para cargar un rango
+        function loadRange(rangeName) {
+            if (savedRanges[rangeName]) {
+                manuallySelectedHands = [...savedRanges[rangeName]]; // Cargar una copia del array
+                updateTableHighlighting(manuallySelectedHands);
+                updateSelectedHandsList();
+                updatePercentageDisplay();
+            }
+        }
+
+        // Función para mostrar los rangos guardados como botones
+        function displaySavedRanges() {
+            savedRangesButtons.innerHTML = ''; // Limpiar los botones existentes
+            for (const rangeName in savedRanges) {
+                const button = document.createElement('button');
+                button.textContent = rangeName;
+                button.addEventListener('click', () => loadRange(rangeName));
+                savedRangesButtons.appendChild(button);
+            }
+        }
+
+        // Evento para el botón "Guardar Rango"
+        saveRangeButton.addEventListener('click', saveRange);
+
+        // Inicialización (mostrar rangos guardados al cargar la página)
+        displaySavedRanges();
+    });
+</script>
 </body>
 </html>
