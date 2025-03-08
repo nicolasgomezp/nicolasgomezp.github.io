@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const toggleSelectedButton = document.getElementById('toggle-selected');
     const handCells = Array.from(handTable.querySelectorAll('.hand'));
     const positionSelect = document.getElementById('position-select');
+    const actionSelect = document.getElementById('action-select');
     const savedRangesButtons = document.getElementById('saved-ranges-buttons');
     const cardSelector = document.getElementById('card-buttons-container');
     const checkHandButton = document.getElementById('checkHand');
@@ -357,42 +358,50 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // --- Range Management ---
-    // Object to store ranges by position
+    // Object to store ranges by position and action
     let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || {};
 
     // Function to save a range
     function saveRange() {
         const rangeName = rangeNameInput.value.trim();
         const position = positionSelect.value;
+        const action = actionSelect.value;
 
         if (!rangeName) {
             alert("Por favor, ingresa un nombre para el rango.");
             return;
         }
 
-        // Create the structure if it doesn't exist for the position
+        // Create the structure if it doesn't exist for the position and action
         if (!savedRanges[position]) {
             savedRanges[position] = {};
         }
 
-        if (savedRanges[position][rangeName]) {
+        if (!savedRanges[position][action]) {
+            savedRanges[position][action] = {};
+        }
+
+        if (savedRanges[position][action][rangeName]) {
             if (!confirm("¿Deseas sobrescribir el rango existente?")) {
                 return;
             }
         }
 
-        savedRanges[position][rangeName] = [...manuallySelectedHands];
+        savedRanges[position][action][rangeName] = [...manuallySelectedHands];
         localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
         rangeNameInput.value = '';
         displaySavedRanges();
     }
 
     // Function to delete a range
-    function deleteRange(rangeName, position) {
-        if (confirm(`¿Estás seguro de que quieres borrar el rango "${rangeName}" de la posición "${position}"?`)) {
-            delete savedRanges[position][rangeName]; // Delete the range
-            if (Object.keys(savedRanges[position]).length === 0) {
-                delete savedRanges[position]; // Delete the position if it's empty
+    function deleteRange(rangeName, position, action) {
+        if (confirm(`¿Estás seguro de que quieres borrar el rango "${rangeName}" de la posición "${position}" y acción "${action}"?`)) {
+            delete savedRanges[position][action][rangeName]; // Delete the range
+            if (Object.keys(savedRanges[position][action]).length === 0) {
+                delete savedRanges[position][action]; // Delete the action if it's empty
+                if (Object.keys(savedRanges[position]).length === 0) {
+                    delete savedRanges[position]; // Delete the position if it's empty
+                }
             }
             localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
             displaySavedRanges(); // Refresh the buttons
@@ -400,9 +409,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Function to load a range
-    function loadRange(rangeName, position) {
-        if (savedRanges[position] && savedRanges[position][rangeName]) {
-            manuallySelectedHands = [...savedRanges[position][rangeName]];
+    function loadRange(rangeName, position, action) {
+        if (savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][rangeName]) {
+            manuallySelectedHands = [...savedRanges[position][action][rangeName]];
             updateTableHighlighting(manuallySelectedHands);
             updateSelectedHandsList();
             updatePercentageDisplay();
@@ -412,23 +421,24 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to display saved ranges as buttons
     function displaySavedRanges() {
         const position = positionSelect.value;
+        const action = actionSelect.value;
         savedRangesButtons.innerHTML = ''; // Clear existing buttons
 
-        if (savedRanges[position]) {
-            for (const rangeName in savedRanges[position]) {
+        if (savedRanges[position] && savedRanges[position][action]) {
+            for (const rangeName in savedRanges[position][action]) {
                 const buttonContainer = document.createElement('div');
                 buttonContainer.className = 'saved-range-button-container'; // Apply class for positioning
 
                 const button = document.createElement('button');
                 button.textContent = rangeName;
-                button.addEventListener('click', () => loadRange(rangeName, position));
+                button.addEventListener('click', () => loadRange(rangeName, position, action));
 
                 const deleteButton = document.createElement('button');
                 deleteButton.className = 'delete-range-button';
                 deleteButton.innerHTML = '×'; // Use the multiplication symbol as "X"
                 deleteButton.addEventListener('click', (event) => {
                     event.stopPropagation(); // Prevent the click from propagating to the range button
-                    deleteRange(rangeName, position);
+                    deleteRange(rangeName, position, action);
                 });
 
                 buttonContainer.appendChild(button);
@@ -453,6 +463,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Event listener for the position select
     positionSelect.addEventListener('change', displaySavedRanges);
+
+    // Event listener for the action select
+    actionSelect.addEventListener('change', displaySavedRanges);
+
 
     // --- Initialization ---
     // Call to generate all hands
