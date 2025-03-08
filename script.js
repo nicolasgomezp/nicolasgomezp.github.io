@@ -16,6 +16,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const rangeNameInput = document.getElementById('range-name');
     const saveRangeButton = document.getElementById('save-range');
 
+    // Mesa Interactiva
+    const interactiveTable = document.getElementById('poker-table');
+    const interactivePositions = Array.from(interactiveTable.querySelectorAll('.position'));
+    const interactiveActionSelect = document.getElementById('action-select-interactive');
+    const savedRangesInteractive = document.getElementById('saved-ranges-interactive');
+    let isDraggingEnabled = true; // Controla si se pueden arrastrar o no
+
     let allHandsOrdered = [
         // Premium
         "AA", "KK", "QQ", "JJ", "AKs", "AQs", "AJs", "KQs", "AKo",
@@ -467,6 +474,129 @@ document.addEventListener('DOMContentLoaded', function () {
     // Event listener for the action select
     actionSelect.addEventListener('change', displaySavedRanges);
 
+    // Function to display saved ranges as buttons for interactive table
+    function displaySavedRangesInteractive() {
+        const position = positionSelect.value;
+        const action = interactiveActionSelect.value;
+        savedRangesInteractive.innerHTML = ''; // Clear existing buttons
+
+        if (savedRanges[position] && savedRanges[position][action]) {
+            for (const rangeName in savedRanges[position][action]) {
+                const button = document.createElement('button');
+                button.textContent = rangeName;
+                button.addEventListener('click', () => loadRange(rangeName, position, action));
+                savedRangesInteractive.appendChild(button);
+            }
+        }
+    }
+
+    // Sync position selects
+    function syncPositionSelects(position) {
+        positionSelect.value = position;
+        displaySavedRanges();
+        displaySavedRangesInteractive();
+    }
+
+    // Event listeners for interactive table positions
+    interactivePositions.forEach(pos => {
+        pos.addEventListener('click', () => {
+            const position = pos.dataset.position;
+            syncPositionSelects(position);
+        });
+    });
+
+    // Event listener for the interactive action select
+    interactiveActionSelect.addEventListener('change', displaySavedRangesInteractive);
+
+    // Function to activate/desactivar la función de arrastrar
+    function toggleDragging() {
+        isDraggingEnabled = !isDraggingEnabled;
+        alert(`Arrastrar está ahora ${isDraggingEnabled ? 'activado' : 'desactivado'}.`);
+    }
+
+    // Botón para activar/desactivar la función de arrastrar
+    const toggleDragButton = document.createElement('button');
+    toggleDragButton.textContent = 'Activar/Desactivar Arrastrar';
+    toggleDragButton.addEventListener('click', toggleDragging);
+    document.getElementById('interactive-table-container').appendChild(toggleDragButton);
+
+    // Variables para controlar el arrastre
+    let currentDragging = null;
+    let offsetX, offsetY;
+
+    // Función para comenzar el arrastre
+    function startDrag(e) {
+        if (!isDraggingEnabled) return;
+
+        currentDragging = this;
+        currentDragging.classList.add('dragging');
+
+        offsetX = e.clientX - currentDragging.getBoundingClientRect().left;
+        offsetY = e.clientY - currentDragging.getBoundingClientRect().top;
+
+        interactiveTable.addEventListener('mousemove', drag);
+        interactiveTable.addEventListener('mouseup', endDrag);
+        interactiveTable.addEventListener('mouseleave', endDrag); // Terminar si el ratón sale de la mesa
+    }
+
+    // Función para arrastrar
+    function drag(e) {
+        if (!currentDragging) return;
+
+        const x = e.clientX - offsetX;
+        const y = e.clientY - offsetY;
+
+        // Limita el movimiento dentro de la mesa
+        const tableRect = interactiveTable.getBoundingClientRect();
+        const elementWidth = currentDragging.offsetWidth;
+        const elementHeight = currentDragging.offsetHeight;
+
+        let newX = x - tableRect.left;
+        let newY = y - tableRect.top;
+
+        // Limita el movimiento
+        newX = Math.max(0, Math.min(newX, tableRect.width - elementWidth));
+        newY = Math.max(0, Math.min(newY, tableRect.height - elementHeight));
+
+        currentDragging.style.left = newX + 'px';
+        currentDragging.style.top = newY + 'px';
+    }
+
+    // Función para terminar el arrastre
+    function endDrag() {
+        if (!currentDragging) return;
+
+        currentDragging.classList.remove('dragging');
+        interactiveTable.removeEventListener('mousemove', drag);
+        interactiveTable.removeEventListener('mouseup', endDrag);
+        interactiveTable.removeEventListener('mouseleave', endDrag);
+        currentDragging = null;
+    }
+
+    // Evento de inicio de arrastre
+    interactivePositions.forEach(pos => {
+        pos.addEventListener('mousedown', startDrag);
+    });
+
+    // Función para cambiar el color al seleccionar y sincronizar selects
+    function handlePositionClick(e) {
+        // Desmarca cualquier posición previamente seleccionada
+        interactivePositions.forEach(pos => pos.classList.remove('selected'));
+
+        // Marca la posición actual como seleccionada
+        this.classList.add('selected');
+
+        const position = this.dataset.position; // Obtén el valor del atributo data-position
+        syncPositionSelects(position); // Llama a la función para sincronizar los selects
+    }
+
+    // Evento click para seleccionar la posición
+    interactivePositions.forEach(pos => {
+        pos.addEventListener('click', handlePositionClick);
+    });
+
+    // Initial display for interactive table
+    displaySavedRangesInteractive();
 
     // --- Initialization ---
     // Call to generate all hands
