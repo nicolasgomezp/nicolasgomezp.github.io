@@ -1,6 +1,10 @@
+
+```css
 /* General Styles (Chrome-inspired) */
+
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto',
+    sans-serif;
     background-color: #f1f3f4;
     color: #202124;
     margin: 0;
@@ -20,11 +24,13 @@ h1 {
 }
 
 /* Button Styles (Chrome-inspired) */
+
 button {
     background-color: #f8f9fa;
     border: 1px solid #dadce0;
     color: #3c4043;
-    font-family: Roboto, sans-serif;
+    font-family: Roboto,
+    sans-serif;
     font-size: 14px;
     border-radius: 4px;
     padding: 8px 16px;
@@ -43,10 +49,12 @@ button:focus {
 }
 
 /* Input Styles (Chrome-inspired) */
+
 input[type="text"],
 input[type="number"],
 select {
-    font-family: Roboto, sans-serif;
+    font-family: Roboto,
+    sans-serif;
     font-size: 14px;
     padding: 8px;
     border: 1px solid #dadce0;
@@ -64,6 +72,7 @@ select:focus {
 }
 
 /* Toggle Badges */
+
 .toggle-badge {
     background-color: #fff;
     border: 1px solid #dadce0;
@@ -95,6 +104,7 @@ select:focus {
 }
 
 /* Table Styles */
+
 #hand-table-container {
     overflow: auto;
     max-width: 900px;
@@ -106,7 +116,8 @@ table {
     border-collapse: collapse;
     margin: 20px auto;
     width: 100%;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
     border-radius: 8px;
     overflow: hidden;
     background-color: #fff;
@@ -142,6 +153,7 @@ th {
 }
 
 /* Hand Type Colors */
+
 .pair {
     background-color: #ffe0b2;
 }
@@ -170,6 +182,7 @@ th {
 }
 
 /* Percentage Input Styles */
+
 .percentage-input-container {
     margin-bottom: 20px;
     text-align: center;
@@ -197,6 +210,7 @@ th {
 }
 
 /* Selected Hands List Styles */
+
 #selected-hands-list {
     list-style-type: none;
     padding: 0;
@@ -221,7 +235,8 @@ th {
     padding: 15px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
 #selected-hands-container h2 {
@@ -231,15 +246,18 @@ th {
 }
 
 /* Hand Checker Styles */
+
 .hand-checker-container {
     margin-bottom: 20px;
     text-align: center;
     width: 100%;
-    max-width: 350px; /* Ajusta el ancho máximo del contenedor */
+    max-width: 350px;
+    /* Ajusta el ancho máximo del contenedor */
     padding: 15px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
 .hand-checker-container h2 {
@@ -269,6 +287,7 @@ th {
 }
 
 /* Range Management Styles */
+
 .range-management-container {
     margin-bottom: 20px;
     text-align: center;
@@ -277,7 +296,8 @@ th {
     padding: 15px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
 }
 
 .range-management-container h2 {
@@ -329,6 +349,7 @@ th {
 }
 
 /* Card Matrix Styles */
+
 .card-matrix {
     display: grid;
     grid-template-columns: repeat(13, 1fr);
@@ -347,7 +368,8 @@ th {
     font-size: 12px;
     border-radius: 4px;
     transition: background-color 0.2s ease;
-    font-family: arial, sans-serif;
+    font-family: arial,
+    sans-serif;
     color: #202124;
 }
 
@@ -361,16 +383,19 @@ th {
 }
 
 /* Red Suit Color */
+
 .red-suit {
     color: #d93025;
 }
 
 /* Hidden Class */
+
 .hidden {
     display: none;
 }
 
 /* Responsive Layout */
+
 @media (max-width: 600px) {
     .card-matrix {
         width: 100%;
@@ -386,16 +411,21 @@ th {
 }
 
 /* Mesa Interactiva Styles */
+
 #interactive-table-container {
     margin-bottom: 20px;
     text-align: center;
     width: 100%;
-    max-width: 350px; /* Ajusta el ancho máximo del contenedor */
+    max-width: 350px;
+    /* Ajusta el ancho máximo del contenedor */
     padding: 15px;
     background-color: #fff;
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-}#interactive-table-container h2 {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+#interactive-table-container h2 {
     font-size: 1.2em;
     margin-bottom: 10px;
     color: #4285f4;
@@ -403,8 +433,10 @@ th {
 
 #poker-table {
     position: relative;
-    width: 300px;  /* Ajusta el tamaño general de la mesa */
-    height: 200px; /* Ajusta la altura de la mesa */
+    width: 300px;
+    /* Ajusta el tamaño general de la mesa */
+    height: 200px;
+    /* Ajusta la altura de la mesa */
     margin: 20px auto;
 }
 
@@ -414,7 +446,8 @@ th {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #388e3c;  /* Un tono de verde poker */
+    background-color: #388e3c;
+    /* Un tono de verde poker */
     border-radius: 50%;
     border-bottom: 10%;
     z-index: 1;
@@ -435,8 +468,10 @@ th {
     font-size: 12px;
     /* Adjust for better readability */
     transition: background-color 0.2s;
-    z-index: 2;  /* Asegura que los círculos estén sobre la mesa */
-    user-select: none; /* Evita la selección de texto */
+    z-index: 2;
+    /* Asegura que los círculos estén sobre la mesa */
+    user-select: none;
+    /* Evita la selección de texto */
 }
 
 .position:hover {
@@ -444,16 +479,15 @@ th {
 }
 
 /* Posiciones de la mesa */
+
 #poker-table #utg {
     top: 10px;
     left: 10px;
-
 }
 
 #poker-table #utgplus1 {
-
-   right: 10px;
-   top: 10px;
+    right: 10px;
+    top: 10px;
 }
 
 #poker-table #mp {
@@ -478,12 +512,12 @@ th {
 }
 
 #poker-table #button {
-      bottom: 10%;
+    bottom: 10%;
     right: -15px;
 }
 
 #poker-table #sb {
-     bottom: 10px;
+    bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -499,28 +533,72 @@ th {
     justify-content: center;
     margin-top: 10px;
 }
+
 /* Existing CSS (above) */
 
 .position.dragging {
-    opacity: 0.7; /* Transparencia al arrastrar */
+    opacity: 0.7;
+    /* Transparencia al arrastrar */
     cursor: grabbing;
 }
 
 .position.selected {
-    background-color: #4CAF50; /* Verde cuando está seleccionado */
+    background-color: #4CAF50;
+    /* Verde cuando está seleccionado */
     color: white;
 }
 
 /* Para evitar la selección de texto dentro de los circulos */
+
 .no-select {
     user-select: none;
 }
 
 /* Contenedor principal para la mesa y el verificador de manos */
+
 .main-container {
     display: flex;
-    justify-content: center; /* Centra horizontalmente los elementos */
-    align-items: flex-start; /* Alinea los elementos en la parte superior */
-    gap: 20px; /* Espacio entre la mesa y el verificador */
-    margin-bottom: 20px; /* Espacio por debajo del contenedor */
+    justify-content: center;
+    /* Centra horizontalmente los elementos */
+    align-items: flex-start;
+    /* Alinea los elementos en la parte superior */
+    gap: 20px;
+    /* Espacio entre la mesa y el verificador */
+    margin-bottom: 20px;
+    /* Espacio por debajo del contenedor */
+}
+
+/* Add the following styles to your style.css */
+
+.position.open-raiser {
+    background-color: #dc3545;
+    /* Bootstrap's red color */
+    color: white;
+    /* Optional: Change text color to white for better contrast */
+}
+
+.open-raiser-badge {
+    position: absolute;
+    top: -10px;
+    /* Adjust as needed */
+    right: -10px;
+    /* Adjust as needed */
+    background-color: #ffc107;
+    /* Bootstrap's yellow color */
+    color: #212529;
+    /* Dark text for contrast */
+    font-size: 0.7em;
+    padding: 2px 4px;
+    border-radius: 50%;
+    z-index: 3;
+    /* Ensure it's above the circle */
+    border: 1px solid #212529;
+    /* Add a border */
+}
+
+/* Style for selected range buttons */
+.selected-range {
+    background-color: #f48fb1 !important; /* Pink color */
+    color: #fff !important;
+    border-color: #f06292 !important;
 }
