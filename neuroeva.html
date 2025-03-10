@@ -55,6 +55,23 @@
                 <option value="call3bet">Call a 3-Bet</option>
                 <option value="Squeeze">Squeeze</option>
             </select>
+
+            <!-- New "Versus Position" Dropdown -->
+            <div id="versus-position-interactive-container" style="display: none;">
+                <label for="versus-position-select-interactive">Contra la Posición:</label>
+                <select id="versus-position-select-interactive">
+                    <option value="utg">UTG</option>
+                    <option value="utg+1">UTG+1</option>
+                    <option value="mp">MP</option>
+                    <option value="lj">LJ</option>
+                    <option value="hj">HJ</option>
+                    <option value="co">CO</option>
+                    <option value="button">Button</option>
+                    <option value="sb">SB</option>
+                    <option value="bb">BB</option>
+                </select>
+            </div>
+
             <h2>Rangos Guardados en Mesa:</h2>
             <div id="saved-ranges-interactive">
                 <!-- Saved ranges for interactive table will be added here -->
@@ -113,6 +130,22 @@
             <option value="call3bet">Call a 3-Bet</option>
             <option value="Squeeze">Squeeze</option>
         </select>
+
+        <!-- New "Versus Position" Dropdown (Initially Hidden) -->
+        <div id="versus-position-container" style="display: none;">
+            <label for="versus-position-select">Contra la Posición:</label>
+            <select id="versus-position-select">
+                <option value="utg">UTG</option>
+                <option value="utg+1">UTG+1</option>
+                <option value="mp">MP</option>
+                <option value="lj">LJ</option>
+                <option value="hj">HJ</option>
+                <option value="co">CO</option>
+                <option value="button">Button</option>
+                <option value="sb">SB</option>
+                <option value="bb">BB</option>
+            </select>
+        </div>
 
         <label for="range-name">Nombre del Rango:</label>
         <input type="text" id="range-name">
@@ -369,7 +402,7 @@
         <h2>Manos Seleccionadas:</h2>
         <ul id="selected-hands-list"></ul>
     </div>
-      <!-- Export/Import Buttons -->
+    <!-- Export/Import Buttons -->
     <div class="export-import-container">
         <button id="export-ranges">Exportar Rangos a JSON</button>
         <input type="file" id="import-ranges-file" accept=".json" style="display: none;">
