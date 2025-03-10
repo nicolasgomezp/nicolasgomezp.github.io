@@ -45,6 +45,14 @@ document.addEventListener('DOMContentLoaded', function () {
     let dragSelect = false; // Variable to track whether to select or deselect while dragging
     let selectedCards = []; // Array to store selected cards in the checker
 
+    //New Element
+    const versusPositionContainer = document.getElementById('versus-position-container');
+    const versusPositionSelect = document.getElementById('versus-position-select');
+
+    //New Element interactive
+    const versusPositionInteractiveContainer = document.getElementById('versus-position-interactive-container');
+    const versusPositionSelectInteractive = document.getElementById('versus-position-select-interactive');
+
     // --- Helper Functions ---
     // Function to order a hand (ensures the higher card is first)
     function orderHand(hand) {
@@ -130,7 +138,69 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Function to add "OR" badge to a position
+    function addOpenRaiserBadge(positionId) {
+        const positionElement = document.getElementById(positionId);
+        if (positionElement) {
+            // Create badge element
+            const badge = document.createElement('div');
+            badge.classList.add('open-raiser-badge');
+            badge.textContent = 'OR';
+
+            // Append badge to the position element
+            positionElement.appendChild(badge);
+        }
+    }
+
+    // Function to remove "OR" badge from a position
+    function removeOpenRaiserBadge(positionId) {
+        const positionElement = document.getElementById(positionId);
+        if (positionElement) {
+            const badge = positionElement.querySelector('.open-raiser-badge');
+            if (badge) {
+                positionElement.removeChild(badge);
+            }
+        }
+    }
+
+    // Function to clear highlighting from all positions
+    function clearAllPositionHighlighting() {
+        interactivePositions.forEach(pos => {
+            pos.classList.remove('open-raiser');
+            removeOpenRaiserBadge(pos.id); // Remove badge too
+        });
+    }
+
+    // Function to highlight the open raiser position
+    function highlightOpenRaiserPosition(positionId) {
+        clearAllPositionHighlighting(); // Clear previous highlighting
+        const positionElement = document.getElementById(positionId);
+        if (positionElement) {
+            positionElement.classList.add('open-raiser');
+            addOpenRaiserBadge(positionId); // Add badge
+        }
+    }
+
     // --- UI Update Functions ---
+    // Function to display Versus Range
+    function displayVersusPosition() {
+        const actionSelect = document.getElementById('action-select');
+        if (actionSelect.value === 'call' || actionSelect.value === 'call3bet') {
+            versusPositionContainer.style.display = 'block';
+        } else {
+            versusPositionContainer.style.display = 'none';
+        }
+    }
+
+    // Function to update versus position visibility
+    function updateVersusPositionVisibility(actionSelectElement, versusPositionElement) {
+        if (actionSelectElement.value === 'call' || actionSelectElement.value === 'call3bet') {
+            versusPositionElement.style.display = 'block';
+        } else {
+            versusPositionElement.style.display = 'none';
+        }
+    }
+
     // Function to update the table highlighting
     function updateTableHighlighting(selectedHands) {
         handCells.forEach(cell => {
@@ -176,7 +246,144 @@ document.addEventListener('DOMContentLoaded', function () {
         // Update the value in the input
         percentageInput.value = percentage.toFixed(2); // Show two decimal places
     }
+    // Function to highlight the open raiser position
+    function highlightOpenRaiserPosition(positionId) {
+        clearAllPositionHighlighting(); // Clear previous highlighting
+        const positionElement = document.getElementById(positionId);
+        if (positionElement) {
+            positionElement.classList.add('open-raiser');
+            addOpenRaiserBadge(positionId); // Add badge
+        }
+    }
 
+    // --- Event Listeners for Interactive Table ---
+    // Function to sync position selects
+    function syncPositionSelects(position) {
+        positionSelect.value = position; // Update range management select
+        displaySavedRanges();
+        displaySavedRangesInteractive();
+    }
+
+    // Function to sync action selects
+    function syncActionSelects(action) {
+        actionSelect.value = action; // Update range management select
+        displaySavedRanges();
+        displaySavedRangesInteractive();
+        displayVersusPosition();
+    }
+      //Function to synchronize the versus position
+    function syncVersusPosition(sourceSelect, targetSelect) {
+        targetSelect.value = sourceSelect.value;
+    }
+
+    // Event listeners for interactive table positions
+    interactivePositions.forEach(pos => {
+        pos.addEventListener('click', function() {
+            const position = this.dataset.position;
+
+            // Update range management position select without changing the action
+            positionSelect.value = position;
+            displaySavedRanges();
+            displaySavedRangesInteractive();
+
+            // Clear highlighting and selection from ALL positions
+            interactivePositions.forEach(p => {
+                p.classList.remove('selected');
+            });
+
+            // Select the clicked position
+            this.classList.add('selected');
+
+            //Clear all position for Action Select
+            clearAllPositionHighlighting();
+        });
+    });
+
+    // Event listener for the interactive action select
+    interactiveActionSelect.addEventListener('change', () => {
+        const action = interactiveActionSelect.value;
+        syncActionSelects(action); // Sync the action select
+        //Clear all position for Action Select
+        clearAllPositionHighlighting();
+
+         // Update visibility of Versus Position dropdown based on the selected action
+        updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
+        updateVersusPositionVisibility(actionSelect, versusPositionContainer);
+
+        //If the versus position container is being showed in interactive table, shows in range management tool
+        if (versusPositionInteractiveContainer.style.display === 'block') {
+            versusPositionContainer.style.display = 'block';
+        } else {
+            versusPositionContainer.style.display = 'none';
+        }
+
+    });
+     //Range Management Action Select Change
+    actionSelect.addEventListener('change', () => {
+        const actionValue = actionSelect.value;
+
+        // Update Interactive Table Action Select
+        interactiveActionSelect.value = actionValue;
+
+        // Update visibility of Versus Position dropdown based on the selected action
+        updateVersusPositionVisibility(actionSelect, versusPositionContainer);
+        updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
+    });
+    //Versus position sync in both interactive and range management tools
+    versusPositionSelectInteractive.addEventListener('change', () => {
+        syncVersusPosition(versusPositionSelectInteractive, versusPositionSelect)
+    })
+
+    versusPositionSelect.addEventListener('change', () => {
+        syncVersusPosition(versusPositionSelect, versusPositionSelectInteractive)
+    })
+    // --- Event Listeners for Range Management Selects ---
+
+    // Event listener for the "Save Range" button
+    saveRangeButton.addEventListener('click', saveRange);
+
+    // Sync positions
+    positionSelect.addEventListener('change', () => {
+        const position = positionSelect.value;
+        // Find the corresponding position on the interactive table and trigger the click event
+        interactivePositions.forEach(pos => {
+            if (pos.dataset.position === position) {
+                // Deselect previously selected positions
+                interactivePositions.forEach(p => p.classList.remove('selected'));
+                pos.classList.add('selected');
+            } else {
+                pos.classList.remove('selected');
+            }
+        });
+        displaySavedRanges();
+        displaySavedRangesInteractive();
+         clearAllPositionHighlighting();
+    });
+    // Sync Actions
+    actionSelect.addEventListener('change', () => {
+        const action = actionSelect.value;
+         clearAllPositionHighlighting();
+        displaySavedRanges();
+        displaySavedRangesInteractive();
+        displayVersusPosition();
+    });
+
+      // Event listener for the position select
+    positionSelect.addEventListener('change', displaySavedRanges);
+
+    // Event listener for the action select
+    actionSelect.addEventListener('change', () => {
+        displaySavedRanges();
+        displaySavedRangesInteractive();
+        displayVersusPosition();
+    });
+     versusPositionSelect.addEventListener('change', () => {
+        displaySavedRanges();
+        displaySavedRangesInteractive();
+    });
+
+       //Clear all highlight position
+    clearAllPositionHighlighting();
     // --- Hand Selection Functions ---
     // Function to handle hand selection
     function handleHandSelection(cell) {
@@ -373,6 +580,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const rangeName = rangeNameInput.value.trim();
         const position = positionSelect.value;
         const action = actionSelect.value;
+        const versusPosition = versusPositionSelect.value; // get value
 
         if (!rangeName) {
             alert("Por favor, ingresa un nombre para el rango.");
@@ -388,26 +596,58 @@ document.addEventListener('DOMContentLoaded', function () {
             savedRanges[position][action] = {};
         }
 
-        if (savedRanges[position][action][rangeName]) {
-            if (!confirm("¿Deseas sobrescribir el rango existente?")) {
-                return;
+        // NEW: Add the "versus position" level
+        if (action === 'call' || action === 'call3bet') {
+            if (!savedRanges[position][action][versusPosition]) {
+                savedRanges[position][action][versusPosition] = {};
             }
+
+            if (savedRanges[position][action][versusPosition][rangeName]) {
+                if (!confirm("¿Deseas sobrescribir el rango existente?")) {
+                    return;
+                }
+            }
+
+            savedRanges[position][action][versusPosition][rangeName] = [...manuallySelectedHands];
+        } else {
+            // Non-Call action, save directly
+            if (savedRanges[position][action][rangeName]) {
+                if (!confirm("¿Deseas sobrescribir el rango existente?")) {
+                    return;
+                }
+            }
+            savedRanges[position][action][rangeName] = [...manuallySelectedHands];
         }
 
-        savedRanges[position][action][rangeName] = [...manuallySelectedHands];
         localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
         rangeNameInput.value = '';
         displaySavedRanges();
     }
 
     // Function to delete a range
-    function deleteRange(rangeName, position, action) {
+    function deleteRange(rangeName, position, action, versusPosition) {
         if (confirm(`¿Estás seguro de que quieres borrar el rango "${rangeName}" de la posición "${position}" y acción "${action}"?`)) {
-            delete savedRanges[position][action][rangeName]; // Delete the range
-            if (Object.keys(savedRanges[position][action]).length === 0) {
-                delete savedRanges[position][action]; // Delete the action if it's empty
-                if (Object.keys(savedRanges[position]).length === 0) {
-                    delete savedRanges[position]; // Delete the position if it's empty
+            if (action === 'call' || action === 'call3bet') {
+                delete savedRanges[position][action][versusPosition][rangeName];
+
+                if (Object.keys(savedRanges[position][action][versusPosition]).length === 0) {
+                    delete savedRanges[position][action][versusPosition];
+                    if (Object.keys(savedRanges[position][action]).length === 0) {
+                        delete savedRanges[position][action];
+                        if (Object.keys(savedRanges[position]).length === 0) {
+                            delete savedRanges[position];
+                        }
+                    }
+
+                }
+
+            } else {
+                delete savedRanges[position][action][rangeName]; // Delete the range
+                if (Object.keys(savedRanges[position][action]).length === 0) {
+                    delete savedRanges[position][action]; // Delete the action if it's empty
+                    if (Object.keys(savedRanges[position]).length === 0) {
+                        delete savedRanges[position]; // Delete the position if it's empty
+                    }
                 }
             }
             localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
@@ -415,37 +655,88 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Store the currently selected range for both interactive and management areas
+    let currentSelectedRangeInteractive = null;
+    let currentSelectedRangeManagement = null;
+
     // Function to load a range
-    function loadRange(rangeName, position, action) {
-        if (savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][rangeName]) {
-            manuallySelectedHands = [...savedRanges[position][action][rangeName]];
+    function loadRange(rangeName, position, action, versusPosition, isInteractive = false) {
+        let rangeToLoad;
+        if (action === 'call' || action === 'call3bet') {
+            rangeToLoad = savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][versusPosition] && savedRanges[position][action][versusPosition][rangeName];
+        } else {
+            rangeToLoad = savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][rangeName];
+        }
+
+        if (rangeToLoad) {
+            manuallySelectedHands = [...rangeToLoad];
             updateTableHighlighting(manuallySelectedHands);
             updateSelectedHandsList();
             updatePercentageDisplay();
+
+            // Clear previous selection
+            if (isInteractive && currentSelectedRangeInteractive) {
+                currentSelectedRangeInteractive.classList.remove('selected-range');
+            }
+            if (!isInteractive && currentSelectedRangeManagement) {
+                currentSelectedRangeManagement.classList.remove('selected-range');
+            }
+
+            // Update the current selection
+            const button = isInteractive ? Array.from(savedRangesInteractive.children).find(btn => btn.textContent === rangeName) :
+                Array.from(savedRangesButtons.children).find(container => container.querySelector('button').textContent === rangeName)?.querySelector('button');
+
+            if (button) {
+                button.classList.add('selected-range');
+                if (isInteractive) {
+                    currentSelectedRangeInteractive = button;
+                } else {
+                    currentSelectedRangeManagement = button;
+                }
+            }
+        } else {
+            // Clear selection if the range is not found
+            if (isInteractive && currentSelectedRangeInteractive) {
+                currentSelectedRangeInteractive.classList.remove('selected-range');
+                currentSelectedRangeInteractive = null;
+            }
+            if (!isInteractive && currentSelectedRangeManagement) {
+                currentSelectedRangeManagement.classList.remove('selected-range');
+                currentSelectedRangeManagement = null;
+            }
         }
     }
+
 
     // Function to display saved ranges as buttons
     function displaySavedRanges() {
         const position = positionSelect.value;
         const action = actionSelect.value;
+        const versusPosition = versusPositionSelect.value; // Get the "Versus" position
+
         savedRangesButtons.innerHTML = ''; // Clear existing buttons
 
-        if (savedRanges[position] && savedRanges[position][action]) {
-            for (const rangeName in savedRanges[position][action]) {
+        //Adjust
+        let rangesToShow = savedRanges[position] && savedRanges[position][action];
+        if (action === 'call' || action === 'call3bet') {
+            rangesToShow = savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][versusPosition];
+        }
+
+        if (rangesToShow) {
+            for (const rangeName in rangesToShow) {
                 const buttonContainer = document.createElement('div');
                 buttonContainer.className = 'saved-range-button-container'; // Apply class for positioning
 
                 const button = document.createElement('button');
                 button.textContent = rangeName;
-                button.addEventListener('click', () => loadRange(rangeName, position, action));
+                button.addEventListener('click', () => loadRange(rangeName, position, action, versusPosition, false)); // Pass versusPosition
 
                 const deleteButton = document.createElement('button');
                 deleteButton.className = 'delete-range-button';
                 deleteButton.innerHTML = '×'; // Use the multiplication symbol as "X"
                 deleteButton.addEventListener('click', (event) => {
                     event.stopPropagation(); // Prevent the click from propagating to the range button
-                    deleteRange(rangeName, position, action);
+                    deleteRange(rangeName, position, action, versusPosition);
                 });
 
                 buttonContainer.appendChild(button);
@@ -454,212 +745,317 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
     }
-
-    // --- Toggle Visibility of Sections ---
-    toggleTableButton.addEventListener('click', function () {
-        handTableContainer.classList.toggle('hidden');
-    });
-
-    toggleSelectedButton.addEventListener('click', function () {
-        selectedHandsContainer.classList.toggle('hidden');
-    });
-
-    // --- Event Listeners ---
-    // Event listener for the "Save Range" button
-    saveRangeButton.addEventListener('click', saveRange);
-
-    // Event listener for the position select
-    positionSelect.addEventListener('change', displaySavedRanges);
-
-    // Event listener for the action select
-    actionSelect.addEventListener('change', displaySavedRanges);
-
     // Function to display saved ranges as buttons for interactive table
     function displaySavedRangesInteractive() {
         const position = positionSelect.value;
         const action = interactiveActionSelect.value;
+        const versusPosition = versusPositionSelect.value;
+
         savedRangesInteractive.innerHTML = ''; // Clear existing buttons
 
-        if (savedRanges[position] && savedRanges[position][action]) {
-            for (const rangeName in savedRanges[position][action]) {
+        let rangesToShow = savedRanges[position] && savedRanges[position][action];
+        if (action === 'call' || action === 'call3bet') {
+            rangesToShow = savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][versusPosition];
+        }
+
+        if (rangesToShow) {
+            for (const rangeName in rangesToShow) {
                 const button = document.createElement('button');
                 button.textContent = rangeName;
-                button.addEventListener('click', () => loadRange(rangeName, position, action));
+                button.addEventListener('click', () => loadRange(rangeName, position, action, versusPosition, true));
                 savedRangesInteractive.appendChild(button);
             }
         }
     }
 
     // Sync position selects
+  // Function to highlight the open raiser position
+    function highlightOpenRaiserPosition(positionId) {
+        clearAllPositionHighlighting(); // Clear previous highlighting
+        const positionElement = document.getElementById(positionId);
+        if (positionElement) {
+            positionElement.classList.add('open-raiser');
+            addOpenRaiserBadge(positionId); // Add badge
+        }
+    }
+
+    // --- Event Listeners for Interactive Table ---
+    // Function to sync position selects
     function syncPositionSelects(position) {
-        positionSelect.value = position;
+        positionSelect.value = position; // Update range management select
         displaySavedRanges();
         displaySavedRangesInteractive();
     }
 
+    // Function to sync action selects
+    function syncActionSelects(action) {
+        actionSelect.value = action; // Update range management select
+        displaySavedRanges();
+        displaySavedRangesInteractive();
+        displayVersusPosition();
+    }
+      //Function to synchronize the versus position
+    function syncVersusPosition(sourceSelect, targetSelect) {
+        targetSelect.value = sourceSelect.value;
+    }
+
     // Event listeners for interactive table positions
     interactivePositions.forEach(pos => {
-        pos.addEventListener('click', () => {
-            const position = pos.dataset.position;
-            syncPositionSelects(position);
+        pos.addEventListener('click', function() {
+            const position = this.dataset.position;
+
+            // Update range management position select without changing the action
+            positionSelect.value = position;
+            displaySavedRanges();
+            displaySavedRangesInteractive();
+
+            // Clear highlighting and selection from ALL positions
+            interactivePositions.forEach(p => {
+                p.classList.remove('selected');
+            });
+
+            // Select the clicked position
+            this.classList.add('selected');
+
+            //Clear all position for Action Select
+            clearAllPositionHighlighting();
         });
     });
 
     // Event listener for the interactive action select
-    interactiveActionSelect.addEventListener('change', displaySavedRangesInteractive);
+    interactiveActionSelect.addEventListener('change', () => {
+        const action = interactiveActionSelect.value;
+        syncActionSelects(action); // Sync the action select
+        //Clear all position for Action Select
+        clearAllPositionHighlighting();
 
-    // Function to activate/desactivar la función de arrastrar
-    function toggleDragging() {
-        isDraggingEnabled = !isDraggingEnabled;
-        alert(`Arrastrar está ahora ${isDraggingEnabled ? 'activado' : 'desactivado'}.`);
-    }
+         // Update visibility of Versus Position dropdown based on the selected action
+        updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
+        updateVersusPositionVisibility(actionSelect, versusPositionContainer);
 
-    // Botón para activar/desactivar la función de arrastrar
-    const toggleDragButton = document.createElement('button');
-    toggleDragButton.textContent = 'Activar/Desactivar Arrastrar';
-    toggleDragButton.addEventListener('click', toggleDragging);
-    document.getElementById('interactive-table-container').appendChild(toggleDragButton);
+        //If the versus position container is being showed in interactive table, shows in range management tool
+        if (versusPositionInteractiveContainer.style.display === 'block') {
+            versusPositionContainer.style.display = 'block';
+        } else {
+            versusPositionContainer.style.display = 'none';
+        }
 
-    // Variables para controlar el arrastre
-    let currentDragging = null;
-    let offsetX, offsetY;
-
-    // Función para comenzar el arrastre
-    function startDrag(e) {
-        if (!isDraggingEnabled) return;
-
-        currentDragging = this;
-        currentDragging.classList.add('dragging');
-
-        offsetX = e.clientX - currentDragging.getBoundingClientRect().left;
-        offsetY = e.clientY - currentDragging.getBoundingClientRect().top;
-
-        interactiveTable.addEventListener('mousemove', drag);
-        interactiveTable.addEventListener('mouseup', endDrag);
-        interactiveTable.addEventListener('mouseleave', endDrag); // Terminar si el ratón sale de la mesa
-    }
-
-    // Función para arrastrar
-    function drag(e) {
-        if (!currentDragging) return;
-
-        const x = e.clientX - offsetX;
-        const y = e.clientY - offsetY;
-
-        // Limita el movimiento dentro de la mesa
-        const tableRect = interactiveTable.getBoundingClientRect();
-        const elementWidth = currentDragging.offsetWidth;
-        const elementHeight = currentDragging.offsetHeight;
-
-        let newX = x - tableRect.left;
-        let newY = y - tableRect.top;
-
-        // Limita el movimiento
-        newX = Math.max(0, Math.min(newX, tableRect.width - elementWidth));
-        newY = Math.max(0, Math.min(newY, tableRect.height - elementHeight));
-
-        currentDragging.style.left = newX + 'px';
-        currentDragging.style.top = newY + 'px';
-    }
-
-    // Función para terminar el arrastre
-    function endDrag() {
-        if (!currentDragging) return;
-
-        currentDragging.classList.remove('dragging');
-        interactiveTable.removeEventListener('mousemove', drag);
-        interactiveTable.removeEventListener('mouseup', endDrag);
-        interactiveTable.removeEventListener('mouseleave', endDrag);
-        currentDragging = null;
-    }
-
-    // Evento de inicio de arrastre
-    interactivePositions.forEach(pos => {
-        pos.addEventListener('mousedown', startDrag);
     });
+     //Range Management Action Select Change
+    actionSelect.addEventListener('change', () => {
+        const actionValue = actionSelect.value;
 
-    // Función para cambiar el color al seleccionar y sincronizar selects
-    function handlePositionClick(e) {
-        // Desmarca cualquier posición previamente seleccionada
-        interactivePositions.forEach(pos => pos.classList.remove('selected'));
+        // Update Interactive Table Action Select
+        interactiveActionSelect.value = actionValue;
 
-        // Marca la posición actual como seleccionada
-        this.classList.add('selected');
-
-        const position = this.dataset.position; // Obtén el valor del atributo data-position
-        syncPositionSelects(position); // Llama a la función para sincronizar los selects
-    }
-
-    // Evento click para seleccionar la posición
-    interactivePositions.forEach(pos => {
-        pos.addEventListener('click', handlePositionClick);
-    });
-
-    // Initial display for interactive table
-    displaySavedRangesInteractive();
-
-    // --- Initialization ---
-    // Call to generate all hands
-    const allHands = generateAllHands();
-
-    // Sort the hands using the initial priority list
-    allHandsOrdered = sortHands(allHands, allHandsOrdered);
-
-    // Initialize the percentage based on the selected hands
-    updatePercentageDisplay();
-    updateTableHighlighting(manuallySelectedHands);
-
-    // Update the cell text to include suited/offsuit indicator
-    handCells.forEach(cell => {
-        const hand = cell.dataset.hand;
-        const orderedHand = orderHand(hand.slice(0, 2)) + hand.slice(2);
-        cell.dataset.hand = orderedHand;
-        cell.textContent = orderedHand; // Update the cell text
-    });
-
-    // Display saved ranges on page load
-    displaySavedRanges();
-
-    // Sort initial Priority List.
-    allHandsOrdered = sortPriorityList(allHandsOrdered);
-
-    // Initialize the percentage based on the selected hands
-    updatePercentageDisplay();
-    updateTableHighlighting(manuallySelectedHands);
-    // Export/Import functions
-        document.getElementById('export-ranges').addEventListener('click', () => {
-            const savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || {};
-            const json = JSON.stringify(savedRanges);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'pokerRanges.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        });
-
-        document.getElementById('import-ranges').addEventListener('click', () => {
-            document.getElementById('import-ranges-file').click();
-        });
-
-        document.getElementById('import-ranges-file').addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const savedRanges = JSON.parse(e.target.result);
-                        localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
-                        alert('Rangos importados exitosamente!');
-                        location.reload(); // Refresh the page to load the imported ranges.
-                    } catch (error) {
-                        alert('Error al importar el archivo JSON: ' + error);
-                    }
-                };
-                reader.readAsText(file);
-            }
-        });
+        // Update visibility of Versus Position    updateVersusPositionVisibility(actionSelect, versusPositionContainer);
+    updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
 });
+//Versus position sync in both interactive and range management tools
+versusPositionSelectInteractive.addEventListener('change', () => {
+    syncVersusPosition(versusPositionSelectInteractive, versusPositionSelect);
+
+    // Highlight the position when the Interactive "Versus Position" changes
+    highlightOpenRaiserPosition(versusPositionSelectInteractive.value);
+})
+
+versusPositionSelect.addEventListener('change', () => {
+    syncVersusPosition(versusPositionSelect, versusPositionSelectInteractive);
+     highlightOpenRaiserPosition(versusPositionSelect.value);
+})
+// Function to activate/desactivar la función de arrastrar
+function toggleDragging() {
+    isDraggingEnabled = !isDraggingEnabled;
+    alert(`Arrastrar está ahora ${isDraggingEnabled ? 'activado' : 'desactivado'}.`);
+}
+// Function to activate/desactivar la función de arrastrar
+function toggleDragging() {
+    isDraggingEnabled = !isDraggingEnabled;
+    alert(`Arrastrar está ahora ${isDraggingEnabled ? 'activado' : 'desactivado'}.`);
+}
+
+// Botón para activar/desactivar la función de arrastrar
+const toggleDragButton = document.createElement('button');
+toggleDragButton.textContent = 'Activar/Desactivar Arrastrar';
+toggleDragButton.addEventListener('click', toggleDragging);
+document.getElementById('interactive-table-container').appendChild(toggleDragButton);
+
+// Variables para controlar el arrastre
+let currentDragging = null;
+let offsetX, offsetY;
+
+// Función para comenzar el arrastre
+function startDrag(e) {
+            if (!isDraggingEnabled) return;
+
+    currentDragging = this;
+    currentDragging.classList.add('dragging');
+
+    offsetX = e.clientX - currentDragging.getBoundingClientRect().left;
+    offsetY = e.clientY - currentDragging.getBoundingClientRect().top;
+
+    interactiveTable.addEventListener('mousemove', drag);
+    interactiveTable.addEventListener('mouseup', endDrag);
+    interactiveTable.addEventListener('mouseleave', endDrag); // Terminar si el ratón sale de la mesa
+}
+
+// Función para arrastrar
+function drag(e) {
+    if (!currentDragging) return;
+
+    const x = e.clientX - offsetX;
+    const y = e.clientY - offsetY;
+
+    // Limita el movimiento dentro de la mesa
+    const tableRect = interactiveTable.getBoundingClientRect();
+    const elementWidth = currentDragging.offsetWidth;
+    const elementHeight = currentDragging.offsetHeight;
+
+    let newX = x - tableRect.left;
+    let newY = y - tableRect.top;
+
+    // Limita el movimiento
+    newX = Math.max(0, Math.min(newX, tableRect.width - elementWidth));
+    newY = Math.max(0, Math.min(newY, tableRect.height - elementHeight));
+
+    currentDragging.style.left = newX + 'px';
+    currentDragging.style.top = newY + 'px';
+}
+
+// Función para terminar el arrastre
+function endDrag() {
+    if (!currentDragging) return;
+
+    currentDragging.classList.remove('dragging');
+    interactiveTable.removeEventListener('mousemove', drag);
+    interactiveTable.removeEventListener('mouseup', endDrag);
+    interactiveTable.removeEventListener('mouseleave', endDrag);
+    currentDragging = null;
+}
+
+// Evento de inicio de arrastre
+interactivePositions.forEach(pos => {
+    pos.addEventListener('mousedown', startDrag);
+});
+
+// Event listener for versusPositionSelect change
+versusPositionSelect.addEventListener('change', () => {
+    const versusPosition = versusPositionSelect.value;
+    highlightOpenRaiserPosition(versusPosition);
+});
+
+// --- Event Listeners for Range Management Selects ---
+
+// Event listener for the "Save Range" button
+saveRangeButton.addEventListener('click', saveRange);
+
+// Sync positions
+positionSelect.addEventListener('change', () => {
+    const position = positionSelect.value;
+    interactivePositions.forEach(pos => {
+        if (pos.dataset.position === position) {
+            interactivePositions.forEach(p => p.classList.remove('selected'));
+            pos.classList.add('selected');
+        } else {
+            pos.classList.remove('selected');
+        }
+    });
+    displaySavedRanges();
+    displaySavedRangesInteractive();
+     clearAllPositionHighlighting();
+});
+// Sync Actions
+actionSelect.addEventListener('change', () => {
+    const action = actionSelect.value;
+     clearAllPositionHighlighting();
+    displaySavedRanges();
+    displaySavedRangesInteractive();
+    displayVersusPosition();
+});
+
+  // Event listener for the position select
+positionSelect.addEventListener('change', displaySavedRanges);
+
+// Event listener for the action select
+actionSelect.addEventListener('change', () => {
+    displaySavedRanges();
+    displaySavedRangesInteractive();
+    displayVersusPosition();
+});
+ versusPositionSelect.addEventListener('change', () => {
+    displaySavedRanges();
+    displaySavedRangesInteractive();
+});
+
+   //Clear all highlight position
+clearAllPositionHighlighting();
+// --- Initialization ---
+
+// Call to generate all hands
+const allHands = generateAllHands();
+
+// Sort the hands using the initial priority list
+allHandsOrdered = sortHands(allHands, allHandsOrdered);
+
+// Initialize the percentage based on the selected hands
+updatePercentageDisplay();
+updateTableHighlighting(manuallySelectedHands);
+
+// Update the cell text to include suited/offsuit indicator
+handCells.forEach(cell => {
+    const hand = cell.dataset.hand;
+    const orderedHand = orderHand(hand.slice(0, 2)) + hand.slice(2);
+    cell.dataset.hand = orderedHand;
+    cell.textContent = orderedHand; // Update the cell text
+});
+
+// Display saved ranges on page load
+displaySavedRanges();
+  //Clear all highlight position
+  displayVersusPosition();
+// Sort initial    allHandsOrdered = sortPriorityList(allHandsOrdered);
+
+// Initialize the percentage based on the selected hands
+updatePercentageDisplay();
+updateTableHighlighting(manuallySelectedHands);
+
+// Sort initial Priority List.
+allHandsOrdered = sortPriorityList(allHandsOrdered);
+    document.getElementById('export-ranges').addEventListener('click', () => {
+        const savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || {};
+        const json = JSON.stringify(savedRanges);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'pokerRanges.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('import-ranges').addEventListener('click', () => {
+        document.getElementById('import-ranges-file').click();
+    });
+
+    document.getElementById('import-ranges-file').addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const savedRanges = JSON.parse(e.target.result);
+                    localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
+                    alert('Rangos importados exitosamente!');
+                    location.reload(); // Refresh the page to load the imported ranges.
+                } catch (error) {
+                    alert('Error al importar el archivo JSON: ' + error);
+                }
+            };
+            reader.readAsText(file);
+        }
+    });
+     // Initial visibility check
+updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
+updateVersusPositionVisibility(actionSelect, versusPositionContainer);});
