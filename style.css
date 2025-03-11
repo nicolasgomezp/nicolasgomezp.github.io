@@ -481,50 +481,48 @@ th {
 /* Posiciones de la mesa */
 
 #poker-table #utg {
-    top: 10px;
-    left: 10px;
+    bottom: 117px;
+    right: 262px;
 }
 
-#poker-table #utgplus1 {
-    right: 10px;
-    top: 10px;
+#poker-table #utg+1 {
+    top: 2px;
+    right: 182px;
 }
 
 #poker-table #mp {
-    top: 40%;
-    right: -15px;
+     bottom: 80%;
+    right: 30%;
 }
 
 #poker-table #lj {
-    bottom: 10%;
-    right: -15px;
+      bottom: 60%;
+    right: 1%;
 }
 
 #poker-table #hj {
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 25%;
+    right: 1%;
 }
 
 #poker-table #co {
-    bottom: 10%;
-    left: -15px;
+    bottom: 5%;
+    right: 20%;
 }
 
 #poker-table #button {
-    bottom: 10%;
-    right: -15px;
+    bottom: 0px;
+    right: 132px;
 }
 
 #poker-table #sb {
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: 8px;
+    right: 202px;
 }
 
 #poker-table #bb {
-    bottom: 10px;
-    right: 10px;
+    bottom: 47px;
+    right: 262px;
 }
 
 #saved-ranges-interactive {
