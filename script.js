@@ -185,7 +185,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to display Versus Range
     function displayVersusPosition() {
         const actionSelect = document.getElementById('action-select');
-        if (actionSelect.value === 'call' || actionSelect.value === 'call3bet') {
+        //Show the versus position for every action except the open raise
+        if (actionSelect.value !== 'open_raise') {
             versusPositionContainer.style.display = 'block';
         } else {
             versusPositionContainer.style.display = 'none';
@@ -194,7 +195,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to update versus position visibility
     function updateVersusPositionVisibility(actionSelectElement, versusPositionElement) {
-        if (actionSelectElement.value === 'call' || actionSelectElement.value === 'call3bet') {
+        //Show the versus position for every action except the open raise
+        if (actionSelectElement.value !== 'open_raise') {
             versusPositionElement.style.display = 'block';
         } else {
             versusPositionElement.style.display = 'none';
@@ -597,7 +599,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // NEW: Add the "versus position" level
-        if (action === 'call' || action === 'call3bet') {
+        if (action !== 'open_raise') {
             if (!savedRanges[position][action][versusPosition]) {
                 savedRanges[position][action][versusPosition] = {};
             }
@@ -627,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to delete a range
     function deleteRange(rangeName, position, action, versusPosition) {
         if (confirm(`¿Estás seguro de que quieres borrar el rango "${rangeName}" de la posición "${position}" y acción "${action}"?`)) {
-            if (action === 'call' || action === 'call3bet') {
+            if (action !== 'open_raise') {
                 delete savedRanges[position][action][versusPosition][rangeName];
 
                 if (Object.keys(savedRanges[position][action][versusPosition]).length === 0) {
@@ -662,7 +664,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to load a range
     function loadRange(rangeName, position, action, versusPosition, isInteractive = false) {
         let rangeToLoad;
-        if (action === 'call' || action === 'call3bet') {
+        if (action !== 'open_raise') {
             rangeToLoad = savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][versusPosition] && savedRanges[position][action][versusPosition][rangeName];
         } else {
             rangeToLoad = savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][rangeName];
@@ -718,7 +720,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         //Adjust
         let rangesToShow = savedRanges[position] && savedRanges[position][action];
-        if (action === 'call' || action === 'call3bet') {
+        if (action !== 'open_raise') {
             rangesToShow = savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][versusPosition];
         }
 
@@ -754,7 +756,7 @@ document.addEventListener('DOMContentLoaded', function () {
         savedRangesInteractive.innerHTML = ''; // Clear existing buttons
 
         let rangesToShow = savedRanges[position] && savedRanges[position][action];
-        if (action === 'call' || action === 'call3bet') {
+        if (action !== 'open_raise') {
             rangesToShow = savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][versusPosition];
         }
 
@@ -848,8 +850,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // Update Interactive Table Action Select
         interactiveActionSelect.value = actionValue;
 
-        // Update visibility of Versus Position    updateVersusPositionVisibility(actionSelect, versusPositionContainer);
-    updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
+        // Update visibility of Versus Position
+        updateVersusPositionVisibility(actionSelect, versusPositionContainer);
+        updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
 });
 //Versus position sync in both interactive and range management tools
 versusPositionSelectInteractive.addEventListener('change', () => {
