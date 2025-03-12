@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', function () {
     const percentageInput = document.getElementById('percentage');
     const handTable = document.getElementById('hand-table');
@@ -258,7 +259,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // --- Event Listeners for Interactive Table ---
+        // --- Event Listeners for Interactive Table ---
     // Function to sync position selects
     function syncPositionSelects(position) {
         positionSelect.value = position; // Update range management select
@@ -273,6 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
         displaySavedRangesInteractive();
         displayVersusPosition();
     }
+
       //Function to synchronize the versus position
     function syncVersusPosition(sourceSelect, targetSelect) {
         targetSelect.value = sourceSelect.value;
@@ -305,8 +307,6 @@ document.addEventListener('DOMContentLoaded', function () {
     interactiveActionSelect.addEventListener('change', () => {
         const action = interactiveActionSelect.value;
         syncActionSelects(action); // Sync the action select
-        //Clear all position for Action Select
-        clearAllPositionHighlighting();
 
          // Update visibility of Versus Position dropdown based on the selected action
         updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
@@ -319,6 +319,35 @@ document.addEventListener('DOMContentLoaded', function () {
             versusPositionContainer.style.display = 'none';
         }
 
+        displaySavedRangesInteractive(); // Refresh the interactive ranges
+         //Clear all position for Action Select
+         clearAllPositionHighlighting();
+
+    });
+     //Range Management Action Select Change
+    actionSelect.addEventListener('change', () => {
+        const actionValue = actionSelect.value;
+
+        // Update Interactive Table Action Select
+        interactiveActionSelect.value = actionValue;
+
+        // Update visibility of Versus Position dropdown based on the selected action
+        updateVersusPositionVisibility(actionSelect, versusPositionContainer);
+        updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
+
+        displaySavedRangesInteractive();
+    });
+    //Versus position sync in both interactive and range management tools
+    versusPositionSelectInteractive.addEventListener('change', () => {
+        syncVersusPosition(versusPositionSelectInteractive, versusPositionSelect);
+        highlightOpenRaiserPosition(versusPositionSelectInteractive.value);
+        displaySavedRangesInteractive();
+    })
+
+    versusPositionSelect.addEventListener('change', () => {
+        syncVersusPosition(versusPositionSelect, versusPositionSelectInteractive);
+        highlightOpenRaiserPosition(versusPositionSelect.value);
+        displaySavedRangesInteractive();
     });
      //Range Management Action Select Change
     actionSelect.addEventListener('change', () => {
