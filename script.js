@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to display Versus Range
     function displayVersusPosition() {
         const actionSelect = document.getElementById('action-select');
-        if (actionSelect.value === 'call' || actionSelect.value === 'call3bet') {
+        if (actionSelect.value === 'call' || actionSelect.value === 'call3bet' || actionSelect.value === '3bet') {
             versusPositionContainer.style.display = 'block';
         } else {
             versusPositionContainer.style.display = 'none';
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to update versus position visibility
     function updateVersusPositionVisibility(actionSelectElement, versusPositionElement) {
-        if (actionSelectElement.value === 'call' || actionSelectElement.value === 'call3bet') {
+        if (actionSelect.value === 'call' || actionSelect.value === 'call3bet' || actionSelect.value === '3bet') {
             versusPositionElement.style.display = 'block';
         } else {
             versusPositionElement.style.display = 'none';
@@ -597,7 +597,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         // NEW: Add the "versus position" level
-        if (action === 'call' || action === 'call3bet') {
+        if (action === 'call' || action === 'call3bet' || action === '3bet') {
             if (!savedRanges[position][action][versusPosition]) {
                 savedRanges[position][action][versusPosition] = {};
             }
@@ -627,7 +627,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to delete a range
     function deleteRange(rangeName, position, action, versusPosition) {
         if (confirm(`¿Estás seguro de que quieres borrar el rango "${rangeName}" de la posición "${position}" y acción "${action}"?`)) {
-            if (action === 'call' || action === 'call3bet') {
+            if (action === 'call' || action === 'call3bet' || action === '3bet') {
                 delete savedRanges[position][action][versusPosition][rangeName];
 
                 if (Object.keys(savedRanges[position][action][versusPosition]).length === 0) {
@@ -662,7 +662,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Function to load a range
     function loadRange(rangeName, position, action, versusPosition, isInteractive = false) {
         let rangeToLoad;
-        if (action === 'call' || action === 'call3bet') {
+        if (action === 'call' || action === 'call3bet' || action === '3bet') {
             rangeToLoad = savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][versusPosition] && savedRanges[position][action][versusPosition][rangeName];
         } else {
             rangeToLoad = savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][rangeName];
@@ -718,7 +718,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         //Adjust
         let rangesToShow = savedRanges[position] && savedRanges[position][action];
-        if (action === 'call' || action === 'call3bet') {
+        if (action === 'call' || action === 'call3bet' || action === '3bet') {
             rangesToShow = savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][versusPosition];
         }
 
@@ -754,7 +754,7 @@ document.addEventListener('DOMContentLoaded', function () {
         savedRangesInteractive.innerHTML = ''; // Clear existing buttons
 
         let rangesToShow = savedRanges[position] && savedRanges[position][action];
-        if (action === 'call' || action === 'call3bet') {
+        if (action === 'call' || action === 'call3bet || action === '3bet'') {
             rangesToShow = savedRanges[position] && savedRanges[position][action] && savedRanges[position][action][versusPosition];
         }
 
