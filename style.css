@@ -105,34 +105,35 @@ select:focus {
 
 #hand-table-container {
     overflow: auto;
-    max-width: 900px;
-    /* adjust to prefered size */
-    width: 100%;
+    width: 100%; /* Reduce to 100% so it's not wider than its container */
+    max-width: 300px; /*  Limit the width */
+    margin-top: 10px;
+    margin-left: 20px;
 }
 
 table {
     border-collapse: collapse;
-    margin: 20px auto;
-    width: 100%;
+    margin: 0 auto;
+    width: 100%; /* Ensure it's relative to its container */
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12),
     0 1px 2px rgba(0, 0, 0, 0.24);
     border-radius: 8px;
     overflow: hidden;
     background-color: #fff;
+    font-size: 0.7em;  /* Reduce the table to scale properly */
 }
-
 th,
 td {
     border: 1px solid #dadce0;
-    padding: 10px;
+    padding: 3px;   /* Further reduce */
     text-align: center;
-    font-size: 14px;
+    font-size: 8px;  /* Further reduce */
 }
 
 th {
     background-color: #f8f9fa;
     color: #5f6368;
-    font-weight: 500;
+    font-weight: 100;
 }
 
 .hand {
@@ -330,7 +331,7 @@ th {
     color: white;
     border: none;
     width: 20px;
-    height: 20px;
+    height:20px;
     border-radius: 50%;
     cursor: pointer;
     font-size: 10px;
