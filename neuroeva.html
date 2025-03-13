@@ -87,6 +87,240 @@
             </div>
             <p id="handResult"></p>
             <button id="checkHand">Verificar</button>
+
+              <!-- Hand Table -->
+              <div id="hand-table-container">
+                <table id="hand-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>A</th>
+                            <th>K</th>
+                            <th>Q</th>
+                            <th>J</th>
+                            <th>T</th>
+                            <th>9</th>
+                            <th>8</th>
+                            <th>7</th>
+                            <th>6</th>
+                            <th>5</th>
+                            <th>4</th>
+                            <th>3</th>
+                            <th>2</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>A</th>
+                            <td class="hand" data-hand="AA">AA</td>
+                            <td class="hand suited" data-hand="AKs">AKs</td>
+                            <td class="hand suited" data-hand="AQs">AQs</td>
+                            <td class="hand suited" data-hand="AJs">AJs</td>
+                            <td class="hand suited" data-hand="ATs">ATs</td>
+                            <td class="hand suited" data-hand="A9s">A9s</td>
+                            <td class="hand suited" data-hand="A8s">A8s</td>
+                            <td class="hand suited" data-hand="A7s">A7s</td>
+                            <td class="hand suited" data-hand="A6s">A6s</td>
+                            <td class="hand suited" data-hand="A5s">A5s</td>
+                            <td class="hand suited" data-hand="A4s">A4s</td>
+                            <td class="hand suited" data-hand="A3s">A3s</td>
+                            <td class="hand suited" data-hand="A2s">A2s</td>
+                        </tr>
+                        <tr>
+                            <th>K</th>
+                            <td class="hand offsuit" data-hand="KAo">KAo</td>
+                            <td class="hand" data-hand="KK">KK</td>
+                            <td class="hand suited" data-hand="KQs">KQs</td>
+                            <td class="hand suited" data-hand="KJs">KJs</td>
+                            <td class="hand suited" data-hand="KTs">KTs</td>
+                            <td class="hand suited" data-hand="K9s">K9s</td>
+                            <td class="hand suited" data-hand="K8s">K8s</td>
+                            <td class="hand suited" data-hand="K7s">K7s</td>
+                            <td class="hand suited" data-hand="K6s">K6s</td>
+                            <td class="hand suited" data-hand="K5s">K5s</td>
+                            <td class="hand suited" data-hand="K4s">K4s</td>
+                            <td class="hand suited" data-hand="K3s">K3s</td>
+                            <td class="hand suited" data-hand="K2s">K2s</td>
+                        </tr>
+                        <tr>
+                            <th>Q</th>
+                            <td class="hand offsuit" data-hand="QAo">QAo</td>
+                            <td class="hand offsuit" data-hand="QKo">QKo</td>
+                            <td class="hand" data-hand="QQ">QQ</td>
+                            <td class="hand suited" data-hand="QJs">QJs</td>
+                            <td class="hand suited" data-hand="QTs">QTs</td>
+                            <td class="hand suited" data-hand="Q9s">Q9s</td>
+                            <td class="hand suited" data-hand="Q8s">Q8s</td>
+                            <td class="hand suited" data-hand="Q7s">Q7s</td>
+                            <td class="hand suited" data-hand="Q6s">Q6s</td>
+                            <td class="hand suited" data-hand="Q5s">Q5s</td>
+                            <td class="hand suited" data-hand="Q4s">Q4s</td>
+                            <td class="hand suited" data-hand="Q3s">Q3s</td>
+                            <td class="hand suited" data-hand="Q2s">Q2s</td>
+                        </tr>
+                        <tr>
+                            <th>J</th>
+                            <td class="hand offsuit" data-hand="JAo">JAo</td>
+                            <td class="hand offsuit" data-hand="JKo">JKo</td>
+                            <td class="hand offsuit" data-hand="JQo">JQo</td>
+                            <td class="hand" data-hand="JJ">JJ</td>
+                            <td class="hand suited" data-hand="JTs">JTs</td>
+                            <td class="hand suited" data-hand="J9s">J9s</td>
+                            <td class="hand suited" data-hand="J8s">J8s</td>
+                            <td class="hand suited" data-hand="J7s">J7s</td>
+                            <td class="hand suited" data-hand="J6s">J6s</td>
+                            <td class="hand suited" data-hand="J5s">J5s</td>
+                            <td class="hand suited" data-hand="J4s">J4s</td>
+                            <td class="hand suited" data-hand="J3s">J3s</td>
+                            <td class="hand suited" data-hand="J2s">J2s</td>
+                        </tr>
+                        <tr>
+                            <th>T</th>
+                            <td class="hand offsuit" data-hand="TAo">TAo</td>
+                            <td class="hand offsuit" data-hand="TKo">TKo</td>
+                            <td class="hand offsuit" data-hand="TQo">TQo</td>
+                            <td class="hand offsuit" data-hand="TJo">TJo</td>
+                            <td class="hand" data-hand="TT">TT</td>
+                            <td class="hand suited" data-hand="T9s">T9s</td>
+                            <td class="hand suited" data-hand="T8s">T8s</td>
+                            <td class="hand suited" data-hand="T7s">T7s</td>
+                            <td class="hand suited" data-hand="T6s">T6s</td>
+                            <td class="hand suited" data-hand="T5s">T5s</td>
+                            <td class="hand suited" data-hand="T4s">T4s</td>
+                            <td class="hand suited" data-hand="T3s">T3s</td>
+                            <td class="hand suited" data-hand="T2s">T2s</td>
+                        </tr>
+                        <tr>
+                            <th>9</th>
+                            <td class="hand offsuit" data-hand="9Ao">9Ao</td>
+                            <td class="hand offsuit" data-hand="9Ko">9Ko</td>
+                            <td class="hand offsuit" data-hand="9Qo">9Qo</td>
+                            <td class="hand offsuit" data-hand="9Jo">9Jo</td>
+                            <td class="hand offsuit" data-hand="9To">9To</td>
+                            <td class="hand" data-hand="99">99</td>
+                            <td class="hand suited" data-hand="98s">98s</td>
+                            <td class="hand suited" data-hand="97s">97s</td>
+                            <td class="hand suited" data-hand="96s">96s</td>
+                            <td class="hand suited" data-hand="95s">95s</td>
+                            <td class="hand suited" data-hand="94s">94s</td>
+                            <td class="hand suited" data-hand="93s">93s</td>
+                            <td class="hand suited" data-hand="92s">92s</td>
+                        </tr>
+                        <tr>
+                            <th>8</th>
+                            <td class="hand offsuit" data-hand="8Ao">8Ao</td>
+                            <td class="hand offsuit" data-hand="8Ko">8Ko</td>
+                            <td class="hand offsuit" data-hand="8Qo">8Qo</td>
+                            <td class="hand offsuit" data-hand="8Jo">8Jo</td>
+                            <td class="hand offsuit" data-hand="8To">8To</td>
+                            <td class="hand offsuit" data-hand="89o">89o</td>
+                            <td class="hand" data-hand="88">88</td>
+                            <td class="hand suited" data-hand="87s">87s</td>
+                            <td class="hand suited" data-hand="86s">86s</td>
+                            <td class="hand suited" data-hand="85s">85s</td>
+                            <td class="hand suited" data-hand="84s">84s</td>
+                            <td class="hand suited" data-hand="83s">83s</td>
+                            <td class="hand suited" data-hand="82s">82s</td>
+                        </tr>
+                        <tr>
+                            <th>7</th>
+                            <td class="hand offsuit" data-hand="7Ao">7Ao</td>
+                            <td class="hand offsuit" data-hand="7Ko">7Ko</td>
+                            <td class="hand offsuit" data-hand="7Qo">7Qo</td>
+                            <td class="hand offsuit" data-hand="7Jo">7Jo</td>
+                            <td class="hand offsuit" data-hand="7To">7To</td>
+                            <td class="hand offsuit" data-hand="79o">79o</td>
+                            <td class="hand offsuit" data-hand="78o">78o</td>
+                            <td class="hand" data-hand="77">77</td>
+                            <td class="hand suited" data-hand="76s">76s</td>
+                            <td class="hand suited" data-hand="75s">75s</td>
+                            <td class="hand suited" data-hand="74s">74s</td>
+                            <td class="hand suited" data-hand="73s">73s</td>
+                            <td class="hand suited" data-hand="72s">72s</td>
+                        </tr>
+                        <tr>
+                            <th>6</th>
+                            <td class="hand offsuit" data-hand="6Ao">6Ao</td>
+                            <td class="hand offsuit" data-hand="6Ko">6Ko</td>
+                            <td class="hand offsuit" data-hand="6Qo">6Qo</td>
+                            <td class="hand offsuit" data-hand="6Jo">6Jo</td>
+                            <td class="hand offsuit" data-hand="6To">6To</td>
+                            <td class="hand offsuit" data-hand="69o">69o</td>
+                            <td class="hand offsuit" data-hand="68o">68o</td>
+                            <td class="hand offsuit" data-hand="67o">67o</td>
+                            <td class="hand" data-hand="66">66</td>
+                            <td class="hand suited" data-hand="65s">65s</td>
+                            <td class="hand suited" data-hand="64s">64s</td>
+                            <td class="hand suited" data-hand="63s">63s</td>
+                            <td class="hand suited" data-hand="62s">62s</td>
+                        </tr>
+                        <tr>
+                            <th>5</th>
+                            <td class="hand offsuit" data-hand="5Ao">5Ao</td>
+                            <td class="hand offsuit" data-hand="5Ko">5Ko</td>
+                            <td class="hand offsuit" data-hand="5Qo">5Qo</td>
+                            <td class="hand offsuit" data-hand="5Jo">5Jo</td>
+                            <td class="hand offsuit" data-hand="5To">5To</td>
+                            <td class="hand offsuit" data-hand="59o">59o</td>
+                            <td class="hand offsuit" data-hand="58o">58o</td>
+                            <td class="hand offsuit" data-hand="57o">57o</td>
+                            <td class="hand offsuit" data-hand="56o">56o</td>
+                            <td class="hand" data-hand="55">55</td>
+                            <td class="hand suited" data-hand="54s">54s</td>
+                            <td class="hand suited" data-hand="53s">53s</td>
+                            <td class="hand suited" data-hand="52s">52s</td>
+                        </tr>
+                        <tr>
+                            <th>4</th>
+                            <td class="hand offsuit" data-hand="4Ao">4Ao</td>
+                            <td class="hand offsuit" data-hand="4Ko">4Ko</td>
+                            <td class="hand offsuit" data-hand="4Qo">4Qo</td>
+                            <td class="hand offsuit" data-hand="4Jo">4Jo</td>
+                            <td class="hand offsuit" data-hand="4To">4To</td>
+                            <td class="hand offsuit" data-hand="49o">49o</td>
+                            <td class="hand offsuit" data-hand="48o">48o</td>
+                            <td class="hand offsuit" data-hand="47o">47o</td>
+                            <td class="hand offsuit" data-hand="46o">46o</td>
+                            <td class="hand offsuit" data-hand="45o">45o</td>
+                            <td class="hand" data-hand="44">44</td>
+                            <td class="hand suited" data-hand="43s">43s</td>
+                            <td class="hand suited" data-hand="42s">42s</td>
+                        </tr>
+                        <tr>
+                            <th>3</th>
+                            <td class="hand offsuit" data-hand="3Ao">3Ao</td>
+                            <td class="hand offsuit" data-hand="3Ko">3Ko</td>
+                            <td class="hand offsuit" data-hand="3Qo">3Qo</td>
+                            <td class="hand offsuit" data-hand="3Jo">3Jo</td>
+                            <td class="hand offsuit" data-hand="3To">3To</td>
+                            <td class="hand offsuit" data-hand="39o">39o</td>
+                            <td class="hand offsuit" data-hand="38o">38o</td>
+                            <td class="hand offsuit" data-hand="37o">37o</td>
+                            <td class="hand offsuit" data-hand="36o">36o</td>
+                            <td class="hand offsuit" data-hand="35o">35o</td>
+                            <td class="hand offsuit" data-hand="34o">34o</td>
+                            <td class="hand" data-hand="33">33</td>
+                            <td class="hand suited" data-hand="32s">32s</td>
+                        </tr>
+                        <tr>
+                            <th>2</th>
+                            <td class="hand offsuit" data-hand="2Ao">2Ao</td>
+                            <td class="hand offsuit" data-hand="2Ko">2Ko</td>
+                            <td class="hand offsuit" data-hand="2Qo">2Qo</td>
+                            <td class="hand offsuit" data-hand="2Jo">2Jo</td>
+                            <td class="hand offsuit" data-hand="2To">2To</td>
+                            <td class="hand offsuit" data-hand="29o">29o</td>
+                            <td class="hand offsuit" data-hand="28o">28o</td>
+                            <td class="hand offsuit" data-hand="27o">27o</td>
+                            <td class="hand offsuit" data-hand="26o">26o</td>
+                            <td class="hand offsuit" data-hand="25o">25o</td>
+                            <td class="hand offsuit" data-hand="24o">24o</td>
+                            <td class="hand offsuit" data-hand="23o">23o</td>
+                            <td class="hand" data-hand="22">22</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
         <!-- Fin Hand Checker -->
     </div>
@@ -163,239 +397,7 @@
         <span>%</span>
     </div>
 
-    <!-- Hand Table -->
-    <div id="hand-table-container">
-        <table id="hand-table">
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>A</th>
-                    <th>K</th>
-                    <th>Q</th>
-                    <th>J</th>
-                    <th>T</th>
-                    <th>9</th>
-                    <th>8</th>
-                    <th>7</th>
-                    <th>6</th>
-                    <th>5</th>
-                    <th>4</th>
-                    <th>3</th>
-                    <th>2</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th>A</th>
-                    <td class="hand" data-hand="AA">AA</td>
-                    <td class="hand suited" data-hand="AKs">AKs</td>
-                    <td class="hand suited" data-hand="AQs">AQs</td>
-                    <td class="hand suited" data-hand="AJs">AJs</td>
-                    <td class="hand suited" data-hand="ATs">ATs</td>
-                    <td class="hand suited" data-hand="A9s">A9s</td>
-                    <td class="hand suited" data-hand="A8s">A8s</td>
-                    <td class="hand suited" data-hand="A7s">A7s</td>
-                    <td class="hand suited" data-hand="A6s">A6s</td>
-                    <td class="hand suited" data-hand="A5s">A5s</td>
-                    <td class="hand suited" data-hand="A4s">A4s</td>
-                    <td class="hand suited" data-hand="A3s">A3s</td>
-                    <td class="hand suited" data-hand="A2s">A2s</td>
-                </tr>
-                <tr>
-                    <th>K</th>
-                    <td class="hand offsuit" data-hand="KAo">KAo</td>
-                    <td class="hand" data-hand="KK">KK</td>
-                    <td class="hand suited" data-hand="KQs">KQs</td>
-                    <td class="hand suited" data-hand="KJs">KJs</td>
-                    <td class="hand suited" data-hand="KTs">KTs</td>
-                    <td class="hand suited" data-hand="K9s">K9s</td>
-                    <td class="hand suited" data-hand="K8s">K8s</td>
-                    <td class="hand suited" data-hand="K7s">K7s</td>
-                    <td class="hand suited" data-hand="K6s">K6s</td>
-                    <td class="hand suited" data-hand="K5s">K5s</td>
-                    <td class="hand suited" data-hand="K4s">K4s</td>
-                    <td class="hand suited" data-hand="K3s">K3s</td>
-                    <td class="hand suited" data-hand="K2s">K2s</td>
-                </tr>
-                <tr>
-                    <th>Q</th>
-                    <td class="hand offsuit" data-hand="QAo">QAo</td>
-                    <td class="hand offsuit" data-hand="QKo">QKo</td>
-                    <td class="hand" data-hand="QQ">QQ</td>
-                    <td class="hand suited" data-hand="QJs">QJs</td>
-                    <td class="hand suited" data-hand="QTs">QTs</td>
-                    <td class="hand suited" data-hand="Q9s">Q9s</td>
-                    <td class="hand suited" data-hand="Q8s">Q8s</td>
-                    <td class="hand suited" data-hand="Q7s">Q7s</td>
-                    <td class="hand suited" data-hand="Q6s">Q6s</td>
-                    <td class="hand suited" data-hand="Q5s">Q5s</td>
-                    <td class="hand suited" data-hand="Q4s">Q4s</td>
-                    <td class="hand suited" data-hand="Q3s">Q3s</td>
-                    <td class="hand suited" data-hand="Q2s">Q2s</td>
-                </tr>
-                <tr>
-                    <th>J</th>
-                    <td class="hand offsuit" data-hand="JAo">JAo</td>
-                    <td class="hand offsuit" data-hand="JKo">JKo</td>
-                    <td class="hand offsuit" data-hand="JQo">JQo</td>
-                    <td class="hand" data-hand="JJ">JJ</td>
-                    <td class="hand suited" data-hand="JTs">JTs</td>
-                    <td class="hand suited" data-hand="J9s">J9s</td>
-                    <td class="hand suited" data-hand="J8s">J8s</td>
-                    <td class="hand suited" data-hand="J7s">J7s</td>
-                    <td class="hand suited" data-hand="J6s">J6s</td>
-                    <td class="hand suited" data-hand="J5s">J5s</td>
-                    <td class="hand suited" data-hand="J4s">J4s</td>
-                    <td class="hand suited" data-hand="J3s">J3s</td>
-                    <td class="hand suited" data-hand="J2s">J2s</td>
-                </tr>
-                <tr>
-                    <th>T</th>
-                    <td class="hand offsuit" data-hand="TAo">TAo</td>
-                    <td class="hand offsuit" data-hand="TKo">TKo</td>
-                    <td class="hand offsuit" data-hand="TQo">TQo</td>
-                    <td class="hand offsuit" data-hand="TJo">TJo</td>
-                    <td class="hand" data-hand="TT">TT</td>
-                    <td class="hand suited" data-hand="T9s">T9s</td>
-                    <td class="hand suited" data-hand="T8s">T8s</td>
-                    <td class="hand suited" data-hand="T7s">T7s</td>
-                    <td class="hand suited" data-hand="T6s">T6s</td>
-                    <td class="hand suited" data-hand="T5s">T5s</td>
-                    <td class="hand suited" data-hand="T4s">T4s</td>
-                    <td class="hand suited" data-hand="T3s">T3s</td>
-                    <td class="hand suited" data-hand="T2s">T2s</td>
-                </tr>
-                <tr>
-                    <th>9</th>
-                    <td class="hand offsuit" data-hand="9Ao">9Ao</td>
-                    <td class="hand offsuit" data-hand="9Ko">9Ko</td>
-                    <td class="hand offsuit" data-hand="9Qo">9Qo</td>
-                    <td class="hand offsuit" data-hand="9Jo">9Jo</td>
-                    <td class="hand offsuit" data-hand="9To">9To</td>
-                    <td class="hand" data-hand="99">99</td>
-                    <td class="hand suited" data-hand="98s">98s</td>
-                    <td class="hand suited" data-hand="97s">97s</td>
-                    <td class="hand suited" data-hand="96s">96s</td>
-                    <td class="hand suited" data-hand="95s">95s</td>
-                    <td class="hand suited" data-hand="94s">94s</td>
-                    <td class="hand suited" data-hand="93s">93s</td>
-                    <td class="hand suited" data-hand="92s">92s</td>
-                </tr>
-                <tr>
-                    <th>8</th>
-                    <td class="hand offsuit" data-hand="8Ao">8Ao</td>
-                    <td class="hand offsuit" data-hand="8Ko">8Ko</td>
-                    <td class="hand offsuit" data-hand="8Qo">8Qo</td>
-                    <td class="hand offsuit" data-hand="8Jo">8Jo</td>
-                    <td class="hand offsuit" data-hand="8To">8To</td>
-                    <td class="hand offsuit" data-hand="89o">89o</td>
-                    <td class="hand" data-hand="88">88</td>
-                    <td class="hand suited" data-hand="87s">87s</td>
-                    <td class="hand suited" data-hand="86s">86s</td>
-                    <td class="hand suited" data-hand="85s">85s</td>
-                    <td class="hand suited" data-hand="84s">84s</td>
-                    <td class="hand suited" data-hand="83s">83s</td>
-                    <td class="hand suited" data-hand="82s">82s</td>
-                </tr>
-                <tr>
-                    <th>7</th>
-                    <td class="hand offsuit" data-hand="7Ao">7Ao</td>
-                    <td class="hand offsuit" data-hand="7Ko">7Ko</td>
-                    <td class="hand offsuit" data-hand="7Qo">7Qo</td>
-                    <td class="hand offsuit" data-hand="7Jo">7Jo</td>
-                    <td class="hand offsuit" data-hand="7To">7To</td>
-                    <td class="hand offsuit" data-hand="79o">79o</td>
-                    <td class="hand offsuit" data-hand="78o">78o</td>
-                    <td class="hand" data-hand="77">77</td>
-                    <td class="hand suited" data-hand="76s">76s</td>
-                    <td class="hand suited" data-hand="75s">75s</td>
-                    <td class="hand suited" data-hand="74s">74s</td>
-                    <td class="hand suited" data-hand="73s">73s</td>
-                    <td class="hand suited" data-hand="72s">72s</td>
-                </tr>
-                <tr>
-                    <th>6</th>
-                    <td class="hand offsuit" data-hand="6Ao">6Ao</td>
-                    <td class="hand offsuit" data-hand="6Ko">6Ko</td>
-                    <td class="hand offsuit" data-hand="6Qo">6Qo</td>
-                    <td class="hand offsuit" data-hand="6Jo">6Jo</td>
-                    <td class="hand offsuit" data-hand="6To">6To</td>
-                    <td class="hand offsuit" data-hand="69o">69o</td>
-                    <td class="hand offsuit" data-hand="68o">68o</td>
-                    <td class="hand offsuit" data-hand="67o">67o</td>
-                    <td class="hand" data-hand="66">66</td>
-                    <td class="hand suited" data-hand="65s">65s</td>
-                    <td class="hand suited" data-hand="64s">64s</td>
-                    <td class="hand suited" data-hand="63s">63s</td>
-                    <td class="hand suited" data-hand="62s">62s</td>
-                </tr>
-                <tr>
-                    <th>5</th>
-                    <td class="hand offsuit" data-hand="5Ao">5Ao</td>
-                    <td class="hand offsuit" data-hand="5Ko">5Ko</td>
-                    <td class="hand offsuit" data-hand="5Qo">5Qo</td>
-                    <td class="hand offsuit" data-hand="5Jo">5Jo</td>
-                    <td class="hand offsuit" data-hand="5To">5To</td>
-                    <td class="hand offsuit" data-hand="59o">59o</td>
-                    <td class="hand offsuit" data-hand="58o">58o</td>
-                    <td class="hand offsuit" data-hand="57o">57o</td>
-                    <td class="hand offsuit" data-hand="56o">56o</td>
-                    <td class="hand" data-hand="55">55</td>
-                    <td class="hand suited" data-hand="54s">54s</td>
-                    <td class="hand suited" data-hand="53s">53s</td>
-                    <td class="hand suited" data-hand="52s">52s</td>
-                </tr>
-                <tr>
-                    <th>4</th>
-                    <td class="hand offsuit" data-hand="4Ao">4Ao</td>
-                    <td class="hand offsuit" data-hand="4Ko">4Ko</td>
-                    <td class="hand offsuit" data-hand="4Qo">4Qo</td>
-                    <td class="hand offsuit" data-hand="4Jo">4Jo</td>
-                    <td class="hand offsuit" data-hand="4To">4To</td>
-                    <td class="hand offsuit" data-hand="49o">49o</td>
-                    <td class="hand offsuit" data-hand="48o">48o</td>
-                    <td class="hand offsuit" data-hand="47o">47o</td>
-                    <td class="hand offsuit" data-hand="46o">46o</td>
-                    <td class="hand offsuit" data-hand="45o">45o</td>
-                    <td class="hand" data-hand="44">44</td>
-                    <td class="hand suited" data-hand="43s">43s</td>
-                    <td class="hand suited" data-hand="42s">42s</td>
-                </tr>
-                <tr>
-                    <th>3</th>
-                    <td class="hand offsuit" data-hand="3Ao">3Ao</td>
-                    <td class="hand offsuit" data-hand="3Ko">3Ko</td>
-                    <td class="hand offsuit" data-hand="3Qo">3Qo</td>
-                    <td class="hand offsuit" data-hand="3Jo">3Jo</td>
-                    <td class="hand offsuit" data-hand="3To">3To</td>
-                    <td class="hand offsuit" data-hand="39o">39o</td>
-                    <td class="hand offsuit" data-hand="38o">38o</td>
-                    <td class="hand offsuit" data-hand="37o">37o</td>
-                    <td class="hand offsuit" data-hand="36o">36o</td>
-                    <td class="hand offsuit" data-hand="35o">35o</td>
-                    <td class="hand offsuit" data-hand="34o">34o</td>
-                    <td class="hand" data-hand="33">33</td>
-                    <td class="hand suited" data-hand="32s">32s</td>
-                </tr>
-                <tr>
-                    <th>2</th>
-                    <td class="hand offsuit" data-hand="2Ao">2Ao</td>
-                    <td class="hand offsuit" data-hand="2Ko">2Ko</td>
-                    <td class="hand offsuit" data-hand="2Qo">2Qo</td>
-                    <td class="hand offsuit" data-hand="2Jo">2Jo</td>
-                    <td class="hand offsuit" data-hand="2To">2To</td>
-                    <td class="hand offsuit" data-hand="29o">29o</td>
-                    <td class="hand offsuit" data-hand="28o">28o</td>
-                    <td class="hand offsuit" data-hand="27o">27o</td>
-                    <td class="hand offsuit" data-hand="26o">26o</td>
-                    <td class="hand offsuit" data-hand="25o">25o</td>
-                    <td class="hand offsuit" data-hand="24o">24o</td>
-                    <td class="hand offsuit" data-hand="23o">23o</td>
-                    <td class="hand" data-hand="22">22</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+
 
     <!-- Selected Hands -->
     <div id="selected-hands-container">
