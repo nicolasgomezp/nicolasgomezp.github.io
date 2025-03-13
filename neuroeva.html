@@ -337,12 +337,12 @@
     </div>
 
     <div class="detail-item">
-        <label for="blind-amount">Cantidad de BB Heroe:</label>
-        <input type="number" id="blind-amount" value="20" min="0">
+        <label for="hero-stack">Cantidad de BB Heroe:</label>
+        <input type="number" id="hero-stack" value="20" min="0">
     </div>
      <div class="detail-item">
-        <label for="blind-amount">Cantidad de BB Villano:</label>
-        <input type="number" id="blind-amount" value="20" min="0">
+        <label for="villain-stack">Cantidad de BB Villano:</label>
+        <input type="number" id="villain-stack" value="20" min="0">
     </div>
 
     <div class="detail-item" id="open-raise-details" style="display: none;">
@@ -368,7 +368,14 @@
         <label for="pot-size">Tamaño del Pot:</label>
         <input type="number" id="pot-size" value="5" min="0"> BB
     </div>
+    <div class="hand-summary-container">
+    <h2>Resumen de la Mano</h2>
+    <textarea id="hand-summary" rows="4" cols="50" readonly>
+    </textarea>
 </div>
+</div>
+
+
 
     </div>
     <!-- Fin Contenedor Principal -->
