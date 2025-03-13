@@ -323,10 +323,107 @@
             </div>
         </div>
         <!-- Fin Hand Checker -->
+        <!-- Editable Hand Details -->
+<div class="hand-details-container">
+    <h2>Detalles de la Mano</h2>
+
+    <div class="detail-item">
+        <label for="hero-position">Posición del Héroe:</label>
+        <span id="hero-position-display">N/A</span>
+    </div>
+
+    <div class="detail-item">
+        <label for="villain-position">Posición del Villano:</label>
+        <span id="villain-position-display">N/A</span>
+    </div>
+
+    <div class="detail-item">
+        <label for="blind-amount">Cantidad de BB Heroe:</label>
+        <input type="number" id="blind-amount" value="20" min="0">
+    </div>
+     <div class="detail-item">
+        <label for="blind-amount">Cantidad de BB Villano:</label>
+        <input type="number" id="blind-amount" value="20" min="0">
+    </div>
+
+    <div class="detail-item" id="open-raise-details" style="display: none;">
+        <p><b>Desarrollo de la Mano (Open Raise):</b></p>
+        <p>Héroe realiza Open Raise en <span id="open-raise-hero-position">N/A</span>.</p>
+        <label for="villain-action">Villano:</label>
+        <select id="villain-action-open-raise">
+            <option value="call">Paga</option>
+            <option value="3bet">3-Betea</option>
+        </select>
+        <label for="pot-size-open-raise">El Tamaño del Pot es:</label>
+        <input type="number" id="pot-size-open-raise" value="5" min="0"> BB
+    </div>
+
+    <div class="detail-item" id="non-open-raise-details" style="display: none;">
+        <p><b>Desarrollo de la Mano:</b></p>
+        <p>Villano abre en <span id="villain-opens-position">N/A</span>.</p>
+        <label for="hero-action">Héroe:</label>
+        <select id="hero-action">
+            <option value="call">Hace Call</option>
+            <option value="3bet">3-Betea</option>
+        </select>
+        <label for="pot-size">Tamaño del Pot:</label>
+        <input type="number" id="pot-size" value="5" min="0"> BB
+    </div>
+</div>
+<style>
+.hand-details-container {
+        margin-bottom: 20px;
+        text-align: left;  /* Alinea el texto a la izquierda */
+        width: 100%;
+        max-width: 350px; /* Ajusta el ancho máximo */
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    }
+
+    .hand-details-container h2 {
+        font-size: 1.2em;
+        margin-bottom: 10px;
+        color: #4285f4;
+    }
+
+    .detail-item {
+        margin-bottom: 10px;
+    }
+
+    .detail-item label {
+        margin-right: 5px;
+        font-weight: 500;
+        color: #5f6368;
+    }
+
+    #hero-position-display,
+    #villain-position-display,
+    #villain-opens-position {
+        font-weight: bold;
+    }
+
+    .detail-item input[type="number"],
+    .detail-item select {
+        padding: 5px;
+        border: 1px solid #dadce0;
+        border-radius: 4px;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+    .detail-item input[type="number"]:focus,
+    .detail-item select:focus {
+        border-color: #4285f4;
+        box-shadow: 0 0 0 1px #4285f4;
+    }
+</style>
     </div>
     <!-- Fin Contenedor Principal -->
 
-    
+   
+
     <!-- Range Management -->
     <div class="range-management-container">
         <h2>Gestión de Rangos</h2>
