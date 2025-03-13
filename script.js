@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
     const percentageInput = document.getElementById('percentage');
     const handTable = document.getElementById('hand-table');
@@ -285,6 +284,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             //Clear all position for Action Select
             clearAllPositionHighlighting();
+            updateHandDetails();
         });
     });
 
@@ -307,6 +307,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         
         displaySavedRangesInteractive(); // Refresh the interactive ranges
+        updateHandDetails();
 
     });
      //Range Management Action Select Change
@@ -322,11 +323,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     //Versus position sync in both interactive and range management tools
     versusPositionSelectInteractive.addEventListener('change', () => {
-        syncVersusPosition(versusPositionSelectInteractive, versusPositionSelect)
+        syncVersusPosition(versusPositionSelectInteractive, versusPositionSelect);
+        highlightOpenRaiserPosition(versusPositionSelectInteractive.value);
+        updateHandDetails();
     })
 
     versusPositionSelect.addEventListener('change', () => {
-        syncVersusPosition(versusPositionSelect, versusPositionSelectInteractive)
+        syncVersusPosition(versusPositionSelect, versusPositionSelectInteractive);
+        highlightOpenRaiserPosition(versusPositionSelect.value);
+        updateHandDetails();
     })
     // --- Event Listeners for Range Management Selects ---
 
@@ -349,6 +354,7 @@ document.addEventListener('DOMContentLoaded', function () {
         displaySavedRanges();
         displaySavedRangesInteractive();
          clearAllPositionHighlighting();
+         updateHandDetails();
     });
     // Sync Actions
     actionSelect.addEventListener('change', () => {
@@ -357,6 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
         displaySavedRanges();
         displaySavedRangesInteractive();
         displayVersusPosition();
+        updateHandDetails();
     });
 
       // Event listener for the position select
@@ -367,10 +374,12 @@ document.addEventListener('DOMContentLoaded', function () {
         displaySavedRanges();
         displaySavedRangesInteractive();
         displayVersusPosition();
+        updateHandDetails();
     });
      versusPositionSelect.addEventListener('change', () => {
         displaySavedRanges();
         displaySavedRangesInteractive();
+        updateHandDetails();
     });
 
        //Clear all highlight position
@@ -1119,7 +1128,8 @@ versusPositionSelect.addEventListener('change', () => {
  // Get references to the new elements
     const heroPositionDisplay = document.getElementById('hero-position-display');
     const villainPositionDisplay = document.getElementById('villain-position-display');
-    const blindAmountInput = document.getElementById('blind-amount');
+    const heroStackInput = document.getElementById('hero-stack');
+    const villainStackInput = document.getElementById('villain-stack');
     const openRaiseDetails = document.getElementById('open-raise-details');
     const nonOpenRaiseDetails = document.getElementById('non-open-raise-details');
     const villainActionOpenRaiseSelect = document.getElementById('villain-action-open-raise');
@@ -1129,8 +1139,34 @@ versusPositionSelect.addEventListener('change', () => {
     const potSizeInput = document.getElementById('pot-size');
     const openRaiseHeroPosition = document.getElementById('open-raise-hero-position');
 
+    const handSummaryTextarea = document.getElementById('hand-summary');
+     function formatCard(cardCode) {
+        const rank = cardCode[0];
+        const suitCode = cardCode[1];
+        let suit = "";
+
+        switch (suitCode) {
+            case "c":
+                suit = "♣️";
+                break;
+            case "d":
+                suit = "♦️";
+                break;
+            case "h":
+                suit = "♥️";
+                break;
+            case "s":
+                suit = "♠️";
+                break;
+            default:
+                suit = "?";
+        }
+
+        return rank + suit;
+    }
+
 // Function to update the hand details
-    function updateHandDetails() {
+function updateHandDetails() {
         const heroPosition = positionSelect.value;
         const action = actionSelect.value;
         const villainPosition = versusPositionSelect.value;
@@ -1147,14 +1183,60 @@ versusPositionSelect.addEventListener('change', () => {
             openRaiseDetails.style.display = 'none';
             nonOpenRaiseDetails.style.display = 'block';
         }
+
+        updateHandSummary(); // Call the function to update the summary
     }
 
-     // Event listeners to trigger updateHandDetails
+    // Event listeners to trigger updateHandDetails
     positionSelect.addEventListener('change', updateHandDetails);
     actionSelect.addEventListener('change', updateHandDetails);
     versusPositionSelect.addEventListener('change', updateHandDetails);
 
     // Call updateHandDetails initially to set the initial state
     updateHandDetails();
+
+    
+     function updateHandSummary() {
+        let summary = "";
+        const heroPosition = positionSelect.value.toUpperCase();
+        const villainPosition = versusPositionSelect.value.toUpperCase();
+        const heroStack = heroStackInput.value;
+        const villainStack = villainStackInput.value;
+        const action = actionSelect.value;
+        let potSize = 0;
+
+        // Get the selected cards and format them
+        let card1 = "";
+        let card2 = "";
+        if (selectedCards.length === 2) {
+            card1 = formatCard(selectedCards[0]);
+            card2 = formatCard(selectedCards[1]);
+        } else {
+            card1 = "🃏"; // Default card 1 if not selected
+            card2 = "🃏"; // Default card 2 if not selected
+        }
+
+    if (action === "open_raise") {
+        const villainAction = villainActionOpenRaiseSelect.value;
+        potSize = potSizeOpenRaiseInput.value;
+
+        summary = `Héroe(${heroStack}BB) en ${heroPosition} hace Open Raise con ${card1} ${card2}, Villano(${villainStack}BB) ${villainAction} en ${villainPosition}. El pot ahora es de ${potSize}BB.`;
+    } else {
+        const heroAction = heroActionSelect.value;
+        potSize = potSizeInput.value;
+
+        summary = `Villano($${villainStack}BB) en ${villainPosition} hace Open Raise, Heroe($${heroStack}BB) ${heroAction} en ${heroPosition} con ${card1} ${card2}. El pot ahora es de $${potSize}BB.`;
+    }
+
+    handSummaryTextarea.value = summary;
+}
+
+// Add event listeners to relevant elements to trigger updateHandSummary
+heroStackInput.addEventListener("change", updateHandSummary);
+villainStackInput.addEventListener("change", updateHandSummary);
+villainActionOpenRaiseSelect.addEventListener("change", updateHandSummary);
+potSizeOpenRaiseInput.addEventListener("change", updateHandSummary);
+heroActionSelect.addEventListener("change", updateHandSummary);
+potSizeInput.addEventListener("change", updateHandSummary);
 
 });
