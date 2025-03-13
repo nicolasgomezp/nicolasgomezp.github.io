@@ -20,6 +20,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const savedRangesInteractive = document.getElementById('saved-ranges-interactive');
     let isDraggingEnabled = true; // Controla si se pueden arrastrar o no
 
+    let allHandsOrdered = [
+        // Premium
+        "AA", "KK", "QQ", "JJ", "AKs", "AQs", "AJs", "KQs", "AKo",
+
+       
+    ];
 
     let manuallySelectedHands = []; // Array to store manually selected hands
     let isDragging = false; // Variable to track if the mouse is being dragged
