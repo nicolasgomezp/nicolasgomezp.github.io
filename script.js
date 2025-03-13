@@ -1050,4 +1050,111 @@ allHandsOrdered = sortPriorityList(allHandsOrdered);
     });
      // Initial visibility check
 updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
-updateVersusPositionVisibility(actionSelect, versusPositionContainer);});
+updateVersusPositionVisibility(actionSelect, versusPositionContainer);
+
+//In Event listener for interactive table positions
+ interactivePositions.forEach(pos => {
+        pos.addEventListener('click', function() {
+            const position = this.dataset.position;
+
+            // Update range management position select without changing the action
+            positionSelect.value = position;
+            displaySavedRanges();
+            displaySavedRangesInteractive();
+
+            // Clear highlighting and selection from ALL positions
+            interactivePositions.forEach(p => {
+                p.classList.remove('selected');
+            });
+
+            // Select the clicked position
+            this.classList.add('selected');
+
+            //Clear all position for Action Select
+            clearAllPositionHighlighting();
+
+             // Call updateHandDetails when an interactive position is clicked
+            updateHandDetails();
+        });
+    });
+
+// In Event listener for the interactive action select
+ interactiveActionSelect.addEventListener('change', () => {
+    const action = interactiveActionSelect.value;
+    syncActionSelects(action); // Sync the action select
+
+    //Clear all position for Action Select
+    clearAllPositionHighlighting();
+
+    // Update visibility of Versus Position dropdown based on the selected action
+    updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
+    updateVersusPositionVisibility(actionSelect, versusPositionContainer);
+
+    //If the versus position container is being showed in interactive table, shows in range management tool
+    if (versusPositionInteractiveContainer.style.display === 'block') {
+        versusPositionContainer.style.display = 'block';
+    } else {
+        versusPositionContainer.style.display = 'none';
+    }
+
+    displaySavedRangesInteractive(); // Refresh the interactive ranges
+
+    // Call updateHandDetails when the interactive action select changes
+    updateHandDetails();
+});
+
+//In Versus position sync in both interactive and range management tools
+versusPositionSelectInteractive.addEventListener('change', () => {
+    syncVersusPosition(versusPositionSelectInteractive, versusPositionSelect);
+    highlightOpenRaiserPosition(versusPositionSelectInteractive.value);
+    updateHandDetails();
+})
+
+versusPositionSelect.addEventListener('change', () => {
+    syncVersusPosition(versusPositionSelect, versusPositionSelectInteractive);
+    highlightOpenRaiserPosition(versusPositionSelect.value);
+     updateHandDetails();
+})
+
+ // Get references to the new elements
+    const heroPositionDisplay = document.getElementById('hero-position-display');
+    const villainPositionDisplay = document.getElementById('villain-position-display');
+    const blindAmountInput = document.getElementById('blind-amount');
+    const openRaiseDetails = document.getElementById('open-raise-details');
+    const nonOpenRaiseDetails = document.getElementById('non-open-raise-details');
+    const villainActionOpenRaiseSelect = document.getElementById('villain-action-open-raise');
+    const potSizeOpenRaiseInput = document.getElementById('pot-size-open-raise');
+    const villainOpensPositionDisplay = document.getElementById('villain-opens-position');
+    const heroActionSelect = document.getElementById('hero-action');
+    const potSizeInput = document.getElementById('pot-size');
+    const openRaiseHeroPosition = document.getElementById('open-raise-hero-position');
+
+// Function to update the hand details
+    function updateHandDetails() {
+        const heroPosition = positionSelect.value;
+        const action = actionSelect.value;
+        const villainPosition = versusPositionSelect.value;
+
+        heroPositionDisplay.textContent = heroPosition !== 'general' ? heroPosition.toUpperCase() : 'N/A';
+        villainPositionDisplay.textContent = action !== 'open_raise' ? villainPosition.toUpperCase() : 'N/A';
+        openRaiseHeroPosition.textContent = heroPosition !== 'general' ? heroPosition.toUpperCase() : 'N/A';
+        villainOpensPositionDisplay.textContent = action !== 'open_raise' ? villainPosition.toUpperCase() : 'N/A';
+
+        if (action === 'open_raise') {
+            openRaiseDetails.style.display = 'block';
+            nonOpenRaiseDetails.style.display = 'none';
+        } else {
+            openRaiseDetails.style.display = 'none';
+            nonOpenRaiseDetails.style.display = 'block';
+        }
+    }
+
+     // Event listeners to trigger updateHandDetails
+    positionSelect.addEventListener('change', updateHandDetails);
+    actionSelect.addEventListener('change', updateHandDetails);
+    versusPositionSelect.addEventListener('change', updateHandDetails);
+
+    // Call updateHandDetails initially to set the initial state
+    updateHandDetails();
+
+});
