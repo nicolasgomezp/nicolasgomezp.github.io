@@ -2,11 +2,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const percentageInput = document.getElementById('percentage');
     const handTable = document.getElementById('hand-table');
-    const handTableContainer = document.getElementById('hand-table-container');
     const selectedHandsList = document.getElementById('selected-hands-list');
-    const selectedHandsContainer = document.getElementById('selected-hands-container');
-    const toggleTableButton = document.getElementById('toggle-table');
-    const toggleSelectedButton = document.getElementById('toggle-selected');
     const handCells = Array.from(handTable.querySelectorAll('.hand'));
     const positionSelect = document.getElementById('position-select');
     const actionSelect = document.getElementById('action-select');
@@ -24,22 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const savedRangesInteractive = document.getElementById('saved-ranges-interactive');
     let isDraggingEnabled = true; // Controla si se pueden arrastrar o no
 
-    let allHandsOrdered = [
-        // Premium
-        "AA", "KK", "QQ", "JJ", "AKs", "AQs", "AJs", "KQs", "AKo",
-
-        // Very strong
-        "TT", "ATs", "KJs", "QTs", "JTs", "AQo", "AJo", "KQo", "KTo",
-
-        // Strong
-        "99", "88", "A9s", "ATo", "QJs", "J9s", "T9s", "A8s", "A5s", "A4s", "A3s", "A2s", "KJo", "QTo",
-
-        // Marginal/Speculative
-        "77", "66", "55", "44", "33", "22", "A7s", "A6s", "A5o", "A4o", "A3o", "A2o", "K9s", "K8s", "K7s", "Q9s", "J8s", "T8s", "98s", "87s", "76s", "65s", "54s",
-
-        // Weak/Bluffing
-        "K6o", "K5o", "K4o", "K3o", "K2o", "Q8o", "Q7o", "Q6o", "Q5o", "Q4o", "Q3o", "Q2o", "J7o", "J6o", "J5o", "J4o", "J3o", "J2o", "T7o", "T6o", "T5o", "T4o", "T3o", "T2o", "96o", "95o", "94o", "93o", "92o", "86o", "85o", "84o", "83o", "82o", "75o", "74o", "73o", "72o", "64o", "63o", "62o", "53o", "52o", "43o", "42o", "32o"
-    ];
 
     let manuallySelectedHands = []; // Array to store manually selected hands
     let isDragging = false; // Variable to track if the mouse is being dragged
@@ -259,7 +239,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-        // --- Event Listeners for Interactive Table ---
+    // --- Event Listeners for Interactive Table ---
     // Function to sync position selects
     function syncPositionSelects(position) {
         positionSelect.value = position; // Update range management select
@@ -274,7 +254,6 @@ document.addEventListener('DOMContentLoaded', function () {
         displaySavedRangesInteractive();
         displayVersusPosition();
     }
-
       //Function to synchronize the versus position
     function syncVersusPosition(sourceSelect, targetSelect) {
         targetSelect.value = sourceSelect.value;
@@ -307,47 +286,22 @@ document.addEventListener('DOMContentLoaded', function () {
     interactiveActionSelect.addEventListener('change', () => {
         const action = interactiveActionSelect.value;
         syncActionSelects(action); // Sync the action select
+        //Clear all position for Action Select
+        clearAllPositionHighlighting();
 
          // Update visibility of Versus Position dropdown based on the selected action
         updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
         updateVersusPositionVisibility(actionSelect, versusPositionContainer);
 
-        //If the versus position container is being showed in interactive table, shows in range management tool
+       //If the versus position container is being showed in interactive table, shows in range management tool
         if (versusPositionInteractiveContainer.style.display === 'block') {
             versusPositionContainer.style.display = 'block';
         } else {
             versusPositionContainer.style.display = 'none';
         }
-
+        
         displaySavedRangesInteractive(); // Refresh the interactive ranges
-         //Clear all position for Action Select
-         clearAllPositionHighlighting();
 
-    });
-     //Range Management Action Select Change
-    actionSelect.addEventListener('change', () => {
-        const actionValue = actionSelect.value;
-
-        // Update Interactive Table Action Select
-        interactiveActionSelect.value = actionValue;
-
-        // Update visibility of Versus Position dropdown based on the selected action
-        updateVersusPositionVisibility(actionSelect, versusPositionContainer);
-        updateVersusPositionVisibility(interactiveActionSelect, versusPositionInteractiveContainer);
-
-        displaySavedRangesInteractive();
-    });
-    //Versus position sync in both interactive and range management tools
-    versusPositionSelectInteractive.addEventListener('change', () => {
-        syncVersusPosition(versusPositionSelectInteractive, versusPositionSelect);
-        highlightOpenRaiserPosition(versusPositionSelectInteractive.value);
-        displaySavedRangesInteractive();
-    })
-
-    versusPositionSelect.addEventListener('change', () => {
-        syncVersusPosition(versusPositionSelect, versusPositionSelectInteractive);
-        highlightOpenRaiserPosition(versusPositionSelect.value);
-        displaySavedRangesInteractive();
     });
      //Range Management Action Select Change
     actionSelect.addEventListener('change', () => {
