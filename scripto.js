@@ -6,7 +6,7 @@ let activeRangeButton = null;
 let lastSelectedRangeIndex = 0;
 let isDragging = false;
 let currentRange = null;
-let colorOptionsVisible = false; // Estado inicial
+let colorOptionsVisible = false;
 
 const colors = [
     { name: 'Rojo', class: 'red', hex: '#ff0000' },
@@ -17,7 +17,6 @@ const colors = [
     { name: 'Morado', class: 'purple', hex: '#800080' }
 ];
 
-// Función auxiliar para crear elementos HTML
 function createElement(type, classes = [], text = '', attributes = {}) {
     const element = document.createElement(type);
     classes.forEach(cls => element.classList.add(cls));
@@ -28,37 +27,30 @@ function createElement(type, classes = [], text = '', attributes = {}) {
     return element;
 }
 
-// Helper function to attach event listeners
 function attachEventListeners() {
     try {
-
         const container = document.querySelector('.container');
 
         const colorOptionsDiv = document.querySelector('.color-options');
         colors.forEach(color => {
             const colorOptionDiv = createElement('div', ['color-option']);
-
             const colorButton = createElement('button', ['color-button'], '', { 'data-color-class': color.class });
             colorButton.style.backgroundColor = color.hex;
             colorButton.addEventListener('click', () => setColor(color.class));
-
             const colorNameInput = createElement('input', ['color-name'], '', { type: 'text', value: color.name });
             colorNameInput.addEventListener('change', (event) => color.name = event.target.value);
-
             const colorInput = createElement('input', ['color-input'], '', { type: 'color', value: color.hex });
             colorInput.addEventListener('change', (event) => {
                 color.hex = event.target.value;
-                colorButton.style.backgroundColor = event.target.value;
+                colorButton.style.backgroundColor = color.hex;
                 updateMatrixColors();
             });
-
             colorOptionDiv.appendChild(colorButton);
             colorOptionDiv.appendChild(colorNameInput);
             colorOptionDiv.appendChild(colorInput);
             colorOptionsDiv.appendChild(colorOptionDiv);
         });
 
-        // Toggle color options button
         const toggleColorOptionsButton = document.getElementById('toggle-color-options');
         toggleColorOptionsButton.addEventListener('click', () => {
             colorOptionsVisible = !colorOptionsVisible;
@@ -121,22 +113,18 @@ function attachEventListeners() {
     }
 }
 
-// Alternar la selección de un combo
 function toggleCombo(event) {
     try {
         const cardDiv = event.target;
         const combo = cardDiv.dataset.combo;
 
         if (!selectedColor) {
-            // If no color is selected, deselect the combo
             const colorClasses = colors.map(c => `selected-${c.class}`);
             cardDiv.classList.remove(...colorClasses);
         } else {
-            // Add or remove the selected class based on current state
             if (cardDiv.classList.contains(`selected-${selectedColor}`)) {
                 cardDiv.classList.remove(`selected-${selectedColor}`);
             } else {
-                // Remove any existing selected class before adding the new one
                 const colorClasses = colors.map(c => `selected-${c.class}`);
                 cardDiv.classList.remove(...colorClasses);
                 cardDiv.classList.add(`selected-${selectedColor}`);
@@ -147,7 +135,6 @@ function toggleCombo(event) {
     }
 }
 
-// Establecer el color seleccionado
 function setColor(color) {
     if (selectedColor === color) {
         selectedColor = '';
@@ -158,7 +145,6 @@ function setColor(color) {
     updateMatrixColors();
 }
 
-// Funcion auxiliar para crear el indicador de color
 function updateColorSelectionIndicator() {
     document.querySelectorAll('.color-option').forEach(option => {
         const colorButton = option.querySelector('.color-button');
@@ -174,21 +160,18 @@ function updateColorSelectionIndicator() {
     });
 }
 
-// Funcion auxiliar para mostrar la matriz de colores
 function updateMatrixColors() {
     const styleSheet = document.styleSheets[0];
 
-    // Remove existing rules for .selected-*
     for (let i = styleSheet.cssRules.length - 1; i >= 0; i--) {
         if (styleSheet.cssRules[i].selectorText && styleSheet.cssRules[i].selectorText.startsWith('.selected-')) {
             styleSheet.deleteRule(i);
         }
     }
 
-    // Add new color styles based on the current colors array
     colors.forEach(color => {
         const rule = `.selected-${color.class} {
-            background-color: ${color.hex + '80'} !important; /* Add transparency */
+            background-color: ${color.hex + '80'} !important;
         }`;
         try {
             styleSheet.insertRule(rule, styleSheet.cssRules.length);
@@ -198,7 +181,6 @@ function updateMatrixColors() {
     });
 }
 
-//Funcion auxiliar para guardar los rangos
 function saveRange() {
     try {
         if (!currentPosition) {
@@ -229,7 +211,6 @@ function saveRange() {
             };
         });
 
-
         if (selectedCombos.length === 0) {
             alert('Por favor, selecciona al menos un combo para guardar el rango.');
             return;
@@ -240,34 +221,28 @@ function saveRange() {
             position: currentPosition,
             stackSize: currentStackSize,
             combos: selectedCombos,
-            legend: []  // Initialize legend array
+            legend: []
         };
 
-        // Guardar en localStorage
         let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
-
-        // Verificar si ya existe un rango para la misma posición y stack size
         const existingRangeIndex = savedRanges.findIndex(range => range.position === currentPosition && range.stackSize == currentStackSize && range.name === rangeName);
 
         if (existingRangeIndex > -1) {
-            // Reemplazar el rango existente
             savedRanges[existingRangeIndex] = rangeData;
         } else {
-            // Agregar el nuevo rango
             savedRanges.push(rangeData);
         }
 
         localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
 
-        loadRanges(); // Recargar los rangos guardados
+        loadRanges();
         alert("Rango guardado correctamente");
-        rangeNameInput.value = ''; // Clear input
+        rangeNameInput.value = '';
     } catch (error) {
         console.error('Error saving range:', error);
     }
 }
 
-// Función para cargar los rangos guardados y mostrarlos como botones
 function loadRanges() {
     try {
         const rangeList = document.getElementById('range-list');
@@ -278,25 +253,34 @@ function loadRanges() {
         rangeList.innerHTML = '';
 
         let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
-
-        // Filter ranges for the current position and stack size
         const filteredRanges = savedRanges.filter(range => range.position === currentPosition && range.stackSize == currentStackSize);
 
         if (filteredRanges.length > 0) {
             filteredRanges.forEach((range, index) => {
+                const rangeButtonContainer = document.createElement('div');
+                rangeButtonContainer.classList.add('range-button-container');
+
                 const rangeButton = createElement('button', ['range-button'], `${range.name} (${range.combos.length} combos)`);
                 rangeButton.addEventListener('click', () => selectRange(range, rangeButton, index));
-                rangeList.appendChild(rangeButton);
+                rangeButtonContainer.appendChild(rangeButton);
+
+                const deleteButton = createElement('span', ['delete-range-button'], 'X');
+                deleteButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    deleteRange(range);
+                });
+                rangeButtonContainer.appendChild(deleteButton);
+
+                rangeList.appendChild(rangeButtonContainer);
             });
 
-            // After creating buttons, try to select the last selected range, if it exists
             if (filteredRanges[lastSelectedRangeIndex]) {
                 const range = filteredRanges[lastSelectedRangeIndex];
-                const buttonToActivate = rangeList.children[lastSelectedRangeIndex];
+                const buttonToActivate = rangeList.children[lastSelectedRangeIndex].querySelector('.range-button');
                 if (buttonToActivate) selectRange(range, buttonToActivate, lastSelectedRangeIndex);
             } else if (filteredRanges.length > 0) {
                 const range = filteredRanges[0];
-                const buttonToActivate = rangeList.children[0];
+                const buttonToActivate = rangeList.children[0].querySelector('.range-button');
                 if (buttonToActivate) selectRange(range, buttonToActivate, 0);
             } else {
                 activeRangeButton = null;
@@ -312,26 +296,35 @@ function loadRanges() {
     }
 }
 
+function deleteRange(rangeToDelete) {
+    if (confirm(`¿Estás seguro de que quieres eliminar el rango "${rangeToDelete.name}"?`)) {
+        let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
+        savedRanges = savedRanges.filter(range =>
+            !(range.position === rangeToDelete.position && range.stackSize == rangeToDelete.stackSize && range.name === rangeToDelete.name)
+        );
+        localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
+        loadRanges();
+    }
+}
+
 function selectRange(range, button, index) {
-    currentRange = range;  // Guarda el rango actual
+    currentRange = range;
     loadRangeInMatrix(range);
     setActiveRangeButton(button);
     lastSelectedRangeIndex = index;
     displayLegend(range);
-    displayLegendEditor(range); // Muestra el editor de leyenda
+    displayLegendEditor(range);
 }
 
 function displayLegendEditor(range) {
     const editorContainer = document.getElementById('legend-editor');
-    editorContainer.innerHTML = ''; // Limpiar el editor existente
+    editorContainer.innerHTML = '';
 
-    // Título del editor
     const editorTitle = createElement('h4', [], 'Editar Leyenda');
     editorContainer.appendChild(editorTitle);
 
-    if (!range.legend) range.legend = []; // Inicializa el array si no existe
+    if (!range.legend) range.legend = [];
 
-    // Elementos de la leyenda
     range.legend.forEach((item, index) => {
         const itemContainer = createElement('div', ['legend-editor-item']);
 
@@ -339,7 +332,7 @@ function displayLegendEditor(range) {
         colorInput.addEventListener('change', (e) => {
             range.legend[index].color = e.target.value;
             displayLegend(range);
-            saveRangesToLocalStorage(); // Guarda los cambios en localStorage
+            saveRangesToLocalStorage();
         });
         itemContainer.appendChild(colorInput);
 
@@ -347,7 +340,7 @@ function displayLegendEditor(range) {
         textInput.addEventListener('change', (e) => {
             range.legend[index].text = e.target.value;
             displayLegend(range);
-            saveRangesToLocalStorage(); // Guarda los cambios en localStorage
+            saveRangesToLocalStorage();
         });
         itemContainer.appendChild(textInput);
 
@@ -356,33 +349,29 @@ function displayLegendEditor(range) {
             range.legend.splice(index, 1);
             displayLegend(range);
             displayLegendEditor(range);
-            saveRangesToLocalStorage(); // Guarda los cambios en localStorage
+            saveRangesToLocalStorage();
         });
         itemContainer.appendChild(deleteButton);
 
         editorContainer.appendChild(itemContainer);
     });
 
-    // Botón para agregar un nuevo elemento
     const addButton = createElement('button', [], 'Agregar Elemento');
     addButton.addEventListener('click', () => {
         range.legend.push({ color: '#FFFFFF', text: '' });
         displayLegend(range);
         displayLegendEditor(range);
-        saveRangesToLocalStorage(); // Guarda los cambios en localStorage
+        saveRangesToLocalStorage();
     });
     editorContainer.appendChild(addButton);
 }
 
-// Nueva función para guardar los rangos en localStorage
 function saveRangesToLocalStorage() {
     let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
-    // Encuentra el índice del rango actual
     const rangeIndex = savedRanges.findIndex(range =>
         range.position === currentPosition && range.stackSize === currentStackSize && range.name === document.getElementById('range-name').value);
 
     if (rangeIndex !== -1) {
-        // Actualiza el rango en savedRanges
         savedRanges[rangeIndex] = currentRange;
         localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
     }
@@ -392,7 +381,6 @@ function saveRangesToLocalStorage() {
 
 function loadRangeInMatrix(range) {
     try {
-        // Clear all selections
         clearCardSelections()
 
         range.combos.forEach(comboData => {
@@ -506,14 +494,11 @@ function generateCardMatrix() {
 
 function restoreCardSelections() {
     try {
-        // Clear all selections
         clearCardSelections();
 
         let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
-        // Find all ranges matching the current position and stack size
         let currentRanges = savedRanges.filter(range => range.position === currentPosition && range.stackSize == currentStackSize);
 
-        // Apply combos from all matching ranges
         currentRanges.forEach(range => {
             range.combos.forEach(comboData => {
                 const cardDiv = document.querySelector(`.card-combo[data-combo="${comboData.combo}"]`);
@@ -534,12 +519,9 @@ function displayLegend(range) {
     if (range && range.legend && range.legend.length > 0) {
         range.legend.forEach(item => {
             const legendItem = createElement('div', ['legend-item']);
-
             const legendColor = createElement('div', ['legend-color']);
             legendColor.style.backgroundColor = item.color;
-
             const legendText = createElement('span', ['legend-text'], item.text);
-
             legendItem.appendChild(legendColor);
             legendItem.appendChild(legendText);
             legendContainer.appendChild(legendItem);
@@ -550,8 +532,8 @@ function displayLegend(range) {
 }
 
 function initializeRangeButtons() {
-        loadRanges();  // Cargar los rangos
-    }
+    loadRanges();
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     try {
@@ -559,12 +541,10 @@ document.addEventListener('DOMContentLoaded', () => {
         generateCardMatrix();
         updateMatrixColors();
 
-        // Inicializar el stack size a 100bb (por defecto)
         document.querySelector('.stack-size-button[data-stack-size="100"]').classList.add('active');
         document.querySelector('.position-button[data-position="utg"]').classList.add('active');
         currentPosition = 'utg';
 
-        // Cargar los rangos iniciales
         initializeRangeButtons();
     } catch (error) {
         console.error('Initialization error:', error);
