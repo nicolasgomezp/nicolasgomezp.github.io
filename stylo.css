@@ -1,0 +1,444 @@
+/* style.css */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom, #34495e, #2c3e50);
+    color: #ecf0f1;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    background-color: rgba(52, 73, 94, 0.8);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    width: 90%;
+    max-width: 1200px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+}
+
+.container:hover {
+    transform: scale(1.03);
+}
+
+h1 {
+    color: #fff;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+h3 {
+    color: #fff;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Position Selector */
+.position-selector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.position-button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    background-color: rgba(41, 128, 185, 0.7);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+}
+
+.position-button:hover {
+    background-color: rgba(41, 128, 185, 1);
+}
+
+.position-button.active {
+    background-color: #e74c3c;
+    /* Intense red */
+    color: #fff;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Stack Size Selector */
+.stack-size-selector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.stack-size-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background-color: rgba(46, 204, 113, 0.7);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+}
+
+.stack-size-button:hover {
+    background-color: rgba(46, 204, 113, 1);
+}
+
+.stack-size-button.active {
+    background-color: #e74c3c;
+    /* Intense red */
+    color: #fff;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Range List */
+.range-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.range-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(142, 68, 173, 0.7);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+}
+
+.range-button:hover {
+    background-color: rgba(142, 68, 173, 1);
+}
+
+.range-button.active {
+    background-color: #f1c40f;
+    /* Highlight yellow */
+    color: #333;
+    /* Dark text for visibility */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Color Options */
+.color-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    display: none; /* Ocultar por defecto */
+}
+
+.color-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.color-button {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.color-button:hover {
+    transform: scale(1.5);
+}
+
+.color-input {
+    width: 30px;
+    padding: 2px;
+    border: 2px solid #7f8c8d;
+    border-radius: 5px;
+    background-color: rgba(236, 240, 241, 0.1);
+    color: #fff;
+    transition: border-color 0.3s ease;
+}
+
+.color-input:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.color-name {
+
+    width: 50px;
+    padding: 1px;
+    font-size: 0.5em;
+    color: #4b4949;
+
+}
+
+/* Contenedor Principal */
+.card-matrix-container {
+    display: flex;
+    flex-direction: column; /* Apilar leyenda y matriz verticalmente */
+    align-items: center; /* Centrar horizontalmente los elementos */
+
+    margin-bottom: 20px;
+}
+
+/* Estilos para la Matriz de Cartas */
+.card-matrix {
+    display: grid;
+    grid-template-columns: repeat(13, 1fr);
+    gap: 1px;
+    width: fit-content;
+    margin: 0 auto; /* Centrar la matriz horizontalmente */
+    user-select: none;
+}
+.card-combo {
+    padding: 3px;
+    text-align: center;
+    border: none;
+    background-color: rgba(241, 243, 244, 0.16);
+    border-radius: 7px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 9px;
+}
+
+.card-combo:hover {
+    background-color: rgba(52, 73, 94, 0.9);
+    transform: scale(1.1);
+}
+
+/* Botón para Vaciar Rango */
+.container > button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(231, 76, 60, 0.7);
+    /* Color rojo anaranjado */
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+    margin-bottom: 20px;
+    /* Espacio debajo del botón */
+}
+
+.container > button:hover {
+    background-color: rgba(231, 76, 60, 1);
+}
+
+.selected-indicator {
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    /* Adjust the color as needed */
+    font-size: 0.8em;
+}
+
+/* Save Range Form */
+#save-range-form {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#save-range-form label {
+    display: block;
+    margin-bottom: 5px;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+#save-range-form input[type="text"] {
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(236, 240, 241, 0.1);
+    color: #fff;
+    margin-bottom: 10px;
+    width: 250px;
+    transition: border-color 0.3s ease;
+}
+
+#save-range-form input[type="text"]:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+#save-range-form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(52, 152, 219, 0.7);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+}
+
+#save-range-form button:hover {
+    background-color: rgba(52, 152, 219, 1);
+}
+
+/* Import/Export Buttons */
+.import-export {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Contenedor de Leyenda (Row) */
+.legend-row {
+    display: flex; /* Disponer los elementos en fila */
+    justify-content: center; /* Centrar las leyendas horizontalmente */
+    flex-wrap: wrap; /* Permitir que las leyendas pasen a la siguiente línea si no caben */
+    width: 100%; /* Ocupar todo el ancho del contenedor */
+    padding: 10px;
+    border-radius: 8px;
+    background-color: rgba(52, 73, 94, 0.4);
+    margin-bottom: 10px; /* Espacio entre la leyenda y la matriz */
+}
+
+/* Elemento de Leyenda Individual */
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 5px; /* Espacio alrededor de cada elemento */
+}
+.legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.legend-text {
+    font-size: 0.9em;
+}
+
+/* Editor de Leyenda */
+.legend-editor {
+    width: 250px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: rgba(52, 73, 94, 0.4);
+    margin-top: 20px;
+    text-align: left;
+}
+
+.legend-editor h4 {
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.legend-editor-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.legend-editor-item input[type="color"] {
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.legend-editor-item input[type="text"] {
+    padding: 5px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(236, 240, 241, 0.1);
+    color: #fff;
+    margin-right: 5px;
+    width: 100px;
+}
+
+.legend-editor-item button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: rgba(231, 76, 60, 0.7);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.8em;
+}
+
+.legend-editor-item button:hover {
+    background-color: rgba(231, 76, 60, 1);
+}
+
+.legend-editor button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(46, 204, 113, 0.7);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-size: 0.9em;
+}
+
+.legend-editor button:hover {
+    background-color: rgba(46, 204, 113, 1);
+}
+
+.import-export button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(155, 89, 182, 0.7);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+}
+
+.import-export button:hover {
+    background-color: rgba(155, 89, 182, 1);
+}
+
+/* Toggle Button Styles */
+#toggle-color-options {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(104, 201, 198, 0.7);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-size: 8px;
+    margin-bottom: 20px;
+}
+
+#toggle-color-options:hover {
+    background-color: rgb(32, 105, 70);
+} 
