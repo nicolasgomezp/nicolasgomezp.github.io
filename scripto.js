@@ -471,10 +471,10 @@ function generateCardMatrix() {
 
                 if (i === j) {
                     combo = rank1 + rank2;
-                } else if (i < j) {
+                } else if (i < j) { // Only generate combos where rank1 > rank2
                     combo = rank1 + rank2 + 's';
-                } else {
-                    combo = rank1 + rank2 + 'o';
+                } else { // Only generate combos where rank1 > rank2
+                    combo = rank2 + rank1 + 'o'; // Swap ranks for offsuit combos
                 }
 
                 const cardDiv = document.createElement('div');
