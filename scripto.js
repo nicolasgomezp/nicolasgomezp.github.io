@@ -263,7 +263,7 @@ function loadRanges() {
                 const rangeButtonContainer = document.createElement('div');
                 rangeButtonContainer.classList.add('range-button-container');
 
-                const rangeButton = createElement('button', ['range-button'], `${range.name} (${range.combos.length} combos)`);
+                const rangeButton = createElement('button', ['range-button'], `${range.name}`);
                 rangeButton.addEventListener('click', () => selectRange(range, rangeButton, index));
                 rangeButtonContainer.appendChild(rangeButton);
 
