@@ -216,12 +216,15 @@ function saveRange() {
             return;
         }
 
+                // Get the legend from the current range if it exists. This preserves it!
+        let legendToSave = currentRange ? currentRange.legend : [];
+
         const rangeData = {
             name: rangeName,
             position: currentPosition,
             stackSize: currentStackSize,
             combos: selectedCombos,
-            legend: []
+                        legend: legendToSave
         };
 
         let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
