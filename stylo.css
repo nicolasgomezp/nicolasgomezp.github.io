@@ -20,12 +20,9 @@ body {
     width: 90%;
     max-width: 1200px;
     text-align: center;
-    transition: transform 0.3s ease-in-out;
 }
 
-.container:hover {
-    transform: scale(1.03);
-}
+
 
 h1 {
     color: #fff;
@@ -44,12 +41,12 @@ h3 {
 .position-selector {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 5px;
     margin-bottom: 20px;
 }
 
 .position-button {
-    padding: 12px 24px;
+    padding: 5px 10px;
     border: none;
     border-radius: 25px;
     background-color: rgba(41, 128, 185, 0.7);
@@ -57,7 +54,7 @@ h3 {
     cursor: pointer;
     transition: background-color 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    font-size: 16px;
+    font-size: 10px;
 }
 
 .position-button:hover {
@@ -80,7 +77,7 @@ h3 {
 }
 
 .stack-size-button {
-    padding: 10px 20px;
+    padding: 5px 5px;
     border: none;
     border-radius: 20px;
     background-color: rgba(46, 204, 113, 0.7);
@@ -117,7 +114,7 @@ h3 {
 }
 
 .range-button {
-    padding: 8px 16px;
+    padding: 5px 5px;
     border: none;
     border-radius: 8px;
     background-color: rgba(142, 68, 173, 0.7);
@@ -125,7 +122,7 @@ h3 {
     cursor: pointer;
     transition: background-color 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    font-size: 14px;
+    font-size: 15px;
 }
 
 .range-button:hover {
@@ -147,11 +144,11 @@ h3 {
     background-color: rgba(231, 76, 60, 0.8); /* Red */
     color: #fff;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 10px;
+    height: 10px;
     text-align: center;
-    line-height: 20px;
-    font-size: 12px;
+    line-height: 10px;
+    font-size: 5px;
     cursor: pointer;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     z-index: 10; /* Ensure it's above other elements */
@@ -230,17 +227,17 @@ h3 {
 .card-matrix {
     display: grid;
     grid-template-columns: repeat(13, 1fr);
-    gap: 1px;
+    gap: 3px;
     width: fit-content;
     margin: 0 auto; /* Centrar la matriz horizontalmente */
     user-select: none;
 }
 .card-combo {
-    padding: 3px;
+    padding: 7px;
     text-align: center;
     border: none;
     background-color: rgba(241, 243, 244, 0.16);
-    border-radius: 7px;
+    border-radius: 3px;
     color: #fff;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
@@ -249,7 +246,7 @@ h3 {
 
 .card-combo:hover {
     background-color: rgba(52, 73, 94, 0.9);
-    transform: scale(1.1);
+    transform: scale(1.8);
 }
 
 /* Botón para Vaciar Rango */
