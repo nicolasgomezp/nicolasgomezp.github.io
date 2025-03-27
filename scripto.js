@@ -8,6 +8,11 @@ let isDragging = false;
 let currentRange = null;
 let colorOptionsVisible = false;
 
+// Long press variables
+let longPressTimer;
+const longPressDuration = 500; // Adjust as needed (milliseconds)
+let longPressTarget; // The element that triggered the long press
+
 const colors = [
     { name: 'Rojo', class: 'red', hex: '#ff0000' },
     { name: 'Azul', class: 'blue', hex: '#0000ff' },
@@ -114,24 +119,17 @@ function attachEventListeners() {
 }
 
 function toggleCombo(event) {
-    try {
-        const cardDiv = event.target;
-        const combo = cardDiv.dataset.combo;
+    const cardDiv = event.target;
+    const combo = cardDiv.dataset.combo;
 
-        if (!selectedColor) {
-            const colorClasses = colors.map(c => `selected-${c.class}`);
-            cardDiv.classList.remove(...colorClasses);
-        } else {
-            if (cardDiv.classList.contains(`selected-${selectedColor}`)) {
-                cardDiv.classList.remove(`selected-${selectedColor}`);
-            } else {
-                const colorClasses = colors.map(c => `selected-${c.class}`);
-                cardDiv.classList.remove(...colorClasses);
-                cardDiv.classList.add(`selected-${selectedColor}`);
-            }
-        }
-    } catch (error) {
-        console.error('Error toggling combo:', error);
+    if (!selectedColor) {
+        const colorClasses = colors.map(c => `selected-${c.class}`);
+        cardDiv.classList.remove(...colorClasses);
+    } else {
+        // Set the color regardless of the current state
+        const colorClasses = colors.map(c => `selected-${c.class}`);
+        cardDiv.classList.remove(...colorClasses);
+        cardDiv.classList.add(`selected-${selectedColor}`);
     }
 }
 
@@ -216,7 +214,7 @@ function saveRange() {
             return;
         }
 
-                // Get the legend from the current range if it exists. This preserves it!
+        // Get the legend from the current range if it exists. This preserves it!
         let legendToSave = currentRange ? currentRange.legend : [];
 
         const rangeData = {
@@ -224,7 +222,7 @@ function saveRange() {
             position: currentPosition,
             stackSize: currentStackSize,
             combos: selectedCombos,
-                        legend: legendToSave
+            legend: legendToSave
         };
 
         let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
@@ -411,7 +409,7 @@ function clearCardSelections() {
 function exportRanges() {
     try {
         const savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
-        const jsonString =JSON.stringify(savedRanges);
+        const jsonString = JSON.stringify(savedRanges);
         const blob = new Blob([jsonString], {
             type: "application/json"
         });
@@ -485,6 +483,23 @@ function generateCardMatrix() {
                 cardDiv.textContent = combo;
                 cardDiv.dataset.combo = combo;
                 cardDiv.addEventListener('click', toggleCombo);
+
+                // Add long press listeners
+                cardDiv.addEventListener('mousedown', (e) => {
+                    longPressTarget = e.target;
+                    longPressTimer = setTimeout(() => {
+                        handleLongPress(longPressTarget);
+                    }, longPressDuration);
+                });
+
+                cardDiv.addEventListener('mouseup', () => {
+                    clearTimeout(longPressTimer);
+                });
+
+                cardDiv.addEventListener('mouseleave', () => {
+                    clearTimeout(longPressTimer);
+                });
+
                 matrix.appendChild(cardDiv);
             }
         }
@@ -553,3 +568,88 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Initialization error:', error);
     }
 });
+
+// Helper Functions for Selection Logic
+
+function isComboSelected(combo) {
+    const cardDiv = document.querySelector(`.card-combo[data-combo="${combo}"]`);
+    if (!cardDiv) return false;
+    return colors.some(color => cardDiv.classList.contains(`selected-${color.class}`));
+}
+
+function selectHigherPairs(combo) {
+    const rank = combo[0]; // e.g., "A" from "AA"
+    const rankIndex = ranks.indexOf(rank);
+    if (rankIndex === -1) return;
+
+    for (let i = 0; i < rankIndex; i++) {
+        const higherRank = ranks[i];
+        const higherPairCombo = higherRank + higherRank;
+        if (!isComboSelected(higherPairCombo)) {  // Only select if not already selected
+            const cardDiv = document.querySelector(`.card-combo[data-combo="${higherPairCombo}"]`);
+            if (cardDiv) {
+                toggleCombo({ target: cardDiv });
+            }
+        }
+    }
+}
+
+function selectSuitedLeft(combo) {
+    const rank = combo[0];
+    const suitRank = combo[1];
+
+    if (combo.length !== 3 || combo[2] !== 's') return;
+
+    const rankIndex = ranks.indexOf(suitRank);
+
+    if (rankIndex === -1) return;
+
+    for (let i = 0; i <= rankIndex; i++) {
+        const leftRank = ranks[i];
+        const leftSuitedCombo = rank + leftRank + 's';
+        if (!isComboSelected(leftSuitedCombo)) { // Only select if not already selected
+            const cardDiv = document.querySelector(`.card-combo[data-combo="${leftSuitedCombo}"]`);
+
+            if (cardDiv) {
+                toggleCombo({ target: cardDiv });
+            }
+        }
+    }
+}
+
+function selectOffsuitAbove(combo) {
+    if (combo.length !== 3 || combo[2] !== 'o') return;
+
+    const firstRank = combo[0];  //First rank of the combo
+    const secondRank = combo[1]; //Second rank of the combo
+    const firstRankIndex = ranks.indexOf(firstRank); //Index of the first rank
+    const secondRankIndex = ranks.indexOf(secondRank); //Index of the second rank
+
+    if (firstRankIndex === -1 || secondRankIndex === -1) return;
+
+    for (let i = secondRankIndex - 1; i >= 0; i--) {
+        const aboveRank = ranks[i];
+
+        const aboveOffsuitCombo = firstRank + aboveRank + 'o';
+
+        if (!isComboSelected(aboveOffsuitCombo)) { // Only select if not already selected
+            const cardDiv = document.querySelector(`.card-combo[data-combo="${aboveOffsuitCombo}"]`);
+
+            if (cardDiv) {
+                toggleCombo({ target: cardDiv });
+            }
+        }
+    }
+}
+
+function handleLongPress(target) {
+    const combo = target.dataset.combo;
+
+    if (combo.length === 2) {
+        selectHigherPairs(combo);
+    } else if (combo.endsWith('s')) {
+        selectSuitedLeft(combo);
+    } else if (combo.endsWith('o')) {
+        selectOffsuitAbove(combo);
+    }
+}
