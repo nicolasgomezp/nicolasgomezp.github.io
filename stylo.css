@@ -1,5 +1,4 @@
-/* style.css */
-
+/* General Styles */
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(to bottom, #34495e, #2c3e50);
@@ -10,8 +9,18 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow-x: hidden; /* Prevent horizontal scroll during screen shake */
+    overflow-x: hidden;
+    /* Reemplaza con la URL de tu imagen GIF */
+    background-size: cover;
+    background-position: center;
+    /* animation: pan 20s linear infinite; */
 }
+
+/* @keyframes pan {
+    100% {
+        background-position: 150% center;
+    }
+} */
 
 .container {
     background-color: rgba(52, 73, 94, 0.8);
@@ -21,6 +30,8 @@ body {
     width: 90%;
     max-width: 1200px;
     text-align: center;
+    overflow: hidden;
+    /* Ensure background doesn't overflow */
 }
 
 h1 {
@@ -214,7 +225,6 @@ h3 {
     padding: 1px;
     font-size: 0.5em;
     color: #4b4949;
-
 }
 
 /* Contenedor Principal */
@@ -224,7 +234,6 @@ h3 {
     /* Apilar leyenda y matriz verticalmente */
     align-items: center;
     /* Centrar horizontalmente los elementos */
-
     margin-bottom: 20px;
 }
 
@@ -483,32 +492,225 @@ h3 {
 /* Practice Mode Styles */
 #practice-cards {
     margin-top: 20px;
-    width: 250px;
+    width: 100%;
+    max-width: 600px;
+    /* Limitar el ancho para una mejor apariencia en pantallas grandes */
+    padding: 20px;
+    border-radius: 10px;
+    background-color: rgba(52, 73, 94, 0.6);
+    /* Fondo más oscuro y translúcido */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    /* Sombreado suave */
+    text-align: center;
+    /* Centrar el texto */
+    display: flex; /* Use flexbox to align items */
+    justify-content: center;
+    align-items: center;
+    /* Arrange elements in a row */
 }
 
 #practice-cards>div {
     margin: 10px;
+    /* Espacio vertical */
     font-size: 1.2em;
-}
-
-#practice-choices button {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 5px;
-    background-color: rgba(52, 152, 219, 0.7);
-    color: #fff;
-    cursor: pointer;
-    margin: 5px;
-}
-
-#practice-choices button:hover {
-    background-color: rgba(52, 152, 219, 1);
-}
-
-#practice-result {
     font-weight: bold;
+    color: #fff;
+    /* Texto blanco para contraste */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    /* Sombra para destacar el texto */
+    width: auto;
+    /* Adjust width to content */
 }
 
+/* Individual Card Containers */
+#practice-card1,
+#practice-card2 {
+    display: inline-flex;
+    /* Use inline-flex to keep them side by side */
+    justify-content: center;
+    align-items: center;
+    margin: 0 10px;
+    /* Add horizontal margin */
+}
+
+#practice-choices {
+    display: flex;
+    /* Alinear horizontalmente los botones */
+    flex-wrap: wrap;
+    /* Permitir que los botones pasen a la siguiente línea */
+    justify-content: center;
+    /* Centrar horizontalmente los botones */
+    gap: 10px;
+    /* Espacio entre los botones */
+    margin-top: 20px;
+}
+
+.practice-choice-button {
+    padding: 12px 24px;
+    /* Aumentar el tamaño del relleno */
+    border: none;
+    border-radius: 8px;
+    /* Bordes redondeados */
+    font-size: 1.1em;
+    /* Aumentar el tamaño de la fuente */
+    font-weight: bold;
+    /* Texto en negrita */
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /* Transiciones suaves */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    /* Sombra sutil */
+    /* Los colores de fondo y texto se establecen dinámicamente en JavaScript */
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.2));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+    /* Hide the glow */
+}
+
+.practice-choice-button:hover {
+    transform: scale(1.05);
+    /* Ligeramente más grande al pasar el ratón */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    /* Sombra más pronunciada al pasar el ratón */
+    /* Add the glow on hover */
+}
+
+/* Add a glow effect on hover */
+.practice-choice-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.1);
+    transform: scaleX(0);
+    transform-origin: bottom right;
+    transition: transform 0.4s ease;
+    border-radius: 8px;
+    /* Match the button border radius */
+}
+
+.practice-choice-button:hover::before {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+/* Estilos específicos para el botón de Fold */
+.fold-button {
+    background-color: #777474;
+    /* Rojo anaranjado */
+    color: #fff;
+    /* Texto blanco */
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.2));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+    /* Hide the glow */
+}
+
+/* Estilos para el resultado de la práctica */
+#practice-result {
+    margin-top: 20px;
+    /* Espacio desde las opciones */
+    font-size: 1.3em;
+    /* Aumentar el tamaño de la fuente */
+    font-weight: bold;
+    /* Texto en negrita */
+    color: #2ecc71;
+    /* Verde para respuestas correctas */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    /* Sombra para destacar el texto */
+    opacity: 0;
+    /* Initially hidden */
+    transition: opacity 0.5s ease;
+    /* Smooth fade-in */
+}
+
+#practice-result.show {
+    opacity: 1;
+    /* Visible */
+}
+
+/* Level Name */
+.level-name {
+    font-style: italic;
+    color: #ddd;
+}
+
+/* styles for Cards */
+.card {
+    display: inline-block;
+    width: 60px;
+    height: 84px;
+    border: 1px solid #bbb;
+    /* Subtle border */
+    border-radius: 8px;
+    /* Rounded corners */
+    text-align: center;
+    font-size: 2em;
+    /* Larger font size */
+    line-height: 84px;
+    margin: 5px;
+    background-color: #f9f9f9;
+    /* Light background */
+    color: black;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    /* Soft shadow */
+    position: relative;
+    /* To position the suit */
+    transition: all 0.3s ease;
+    /* Smooth transition */
+}
+
+/* Add suit symbols */
+.card::after {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 0.7em;
+}
+
+.card.h::after {
+    content: '\2665';
+    /* Heart symbol */
+}
+
+.card.d::after {
+    content: '\2666';
+    /* Diamond symbol */
+}
+
+.card.c::after {
+    content: '\2663';
+    /* Club symbol */
+}
+
+.card.s::after {
+    content: '\2660';
+    /* Spade symbol */
+}
+
+/* Suit colors */
+.card.h{
+    color: red;
+}
+.card.d {
+    color: blue;
+}
+
+/* hearts and diamonds */
+.card.c {
+    color: green;
+}
+.card.s {
+    color: black;
+}
+
+/* clubs and spades */
 .matrix-and-practice {
     display: flex;
     /*  Horizontal  */
@@ -520,7 +722,8 @@ h3 {
 }
 
 .card-combo.highlighted {
-    border: 2px solid yellow; /* Customize as needed */
+    border: 2px solid yellow;
+    /* Customize as needed */
 }
 
 .elo-import-export {
@@ -554,42 +757,70 @@ h3 {
     font-size: 5em;
     font-weight: bold;
     color: #fff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* Add a more intense shadow */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    /* Add a more intense shadow */
     opacity: 0;
-    transition: opacity 0.3s, transform 0.3s; /* Faster transition */
+    transition: opacity 0.3s, transform 0.3s;
+    /* Faster transition */
 }
 
 #elo-change-animation.show {
     opacity: 1;
-    transform: translate(-50%, -100%) scale(1.2); /* More prominent movement and scale */
+    transform: translate(-50%, -100%) scale(1.2);
+    /* More prominent movement and scale */
 }
 
 #elo-change-animation.positive {
     color: lawngreen;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1); /* Adjust shadow for green */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+    /* Adjust shadow for green */
 }
 
 #elo-change-animation.negative {
     color: orangered;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1); /* Adjust shadow for red */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 1);
+    /* Adjust shadow for red */
 }
 
 .shake {
-    animation: shake 0.3s linear; /* Reduced duration for snappier effect */
+    animation: shake 0.3s linear;
+    /* Reduced duration for snappier effect */
 }
 
 @keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(3px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(3px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
+    0% {
+        transform: translate(1px, 1px) rotate(0deg);
+    }
+    10% {
+        transform: translate(-1px, -2px) rotate(-1deg);
+    }
+    20% {
+        transform: translate(-3px, 0px) rotate(1deg);
+    }
+    30% {
+        transform: translate(3px, 2px) rotate(0deg);
+    }
+    40% {
+        transform: translate(1px, -1px) rotate(1deg);
+    }
+    50% {
+        transform: translate(-1px, 2px) rotate(-1deg);
+    }
+    60% {
+        transform: translate(-3px, 1px) rotate(0deg);
+    }
+    70% {
+        transform: translate(3px, 1px) rotate(-1deg);
+    }
+    80% {
+        transform: translate(-1px, -1px) rotate(1deg);
+    }
+    90% {
+        transform: translate(1px, 2px) rotate(0deg);
+    }
+    100% {
+        transform: translate(1px, -2px) rotate(-1deg);
+    }
 }
 
 .particle {
@@ -598,7 +829,8 @@ h3 {
     height: 10px;
     border-radius: 50%;
     background-color: #fff;
-    pointer-events: none; /* Ensure particles don't interfere with clicks */
+    pointer-events: none;
+    /* Ensure particles don't interfere with clicks */
     animation: particleExplode 0.5s forwards;
 }
 
@@ -608,7 +840,8 @@ h3 {
         opacity: 1;
     }
     100% {
-        transform: translate(var(--x), var(--y)) scale(0); /* Use CSS variables for random direction */
+        transform: translate(var(--x), var(--y)) scale(0);
+        /* Use CSS variables for random direction */
         opacity: 0;
     }
 }
@@ -616,12 +849,14 @@ h3 {
 /* ELO Progress Bar Styles */
 #elo-progress-container {
     width: 100%;
-    height: 20px; /* Increased height for better text visibility */
+    height: 20px;
+    /* Increased height for better text visibility */
     background-color: #34495e;
     border-radius: 5px;
     margin-bottom: 10px;
     overflow: hidden;
-    position: relative; /* To position percentage text */
+    position: relative;
+    /* To position percentage text */
 }
 
 #elo-progress-bar {
@@ -630,12 +865,73 @@ h3 {
     background-color: #2ecc71;
     border-radius: 5px;
     transition: width 0.3s ease;
-    color: white; /* Text color for the percentage */
+    color: white;
+    /* Text color for the percentage */
     font-size: 0.8em;
-    line-height: 20px; /* Vertically center the text */
-    text-align: center; /* Horizontally center the text */
-    position: absolute; /* Position the text within the bar */
+    line-height: 20px;
+    /* Vertically center the text */
+    text-align: center;
+    /* Horizontally center the text */
+    position: absolute;
+    /* Position the text within the bar */
     top: 0;
     left: 0;
     right: 0;
 }
+/* styles for Cards */
+.card {
+    display: inline-block;
+    width: 60px;
+    height: 84px;
+    border: 1px solid #bbb;
+    /* Subtle border */
+    border-radius: 8px;
+    /* Rounded corners */
+    text-align: center;
+    font-size: 2em;
+    /* Larger font size */
+    line-height: 70px;
+    margin: 5px;
+    background-color: #f9f9f9;
+    /* Light background */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    /* Soft shadow */
+    position: relative;
+    /* To position the suit */
+    transition: all 0.3s ease;
+    /* Smooth transition */
+}
+
+/* Add suit symbols */
+.card::after {
+    position: absolute;
+    top: -25px;
+    right: 3px;
+    font-size: 0.7em;
+}
+
+.card.h::after {
+    content: '\2665';
+    /* Heart symbol */
+    color: red;
+}
+
+.card.d::after {
+    content: '\2666';
+    /* Diamond symbol */
+    color: blue;
+}
+
+.card.c::after {
+    content: '\2663';
+    /* Club symbol */
+    color: green;
+}
+
+.card.s::after {
+    content: '\2660';
+    /* Spade symbol */
+    color: black;
+}
+
+/* Quitamos los Bloques Suit Colors*/
