@@ -32,15 +32,33 @@
 
         <div class="range-list" id="range-list"></div>
 
-    
-        <div class="color-options" id="color-options">
+        <div class="color-options" id="color-options"></div>
+
+        <div class="matrix-and-practice">
+            <div class="card-matrix-container">
+                <div class="card-matrix" id="card-matrix"></div>
+                <!-- Matriz centrada -->
+                <div class="legend-row" id="legend"></div>
+                <!-- Leyendas arriba -->
+
+            </div>
+            <!-- Practice Mode Elements -->
+            <div id="practice-cards" style="display: none;">
+                 <div id="elo-display"></div> <!-- *** MOVED HERE *** -->
+                 <!-- ELO Progress Bar -->
+                <div id="elo-progress-container">
+                    <div id="elo-progress-bar"></div>
+                </div>
+                <h3>Cartas Seleccionadas:</h3>
+                <div id="practice-card1"></div>
+                <div id="practice-card2"></div>
+                <div id="practice-choices"></div>
+                <div id="practice-result"></div>
+                <div id="elo-change-animation"></div> <!--  ELO Animation -->
+            </div>
         </div>
 
-        <div class="card-matrix-container">
-            <div class="card-matrix" id="card-matrix"></div> <!-- Matriz centrada -->
-            <div class="legend-row" id="legend"></div>  <!-- Leyendas arriba -->
 
-        </div>
         <div class="legend-editor" id="legend-editor"></div> <!-- Editor debajo -->
 
         <form id="save-range-form">
@@ -48,16 +66,24 @@
             <input type="text" id="range-name" required>
             <button type="button" id="save-range-button">Guardar Rango</button>
         </form>
+		<!-- Add the ELO import/export buttons here -->
+        <div class="elo-import-export">
+            <button id="export-elo-button">Exportar ELO</button>
+            <input type="file" id="import-elo-file" accept=".json" style="display: none;">
+            <button id="import-elo-button">Importar ELO</button>
+        </div>
 
         <div class="import-export">
             <button id="export-ranges-button">Exportar Rangos</button>
             <input type="file" id="import-file" accept=".json" style="display: none;">
             <button id="import-ranges-button">Importar Rangos</button>
         </div>
-            <button id="toggle-color-options">Mostrar/Ocultar Colores</button>
+        <button id="toggle-color-options">Mostrar/Ocultar Colores</button>
+        <button id="practice-mode-button">Modo Práctica</button>
+
 
     </div>
-    
+
     <script src="scripto.js"></script>
 </body>
 
