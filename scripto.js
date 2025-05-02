@@ -24,7 +24,7 @@ const colors = [
 ];
 
 const levels = [
-    { level: "Novato", elo: 0, emoji: "👶" },    // Adjusted
+    { level: "Novato", elo: 0, emoji: "👶" },
     { level: "Principiante", elo: 1000, emoji: "🎓" },
     { level: "Aspirante", elo: 5000, emoji: "🧑‍🎓" },
     { level: "Intermedio", elo: 10000, emoji: "👨‍🏫" },
@@ -32,8 +32,6 @@ const levels = [
     { level: "Experto", elo: 50000, emoji: "🏆" },
     { level: "Maestro", elo: 100000, emoji: "👑" },
     { level: "Dios", elo: 1000000, emoji: "🐐" },
-
-    
 ];
 
 // Function to create an HTML element
@@ -259,7 +257,7 @@ function saveRange() {
             stackSize: currentStackSize,
             combos: selectedCombos,
             legend: legendToSave,
-            elo: currentRange ? currentRange.elo : 0,   // Adjusted: Initial ELO is now 0
+            elo: currentRange ? currentRange.elo : 0,
             correctStreak: currentRange ? currentRange.correctStreak : 0,
             incorrectStreak: currentRange ? currentRange.incorrectStreak : 0
         };
@@ -375,7 +373,7 @@ function selectRange(range, button, index) {
     displayLegend(range);
     displayLegendEditor(range);
     updateEloDisplay(currentRange.elo);
-    updateEloProgressBar(currentRange.elo); // Update progress bar on range selection
+    updateEloProgressBar(currentRange.elo);
     displayStreakInformation(currentRange.correctStreak, currentRange.incorrectStreak);
 }
 
@@ -612,6 +610,56 @@ function initializeRangeButtons() {
     loadRanges();
 }
 
+function displayPracticeCards(combo) {
+    const card1Div = document.getElementById('practice-card1');
+    const card2Div = document.getElementById('practice-card2');
+
+    const cards = getVisualCards(combo);
+
+    card1Div.innerHTML = cards.card1; // Render HTML
+    card2Div.innerHTML = cards.card2;
+}
+
+// Function to Generate Visual Cards
+function getVisualCards(combo) {
+    let card1 = '';
+    let card2 = '';
+    const suits = ['h', 'd', 'c', 's']; // hearts, diamonds, clubs, spades
+
+    if (combo.length === 3) { // Suited or offsuit
+        const rank1 = combo[0];
+        const rank2 = combo[1];
+        const suited = combo[2] === 's';
+
+        // Random suit for first card
+        const suit1 = suits[Math.floor(Math.random() * suits.length)];
+        card1 = `<span class="card ${suit1} ${suit1}-color">${rank1}</span>`;
+
+        let suit2;
+        if (suited) {
+            suit2 = suit1; // Same suit
+        } else {
+            // Different suit
+            const otherSuits = suits.filter(s => s !== suit1);
+            suit2 = otherSuits[Math.floor(Math.random() * otherSuits.length)];
+        }
+        card2 = `<span class="card ${suit2} ${suit2}-color">${rank2}</span>`;
+    } else if (combo.length === 2) { // Pair
+        const rank = combo[0];
+        let suit1 = suits[Math.floor(Math.random() * suits.length)];
+        let suit2;
+        const otherSuits = suits.filter(s => s !== suit1);
+        suit2 = otherSuits[Math.floor(Math.random() * suits.length)];
+
+        card1 = `<span class="card ${suit1} ${suit1}-color">${rank}</span>`;
+        card2 = `<span class="card ${suit2} ${suit2}-color">${rank}</span>`;
+    }
+
+    return {
+        card1: card1,
+        card2: card2 
+    };
+}
 // Document Event Listener
 document.addEventListener('DOMContentLoaded', () => {
     try {
@@ -765,18 +813,6 @@ function getRandomCombo() {
     return allCombos[Math.floor(Math.random() * allCombos.length)];
 }
 
-// Function to display Practice Cards
-function displayPracticeCards(combo) {
-    const card1Div = document.getElementById('practice-card1');
-    const card2Div = document.getElementById('practice-card2');
-
-    const card1 = combo[0];
-    const card2 = combo[1];
-
-    card1Div.textContent = `Mano: ${combo}`;
-    card2Div.textContent = `¿Qué harías con esta mano?`;
-}
-
 // Function to display the Practice Choices
 function displayPracticeChoices(combo) {
     const choicesDiv = document.getElementById('practice-choices');
@@ -784,7 +820,10 @@ function displayPracticeChoices(combo) {
 
     colors.forEach(color => {
         if (currentRange.combos.some(c => c.color === color.class)) {
-            const button = createElement('button', [], color.name);
+            const button = createElement('button', ['practice-choice-button'], color.name);
+            button.style.backgroundColor = color.hex;
+            button.style.color = getContrastColor(color.hex);
+            button.innerHTML = `<i class="fas fa-check"></i> ${color.name}`;  // Add icon
             button.addEventListener('click', () => {
                 checkPracticeAnswer(combo, color.class, color.name);
             });
@@ -792,7 +831,8 @@ function displayPracticeChoices(combo) {
         }
     });
 
-    const foldButton = createElement('button', [], 'Fold');
+    const foldButton = createElement('button', ['practice-choice-button', 'fold-button'], 'Fold');
+    foldButton.innerHTML = '<i class="fas fa-times"></i> Fold';  // Add icon
     foldButton.addEventListener('click', () => {
         checkPracticeAnswer(combo, null, 'Fold');
     });
@@ -856,7 +896,7 @@ function checkPracticeAnswer(combo, selectedColor, selectedText) {
         correctColor = comboData.color;
     }
 
-    let eloChange = 0;
+     let eloChange = 0;
 
     if (selectedText === 'Fold') {
         if (!isInRange) {
@@ -870,6 +910,10 @@ function checkPracticeAnswer(combo, selectedColor, selectedText) {
         if (selectedColor === correctColor) {
             resultDiv.textContent = `¡Correcto! La acción correcta para ${combo} es ${selectedText}.`;
             eloChange = calculateEloChange(true);
+            const correctColorObj = colors.find(color => color.class === selectedColor);
+            if (correctColorObj) {
+                createParticles(correctColorObj.hex);  // Pass color to createParticles
+            }
         } else {
             resultDiv.textContent = `¡Incorrecto! La acción correcta para ${combo} no es ${selectedText}.`;
             eloChange = calculateEloChange(false);
@@ -879,7 +923,6 @@ function checkPracticeAnswer(combo, selectedColor, selectedText) {
     updateRangeElo(eloChange);
     showEloChangeAnimation(eloChange);
     triggerScreenShake();
-    createParticles();
     displayStreakInformation(currentRange.correctStreak, currentRange.incorrectStreak);
     showCorrectAnswerAndPrepareNext(combo);
 }
@@ -928,13 +971,15 @@ function triggerScreenShake() {
     }, 300);
 }
 
-function createParticles() {
+// Function to create particles on correct answer
+function createParticles(color) {
     const animationDiv = document.getElementById('elo-change-animation');
     const numParticles = 15;
 
     for (let i = 0; i < numParticles; i++) {
         const particle = document.createElement('div');
         particle.classList.add('particle');
+        particle.style.backgroundColor = color || '#fff';  // Use specified color
         animationDiv.appendChild(particle);
 
         const angle = Math.random() * Math.PI * 2;
@@ -1006,8 +1051,8 @@ function updateRangeElo(eloChange) {
         range.position === currentRange.position && range.stackSize === currentRange.stackSize && range.name === currentRange.name);
     if (rangeIndex !== -1) {
         savedRanges[rangeIndex].elo = currentRange.elo;
-        savedRanges[rangeIndex].correctStreak = currentRange.correctStreak;
-        savedRanges[rangeIndex].incorrectStreak = currentRange.incorrectStreak;
+	savedRanges[rangeIndex].correctStreak = currentRange.correctStreak;
+	savedRanges[rangeIndex].incorrectStreak = currentRange.incorrectStreak;
         localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
     }
 
@@ -1019,8 +1064,24 @@ function updateRangeElo(eloChange) {
 function showCorrectAnswerAndPrepareNext(combo) {
     loadRangeInMatrix(currentRange);
 
+    const comboData = currentRange.combos.find(c => c.combo === combo);
+    const resultDiv = document.getElementById('practice-result');
+    resultDiv.classList.add('show');  // Add fade-in class
+
+    if (comboData && comboData.color) {
+        const correctColorObj = colors.find(color => color.class === comboData.color);
+        if (correctColorObj) {
+            resultDiv.innerHTML = `La acción correcta para ${combo} es <span style="color: ${correctColorObj.hex}; font-weight: bold;"><i class="fas fa-check-circle"></i> ${correctColorObj.name}</span>.`;
+        } else {
+            resultDiv.textContent = `La acción correcta para ${combo} no está definida.`;
+        }
+    } else {
+        resultDiv.innerHTML = `La acción correcta para ${combo} es <span style="font-weight: bold;"><i class="fas fa-times-circle"></i> Fold</span>.`;
+    }
+
     setTimeout(() => {
         clearCardSelections();
+	resultDiv.classList.remove('show');  // Remove fade-in class
         startPracticeRound();
     }, 2000);
 }
@@ -1030,7 +1091,7 @@ function updateEloDisplay(elo) {
     const eloDisplay = document.getElementById('elo-display');
     if (eloDisplay) {
         const levelData = getLevel(elo);
-        eloDisplay.textContent = `ELO: ${elo} ${levelData.emoji} (${levelData.level})`;
+        eloDisplay.innerHTML = `ELO: ${elo} ${levelData.emoji} <span class="level-name">(${levelData.level})</span>`;
     }
 }
 
@@ -1054,7 +1115,7 @@ function exportElo() {
         name: range.name,
         position: range.position,
         stackSize: range.stackSize,
-        elo: range.elo || 0    //Ensure default elo is 0 for export
+        elo: range.elo || 0
     }));
 
     const jsonString = JSON.stringify(eloData, null, 2);
@@ -1116,4 +1177,18 @@ function importEloFromFile(event) {
 
         reader.readAsText(file);
     }
+}
+
+// Function to get contrast color
+function getContrastColor(hexColor) {
+    // Convert hex to RGB
+    const r = parseInt(hexColor.slice(1, 3), 16);
+    const g = parseInt(hexColor.slice(3, 5), 16);
+    const b = parseInt(hexColor.slice(5, 7), 16);
+
+    // Calculate YIQ value
+    const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+
+    // Return black or white based on YIQ value
+    return (yiq >= 128) ? 'black' : 'white';
 }
