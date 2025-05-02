@@ -30,7 +30,10 @@ const levels = [
     { level: "Intermedio", elo: 10000, emoji: "👨‍🏫" },
     { level: "Avanzado", elo: 25000, emoji: "🧙‍♂️" },
     { level: "Experto", elo: 50000, emoji: "🏆" },
-    { level: "Maestro", elo: 100000, emoji: "👑" }
+    { level: "Maestro", elo: 100000, emoji: "👑" },
+    { level: "Dios", elo: 1000000, emoji: "🐐" },
+
+    
 ];
 
 // Function to create an HTML element
@@ -806,13 +809,13 @@ function displayStreakInformation(correctStreak, incorrectStreak) {
         let multiplier = 1;
         let emoji = "👍";
         if (correctStreak >= 100) {
-            multiplier = 10;
+            multiplier = 1000;
             emoji = "🔥";
         } else if (correctStreak >= 50) {
-            multiplier = 5;
+            multiplier = 100;
             emoji = "✨";
         } else if (correctStreak >= 10) {
-            multiplier = 2;
+            multiplier = 10;
             emoji = "💪";
         }
         streakMessage = `Racha Correcta: ${correctStreak} ${emoji} x${multiplier} puntos`;
@@ -890,11 +893,11 @@ function calculateEloChange(isCorrect) {
         currentRange.correctStreak++;
 
         if (currentRange.correctStreak >= 100) {
-            eloChange = 1 * 10;
+            eloChange = 1 * 1000;
         } else if (currentRange.correctStreak >= 50) {
-            eloChange = 1 * 5;
+            eloChange = 1 * 100;
         } else if (currentRange.correctStreak >= 10) {
-            eloChange = 1 * 2;
+            eloChange = 1 * 10;
         } else {
             eloChange = 1;
         }
