@@ -1,4 +1,5 @@
 const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+const suits = ['h', 'd', 'c', 's'];
 let selectedColor = '';
 let currentPosition = '';
 let currentStackSize = 100;
@@ -7,21 +8,32 @@ let lastSelectedRangeIndex = 0;
 let isDragging = false;
 let currentRange = null;
 let colorOptionsVisible = false;
+let practiceMode = false;
+let eloDisplay;
 
-// Long press variables
 let longPressTimer;
-const longPressDuration = 500; // Adjust as needed (milliseconds)
-let longPressTarget; // The element that triggered the long press
+const longPressDuration = 500;
 
 const colors = [
     { name: 'Rojo', class: 'red', hex: '#ff0000' },
     { name: 'Azul', class: 'blue', hex: '#0000ff' },
     { name: 'Verde', class: 'green', hex: '#00ff00' },
-    { name: 'Amarillo', class: 'yellow', hex: '#ffff00' },
-    { name: 'Naranja', class: 'orange', hex: '#ffa500' },
-    { name: 'Morado', class: 'purple', hex: '#800080' }
+    { name: 'Amarillo', hex: '#ffff00' },
+    { name: 'Naranja', hex: '#ffa500' },
+    { name: 'Morado', hex: '#800080' }
 ];
 
+const levels = [
+    { level: "Novato", elo: 0, emoji: "👶" },    // Adjusted
+    { level: "Principiante", elo: 1000, emoji: "🎓" },
+    { level: "Aspirante", elo: 5000, emoji: "🧑‍🎓" },
+    { level: "Intermedio", elo: 10000, emoji: "👨‍🏫" },
+    { level: "Avanzado", elo: 25000, emoji: "🧙‍♂️" },
+    { level: "Experto", elo: 50000, emoji: "🏆" },
+    { level: "Maestro", elo: 100000, emoji: "👑" }
+];
+
+// Function to create an HTML element
 function createElement(type, classes = [], text = '', attributes = {}) {
     const element = document.createElement(type);
     classes.forEach(cls => element.classList.add(cls));
@@ -32,10 +44,12 @@ function createElement(type, classes = [], text = '', attributes = {}) {
     return element;
 }
 
+// Function to attach all event listeners to the document
 function attachEventListeners() {
     try {
         const container = document.querySelector('.container');
 
+        //Color Options
         const colorOptionsDiv = document.querySelector('.color-options');
         colors.forEach(color => {
             const colorOptionDiv = createElement('div', ['color-option']);
@@ -101,7 +115,9 @@ function attachEventListeners() {
 
         cardMatrix.addEventListener('mouseup', () => isDragging = false);
 
-        cardMatrix.addEventListener('mouseleave', () => isDragging = false);
+        cardMatrix.addEventListener('mouseleave', (e) => isDragging = false);
+
+        eloDisplay = document.getElementById("elo-display");
 
         cardMatrix.addEventListener('mouseover', (e) => {
             if (isDragging && e.target.classList.contains('card-combo')) {
@@ -113,11 +129,26 @@ function attachEventListeners() {
         clearRangeButton.addEventListener('click', clearCardSelections);
         container.insertBefore(clearRangeButton, document.getElementById('save-range-form'));
 
+        const practiceModeButton = document.getElementById('practice-mode-button');
+        practiceModeButton.addEventListener('click', togglePracticeMode);
+
+        //Export ELO button
+        const exportEloButton = document.getElementById('export-elo-button');
+        if (exportEloButton) exportEloButton.addEventListener('click', exportElo);
+
+        // Import ELO button
+        const importEloFileElement = document.getElementById('import-elo-file');
+        if (importEloFileElement) importEloFileElement.addEventListener('change', importEloFromFile);
+
+        const importEloButton = document.getElementById('import-elo-button');
+        if (importEloButton) importEloButton.addEventListener('click', () => importEloFileElement.click());
+
     } catch (error) {
         console.error('Error attaching event listeners:', error);
     }
 }
 
+// Function to toggle card combo
 function toggleCombo(event) {
     const cardDiv = event.target;
     const combo = cardDiv.dataset.combo;
@@ -126,13 +157,13 @@ function toggleCombo(event) {
         const colorClasses = colors.map(c => `selected-${c.class}`);
         cardDiv.classList.remove(...colorClasses);
     } else {
-        // Set the color regardless of the current state
         const colorClasses = colors.map(c => `selected-${c.class}`);
         cardDiv.classList.remove(...colorClasses);
         cardDiv.classList.add(`selected-${selectedColor}`);
     }
 }
 
+// Function to set a color
 function setColor(color) {
     if (selectedColor === color) {
         selectedColor = '';
@@ -143,6 +174,7 @@ function setColor(color) {
     updateMatrixColors();
 }
 
+// Function to update color selection indicator
 function updateColorSelectionIndicator() {
     document.querySelectorAll('.color-option').forEach(option => {
         const colorButton = option.querySelector('.color-button');
@@ -158,6 +190,7 @@ function updateColorSelectionIndicator() {
     });
 }
 
+// Function to update matrix colors
 function updateMatrixColors() {
     const styleSheet = document.styleSheets[0];
 
@@ -179,6 +212,7 @@ function updateMatrixColors() {
     });
 }
 
+// Function to save a range
 function saveRange() {
     try {
         if (!currentPosition) {
@@ -214,7 +248,6 @@ function saveRange() {
             return;
         }
 
-        // Get the legend from the current range if it exists. This preserves it!
         let legendToSave = currentRange ? currentRange.legend : [];
 
         const rangeData = {
@@ -222,7 +255,10 @@ function saveRange() {
             position: currentPosition,
             stackSize: currentStackSize,
             combos: selectedCombos,
-            legend: legendToSave
+            legend: legendToSave,
+            elo: currentRange ? currentRange.elo : 0,   // Adjusted: Initial ELO is now 0
+            correctStreak: currentRange ? currentRange.correctStreak : 0,
+            incorrectStreak: currentRange ? currentRange.incorrectStreak : 0
         };
 
         let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
@@ -244,6 +280,21 @@ function saveRange() {
     }
 }
 
+// Function to get the Level according to the ELO
+function getLevel(elo) {
+    let currentLevel = levels[0];
+
+    for (let i = 0; i < levels.length; i++) {
+        if (elo >= levels[i].elo) {
+            currentLevel = levels[i];
+        } else {
+            break;
+        }
+    }
+    return currentLevel;
+}
+
+// Function to load all Ranges
 function loadRanges() {
     try {
         const rangeList = document.getElementById('range-list');
@@ -258,11 +309,12 @@ function loadRanges() {
 
         if (filteredRanges.length > 0) {
             filteredRanges.forEach((range, index) => {
-                const rangeButtonContainer = document.createElement('div');
+                const rangeButtonContainer = createElement('div');
                 rangeButtonContainer.classList.add('range-button-container');
 
                 const rangeButton = createElement('button', ['range-button'], `${range.name}`);
                 rangeButton.addEventListener('click', () => selectRange(range, rangeButton, index));
+                rangeButton.textContent = `${range.name}`;
                 rangeButtonContainer.appendChild(rangeButton);
 
                 const deleteButton = createElement('span', ['delete-range-button'], 'X');
@@ -292,11 +344,14 @@ function loadRanges() {
             activeRangeButton = null;
             clearCardSelections();
         }
+
+
     } catch (error) {
         console.error('Error loading ranges:', error);
     }
 }
 
+// Function to delete a Range
 function deleteRange(rangeToDelete) {
     if (confirm(`¿Estás seguro de que quieres eliminar el rango "${rangeToDelete.name}"?`)) {
         let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
@@ -308,6 +363,7 @@ function deleteRange(rangeToDelete) {
     }
 }
 
+// Function to select a Range
 function selectRange(range, button, index) {
     currentRange = range;
     loadRangeInMatrix(range);
@@ -315,8 +371,12 @@ function selectRange(range, button, index) {
     lastSelectedRangeIndex = index;
     displayLegend(range);
     displayLegendEditor(range);
+    updateEloDisplay(currentRange.elo);
+    updateEloProgressBar(currentRange.elo); // Update progress bar on range selection
+    displayStreakInformation(currentRange.correctStreak, currentRange.incorrectStreak);
 }
 
+// Function to display the legend Editor
 function displayLegendEditor(range) {
     const editorContainer = document.getElementById('legend-editor');
     editorContainer.innerHTML = '';
@@ -343,7 +403,7 @@ function displayLegendEditor(range) {
             displayLegend(range);
             saveRangesToLocalStorage();
         });
-        itemContainer.appendChild(textInput);
+        itemContainer.appendChild(colorInput);
 
         const deleteButton = createElement('button', [], 'Eliminar');
         deleteButton.addEventListener('click', () => {
@@ -367,6 +427,7 @@ function displayLegendEditor(range) {
     editorContainer.appendChild(addButton);
 }
 
+// Function to save the range to the local Storage
 function saveRangesToLocalStorage() {
     let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
     const rangeIndex = savedRanges.findIndex(range =>
@@ -374,16 +435,19 @@ function saveRangesToLocalStorage() {
 
     if (rangeIndex !== -1) {
         savedRanges[rangeIndex] = currentRange;
+        if (typeof savedRanges[rangeIndex].elo !== 'number') {
+            savedRanges[rangeIndex].elo = 0;
+        }
         localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
     }
 
     localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
 }
 
+// Function to load Range in Matrix
 function loadRangeInMatrix(range) {
     try {
-        clearCardSelections()
-
+        clearCardSelections();
         range.combos.forEach(comboData => {
             const cardDiv = document.querySelector(`.card-combo[data-combo="${comboData.combo}"]`);
             if (cardDiv && comboData.color) {
@@ -395,6 +459,7 @@ function loadRangeInMatrix(range) {
     }
 }
 
+// Function to clear card Selection
 function clearCardSelections() {
     try {
         document.querySelectorAll('.card-combo').forEach(cardDiv => {
@@ -406,6 +471,7 @@ function clearCardSelections() {
     }
 }
 
+// Function to export Ranges
 function exportRanges() {
     try {
         const savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
@@ -426,6 +492,7 @@ function exportRanges() {
     }
 }
 
+// Function to import ranges from file
 function importRangesFromFile(event) {
     try {
         const file = event.target.files[0];
@@ -449,12 +516,14 @@ function importRangesFromFile(event) {
     }
 }
 
+// Function to set Active Range Button
 function setActiveRangeButton(button) {
     if (activeRangeButton) activeRangeButton.classList.remove('active');
     activeRangeButton = button;
     activeRangeButton.classList.add('active');
 }
 
+// Function to generate the card matrix
 function generateCardMatrix() {
     try {
         const matrix = document.getElementById('card-matrix');
@@ -472,10 +541,10 @@ function generateCardMatrix() {
 
                 if (i === j) {
                     combo = rank1 + rank2;
-                } else if (i < j) { // Only generate combos where rank1 > rank2
+                } else if (i < j) {
                     combo = rank1 + rank2 + 's';
-                } else { // Only generate combos where rank1 > rank2
-                    combo = rank2 + rank1 + 'o'; // Swap ranks for offsuit combos
+                } else {
+                    combo = rank2 + rank1 + 'o';
                 }
 
                 const cardDiv = document.createElement('div');
@@ -484,32 +553,17 @@ function generateCardMatrix() {
                 cardDiv.dataset.combo = combo;
                 cardDiv.addEventListener('click', toggleCombo);
 
-                // Add long press listeners
-                cardDiv.addEventListener('mousedown', (e) => {
-                    longPressTarget = e.target;
-                    longPressTimer = setTimeout(() => {
-                        handleLongPress(longPressTarget);
-                    }, longPressDuration);
-                });
-
-                cardDiv.addEventListener('mouseup', () => {
-                    clearTimeout(longPressTimer);
-                });
-
-                cardDiv.addEventListener('mouseleave', () => {
-                    clearTimeout(longPressTimer);
-                });
-
                 matrix.appendChild(cardDiv);
             }
         }
 
-        restoreCardSelections();
+        // restoreCardSelections(); //Load saved Ranges
     } catch (error) {
         console.error('Error generating card matrix:', error);
     }
 }
 
+// Function to restore card selection
 function restoreCardSelections() {
     try {
         clearCardSelections();
@@ -530,6 +584,7 @@ function restoreCardSelections() {
     }
 }
 
+// Function to display the Legend
 function displayLegend(range) {
     const legendContainer = document.getElementById('legend');
     legendContainer.innerHTML = '';
@@ -549,43 +604,47 @@ function displayLegend(range) {
     }
 }
 
+// Function to initilize the Range Buttons
 function initializeRangeButtons() {
     loadRanges();
 }
 
+// Document Event Listener
 document.addEventListener('DOMContentLoaded', () => {
     try {
         attachEventListeners();
         generateCardMatrix();
         updateMatrixColors();
+        restoreCardSelections();
 
         document.querySelector('.stack-size-button[data-stack-size="100"]').classList.add('active');
         document.querySelector('.position-button[data-position="utg"]').classList.add('active');
         currentPosition = 'utg';
 
         initializeRangeButtons();
+
     } catch (error) {
         console.error('Initialization error:', error);
     }
 });
 
-// Helper Functions for Selection Logic
-
+// Function to know is Combo Selected
 function isComboSelected(combo) {
     const cardDiv = document.querySelector(`.card-combo[data-combo="${combo}"]`);
     if (!cardDiv) return false;
-    return colors.some(color => cardDiv.classList.contains(`selected-${color.class}`));
+    return colors.some(color => cardDiv.classList.contains(`selected-${c.class}`));
 }
 
+// Function to select higher Pairs
 function selectHigherPairs(combo) {
-    const rank = combo[0]; // e.g., "A" from "AA"
+    const rank = combo[0];
     const rankIndex = ranks.indexOf(rank);
     if (rankIndex === -1) return;
 
     for (let i = 0; i < rankIndex; i++) {
         const higherRank = ranks[i];
-        const higherPairCombo = higherRank + higherRank;
-        if (!isComboSelected(higherPairCombo)) {  // Only select if not already selected
+        const higherPairCombo = higherRank + higherPairCombo;
+        if (!isComboSelected(higherPairCombo)) {
             const cardDiv = document.querySelector(`.card-combo[data-combo="${higherPairCombo}"]`);
             if (cardDiv) {
                 toggleCombo({ target: cardDiv });
@@ -594,6 +653,7 @@ function selectHigherPairs(combo) {
     }
 }
 
+// Function to Select SuitedLeft
 function selectSuitedLeft(combo) {
     const rank = combo[0];
     const suitRank = combo[1];
@@ -607,7 +667,7 @@ function selectSuitedLeft(combo) {
     for (let i = 0; i <= rankIndex; i++) {
         const leftRank = ranks[i];
         const leftSuitedCombo = rank + leftRank + 's';
-        if (!isComboSelected(leftSuitedCombo)) { // Only select if not already selected
+        if (!isComboSelected(leftSuitedCombo)) {
             const cardDiv = document.querySelector(`.card-combo[data-combo="${leftSuitedCombo}"]`);
 
             if (cardDiv) {
@@ -617,13 +677,14 @@ function selectSuitedLeft(combo) {
     }
 }
 
+// Function to Select Offsuit Above
 function selectOffsuitAbove(combo) {
     if (combo.length !== 3 || combo[2] !== 'o') return;
 
-    const firstRank = combo[0];  //First rank of the combo
-    const secondRank = combo[1]; //Second rank of the combo
-    const firstRankIndex = ranks.indexOf(firstRank); //Index of the first rank
-    const secondRankIndex = ranks.indexOf(secondRank); //Index of the second rank
+    const firstRank = combo[0];
+    const secondRank = combo[1];
+    const firstRankIndex = ranks.indexOf(firstRank);
+    const secondRankIndex = ranks.indexOf(secondRank);
 
     if (firstRankIndex === -1 || secondRankIndex === -1) return;
 
@@ -632,7 +693,7 @@ function selectOffsuitAbove(combo) {
 
         const aboveOffsuitCombo = firstRank + aboveRank + 'o';
 
-        if (!isComboSelected(aboveOffsuitCombo)) { // Only select if not already selected
+        if (!isComboSelected(aboveOffsuitCombo)) {
             const cardDiv = document.querySelector(`.card-combo[data-combo="${aboveOffsuitCombo}"]`);
 
             if (cardDiv) {
@@ -642,14 +703,414 @@ function selectOffsuitAbove(combo) {
     }
 }
 
-function handleLongPress(target) {
-    const combo = target.dataset.combo;
+// NEW: Practice Mode Functions
 
-    if (combo.length === 2) {
-        selectHigherPairs(combo);
-    } else if (combo.endsWith('s')) {
-        selectSuitedLeft(combo);
-    } else if (combo.endsWith('o')) {
-        selectOffsuitAbove(combo);
+// Function to toggle Practice Mode
+function togglePracticeMode() {
+    practiceMode = !practiceMode;
+    const practiceCardsDiv = document.getElementById('practice-cards');
+
+    if (practiceMode) {
+        if (!currentRange) {
+            alert('Selecciona un rango primero.');
+            practiceMode = false;
+            return;
+        }
+
+        practiceCardsDiv.style.display = 'block';
+
+        let eloDisplay = document.getElementById('elo-display');
+        if (eloDisplay) {
+            updateEloDisplay(currentRange.elo);
+        }
+
+        updateEloProgressBar(currentRange.elo);
+
+        if (!currentRange.correctStreak) currentRange.correctStreak = 0;
+        if (!currentRange.incorrectStreak) currentRange.incorrectStreak = 0;
+        startPracticeRound();
+
+    } else {
+        practiceCardsDiv.style.display = 'none';
+
+        restoreCardSelections();
+    }
+
+    const colorOptions = document.getElementById('color-options');
+    colorOptions.style.display = practiceMode ? 'none' : 'flex';
+}
+
+// Function to hide the color
+function hideRangeColors() {
+    document.querySelectorAll('.card-combo').forEach(cardDiv => {
+        const colorClasses = colors.map(c => `selected-${c.class}`);
+        cardDiv.classList.remove(...colorClasses);
+    });
+}
+
+// Function to start the Practice Round
+function startPracticeRound() {
+    hideRangeColors();
+    const combo = getRandomCombo();
+    displayPracticeCards(combo);
+    displayPracticeChoices(combo);
+}
+
+// Function to get Random Combo
+function getRandomCombo() {
+    const allCombos = Array.from(document.querySelectorAll('.card-combo')).map(cardDiv => cardDiv.dataset.combo);
+    return allCombos[Math.floor(Math.random() * allCombos.length)];
+}
+
+// Function to display Practice Cards
+function displayPracticeCards(combo) {
+    const card1Div = document.getElementById('practice-card1');
+    const card2Div = document.getElementById('practice-card2');
+
+    const card1 = combo[0];
+    const card2 = combo[1];
+
+    card1Div.textContent = `Mano: ${combo}`;
+    card2Div.textContent = `¿Qué harías con esta mano?`;
+}
+
+// Function to display the Practice Choices
+function displayPracticeChoices(combo) {
+    const choicesDiv = document.getElementById('practice-choices');
+    choicesDiv.innerHTML = '';
+
+    colors.forEach(color => {
+        if (currentRange.combos.some(c => c.color === color.class)) {
+            const button = createElement('button', [], color.name);
+            button.addEventListener('click', () => {
+                checkPracticeAnswer(combo, color.class, color.name);
+            });
+            choicesDiv.appendChild(button);
+        }
+    });
+
+    const foldButton = createElement('button', [], 'Fold');
+    foldButton.addEventListener('click', () => {
+        checkPracticeAnswer(combo, null, 'Fold');
+    });
+
+    choicesDiv.appendChild(foldButton);
+}
+
+// Function to display streak information
+function displayStreakInformation(correctStreak, incorrectStreak) {
+    let streakMessage = "";
+    const eloDisplay = document.getElementById('elo-display');
+
+    if (correctStreak > 0) {
+        let multiplier = 1;
+        let emoji = "👍";
+        if (correctStreak >= 100) {
+            multiplier = 10;
+            emoji = "🔥";
+        } else if (correctStreak >= 50) {
+            multiplier = 5;
+            emoji = "✨";
+        } else if (correctStreak >= 10) {
+            multiplier = 2;
+            emoji = "💪";
+        }
+        streakMessage = `Racha Correcta: ${correctStreak} ${emoji} x${multiplier} puntos`;
+    } else if (incorrectStreak > 0) {
+        let multiplier = 1;
+        let emoji = "😥";
+
+        if (incorrectStreak === 2) {
+            multiplier = 2;
+            emoji = "🙁";
+        } else if (incorrectStreak === 3) {
+            multiplier = 4;
+            emoji = "😟";
+        } else if (incorrectStreak === 4) {
+            multiplier = 8;
+            emoji = "😭";
+        } else if (incorrectStreak >= 5) {
+            multiplier = 10;
+            emoji = "💀";
+        }
+        streakMessage = `Racha Incorrecta: ${incorrectStreak} ${emoji} x${multiplier} descuento`;
+    }
+
+    if (eloDisplay) {
+        eloDisplay.innerHTML += `<br>${streakMessage}`;
+    }
+}
+
+// Function to check the Practice Answer
+function checkPracticeAnswer(combo, selectedColor, selectedText) {
+    const resultDiv = document.getElementById('practice-result');
+    const simplifiedCombo = getSimplifiedCombo(combo);
+    const isInRange = currentRange.combos.some(c => getSimplifiedCombo(c.combo) === simplifiedCombo);
+
+    let correctColor = null;
+    const comboData = currentRange.combos.find(c => c.combo === combo);
+    if (comboData) {
+        correctColor = comboData.color;
+    }
+
+    let eloChange = 0;
+
+    if (selectedText === 'Fold') {
+        if (!isInRange) {
+            resultDiv.textContent = `¡Correcto! Fold es la mejor opción para ${combo} en este rango.`;
+            eloChange = calculateEloChange(true);
+        } else {
+            resultDiv.textContent = `¡Incorrecto! ${combo} debería tener otra acción en este rango.`;
+            eloChange = calculateEloChange(false);
+        }
+    } else {
+        if (selectedColor === correctColor) {
+            resultDiv.textContent = `¡Correcto! La acción correcta para ${combo} es ${selectedText}.`;
+            eloChange = calculateEloChange(true);
+        } else {
+            resultDiv.textContent = `¡Incorrecto! La acción correcta para ${combo} no es ${selectedText}.`;
+            eloChange = calculateEloChange(false);
+        }
+    }
+
+    updateRangeElo(eloChange);
+    showEloChangeAnimation(eloChange);
+    triggerScreenShake();
+    createParticles();
+    displayStreakInformation(currentRange.correctStreak, currentRange.incorrectStreak);
+    showCorrectAnswerAndPrepareNext(combo);
+}
+
+// Function to calculate elo change
+function calculateEloChange(isCorrect) {
+    let eloChange = 0;
+
+    if (isCorrect) {
+        currentRange.incorrectStreak = 0;
+        currentRange.correctStreak++;
+
+        if (currentRange.correctStreak >= 100) {
+            eloChange = 1 * 10;
+        } else if (currentRange.correctStreak >= 50) {
+            eloChange = 1 * 5;
+        } else if (currentRange.correctStreak >= 10) {
+            eloChange = 1 * 2;
+        } else {
+            eloChange = 1;
+        }
+    } else {
+        currentRange.correctStreak = 0;
+        currentRange.incorrectStreak++;
+
+        if (currentRange.incorrectStreak === 1) {
+            eloChange = -10;
+        } else if (currentRange.incorrectStreak === 2) {
+            eloChange = -20;
+        } else if (currentRange.incorrectStreak === 3) {
+            eloChange = -40;
+        } else if (currentRange.incorrectStreak === 4) {
+            eloChange = -80;
+        } else {
+            eloChange = -100;
+        }
+    }
+    return eloChange;
+}
+
+function triggerScreenShake() {
+    const container = document.querySelector('.container');
+    container.classList.add('shake');
+    setTimeout(() => {
+        container.classList.remove('shake');
+    }, 300);
+}
+
+function createParticles() {
+    const animationDiv = document.getElementById('elo-change-animation');
+    const numParticles = 15;
+
+    for (let i = 0; i < numParticles; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        animationDiv.appendChild(particle);
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 50 + 30;
+        const x = Math.cos(angle) * distance;
+        const y = Math.sin(angle) * distance;
+
+        particle.style.setProperty('--x', `${x}px`);
+        particle.style.setProperty('--y', `${y}px`);
+
+        setTimeout(() => {
+            particle.remove();
+        }, 500);
+    }
+}
+
+// Function to Show the ELO Change Animation
+function showEloChangeAnimation(eloChange) {
+    const animationDiv = document.getElementById('elo-change-animation');
+    animationDiv.textContent = (eloChange > 0 ? '+' : '') + eloChange;
+    animationDiv.classList.add('show');
+
+    if (eloChange > 0) {
+        animationDiv.classList.add('positive');
+        animationDiv.classList.remove('negative');
+    } else if (eloChange < 0) {
+        animationDiv.classList.add('negative');
+        animationDiv.classList.remove('positive');
+    } else {
+        animationDiv.classList.remove('positive', 'negative');
+    }
+
+    setTimeout(() => {
+        animationDiv.classList.remove('show');
+    }, 750);
+}
+
+// Function to get Simplified Combo
+function getSimplifiedCombo(combo) {
+
+    const rank1 = combo[0];
+    const rank2 = combo[1];
+    const suitedChar = combo[2];
+
+    const ranksArray = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+
+    if (combo.length === 2) return combo[0] + combo[1];
+    const simplifiedCombo = (ranksArray.indexOf(rank1) < ranksArray.indexOf(rank2) ? rank1 + rank2 : rank2 + rank1)
+        + suitedChar;
+    return simplifiedCombo
+}
+
+// Function to update the Range ELO
+function updateRangeElo(eloChange) {
+    if (!currentRange) {
+        console.warn("updateRangeElo called with no currentRange!");
+        return;
+    }
+    if (typeof currentRange.elo !== 'number') {
+        console.error("currentRange.elo is not a number! It is:", currentRange.elo);
+        currentRange.elo = 0;
+    }
+
+    currentRange.elo += eloChange;
+    if (currentRange.elo < 0) currentRange.elo = 0;
+
+    let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
+    const rangeIndex = savedRanges.findIndex(range =>
+        range.position === currentRange.position && range.stackSize === currentRange.stackSize && range.name === currentRange.name);
+    if (rangeIndex !== -1) {
+        savedRanges[rangeIndex].elo = currentRange.elo;
+        savedRanges[rangeIndex].correctStreak = currentRange.correctStreak;
+        savedRanges[rangeIndex].incorrectStreak = currentRange.incorrectStreak;
+        localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
+    }
+
+    updateEloDisplay(currentRange.elo)
+    updateEloProgressBar(currentRange.elo);
+}
+
+// Function to show the correct answer and Prepare the Next Round
+function showCorrectAnswerAndPrepareNext(combo) {
+    loadRangeInMatrix(currentRange);
+
+    setTimeout(() => {
+        clearCardSelections();
+        startPracticeRound();
+    }, 2000);
+}
+
+// Function to update ELO Display
+function updateEloDisplay(elo) {
+    const eloDisplay = document.getElementById('elo-display');
+    if (eloDisplay) {
+        const levelData = getLevel(elo);
+        eloDisplay.textContent = `ELO: ${elo} ${levelData.emoji} (${levelData.level})`;
+    }
+}
+
+function updateEloProgressBar(elo) {
+    const progressBar = document.getElementById('elo-progress-bar');
+    const currentLevel = getLevel(elo);
+    const nextLevelIndex = levels.indexOf(currentLevel) + 1;
+    const nextLevelElo = nextLevelIndex < levels.length ? levels[nextLevelIndex].elo : 100000;
+
+    const progress = Math.min(1, (elo - currentLevel.elo) / (nextLevelElo - currentLevel.elo)) * 100;
+
+    progressBar.style.width = `${progress}%`;
+    progressBar.textContent = `${Math.round(progress)}%`;
+}
+
+// Function to export the ELO
+function exportElo() {
+    let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
+
+    const eloData = savedRanges.map(range => ({
+        name: range.name,
+        position: range.position,
+        stackSize: range.stackSize,
+        elo: range.elo || 0    //Ensure default elo is 0 for export
+    }));
+
+    const jsonString = JSON.stringify(eloData, null, 2);
+
+    const blob = new Blob([jsonString], { type: "application/json" });
+
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pokerElo.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+}
+
+// Function to import the ELO from File
+function importEloFromFile(event) {
+    const file = event.target.files[0];
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            try {
+                const importedEloData = JSON.parse(e.target.result);
+
+                let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
+
+                importedEloData.forEach(importedRange => {
+                    const rangeIndex = savedRanges.findIndex(range =>
+                        range.name === importedRange.name &&
+                        range.position === importedRange.position &&
+                        range.stackSize === importedRange.stackSize
+                    );
+
+                    if (rangeIndex !== -1) {
+                        savedRanges[rangeIndex].elo = importedRange.elo;
+                    }
+                });
+
+                localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
+
+                alert('ELO importado correctamente.');
+
+                loadRanges();
+
+                if (practiceMode && currentRange) {
+                    updateEloDisplay(currentRange.elo);
+                    updateEloProgressBar(currentRange.elo);
+                }
+            } catch (error) {
+                alert('Error al importar ELO: ' + error);
+                console.error('Error parsing imported ELO:', error);
+            }
+        };
+
+        reader.readAsText(file);
     }
 }
