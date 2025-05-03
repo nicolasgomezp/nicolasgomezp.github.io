@@ -2,7 +2,7 @@ const ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
 const suits = ['h', 'd', 'c', 's'];
 let selectedColor = '';
 let currentPosition = '';
-let currentStackSize = 100;
+let currentStackSize = 50;
 let activeRangeButton = null;
 let lastSelectedRangeIndex = 0;
 let isDragging = false;
@@ -18,11 +18,11 @@ const colors = [
     { name: 'Rojo', class: 'red', hex: '#ff0000' },
     { name: 'Azul', class: 'blue', hex: '#0000ff' },
     { name: 'Verde', class: 'green', hex: '#00ff00' },
-    { name: 'Amarillo', hex: '#ffff00' },
-    { name: 'Naranja', hex: '#ffa500' },
-    { name: 'Morado', hex: '#800080' }
+    { name: 'Negro', class: 'yellow', hex: '#000000' },
+    { name: 'Naranja', class: 'orange', hex: '#ffa500' },
+    { name: 'Morado', class: 'purple', hex: '#800080' }
 ];
-
+ 
 const levels = [
     { level: "Novato", elo: 0, emoji: "👶" },
     { level: "Principiante", elo: 1000, emoji: "🎓" },
