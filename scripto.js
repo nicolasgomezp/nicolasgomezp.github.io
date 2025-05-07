@@ -639,7 +639,9 @@ function setActiveRangeButton(button) {
 
 // Key for localStorage to store badges, now including the current position, stacksize and rangetype
 function getBadgeStorageKey() {
-    return `pokerBadges_${currentPosition}_${currentStackSize}_${currentPreflopRangeType}`;
+    // Check if currentRange is defined and has a name property
+    const rangeName = currentRange && currentRange.name ? currentRange.name : 'default'; // Use a default if no range selected
+    return `pokerBadges_${currentPosition}_${currentStackSize}_${currentPreflopRangeType}_${rangeName}`;
 }
 
 // Function to load badges from localStorage
