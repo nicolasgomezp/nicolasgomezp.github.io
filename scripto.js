@@ -10,6 +10,7 @@ let currentRange = null;
 let colorOptionsVisible = false;
 let practiceMode = false;
 let eloDisplay;
+let currentPreflopRangeType = null;
 
 let longPressTimer;
 const longPressDuration = 500;
@@ -22,7 +23,14 @@ const colors = [
     { name: 'Naranja', class: 'orange', hex: '#ffa500' },
     { name: 'Morado', class: 'purple', hex: '#800080' }
 ];
- 
+
+const preflopRangeTypes = [
+    { name: 'OR', key: 'or' },
+    { name: 'Vs OR', key: 'vs_or' },
+    { name: 'Vs 3bet', key: 'vs_3bet' },
+    { name: 'Todos', key: 'todos' } // Added 'Todos' option
+];
+
 const levels = [
     { level: "Novato", elo: 0, emoji: "👶" },
     { level: "Principiante", elo: 1000, emoji: "🎓" },
@@ -49,6 +57,23 @@ function createElement(type, classes = [], text = '', attributes = {}) {
 function attachEventListeners() {
     try {
         const container = document.querySelector('.container');
+
+        // Preflop Range Type Buttons
+        const preflopSelector = document.getElementById('range-preflop-selector');
+        preflopRangeTypes.forEach(type => {
+            const button = createElement('button', ['range-preflop-button'], type.name, { 'data-range-type': type.key });
+            button.addEventListener('click', () => {
+                setCurrentPreflopRangeType(type.key);
+            });
+            preflopSelector.appendChild(button);
+        });
+
+        function setCurrentPreflopRangeType(rangeType) {
+            document.querySelectorAll('.range-preflop-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.range-preflop-button[data-range-type="${rangeType}"]`).classList.add('active');
+            currentPreflopRangeType = rangeType;
+            initializeRangeButtons(); // Refresh range buttons on preflop type change
+        }
 
         //Color Options
         const colorOptionsDiv = document.querySelector('.color-options');
@@ -221,6 +246,11 @@ function saveRange() {
             return;
         }
 
+        if (!currentPreflopRangeType) {
+            alert('Por favor, selecciona un tipo de rango (OR, Vs OR, Vs 3bet, Todos) primero.');
+            return;
+        }
+
         const rangeNameInput = document.getElementById('range-name');
         if (!rangeNameInput) {
             console.error('Range name input not found!');
@@ -255,6 +285,7 @@ function saveRange() {
             name: rangeName,
             position: currentPosition,
             stackSize: currentStackSize,
+            rangeType: currentPreflopRangeType,
             combos: selectedCombos,
             legend: legendToSave,
             elo: currentRange ? currentRange.elo : 0,
@@ -263,7 +294,12 @@ function saveRange() {
         };
 
         let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
-        const existingRangeIndex = savedRanges.findIndex(range => range.position === currentPosition && range.stackSize == currentStackSize && range.name === rangeName);
+        const existingRangeIndex = savedRanges.findIndex(range =>
+            range.position === currentPosition &&
+            range.stackSize == currentStackSize &&
+            range.rangeType === currentPreflopRangeType &&
+            range.name === rangeName
+        );
 
         if (existingRangeIndex > -1) {
             savedRanges[existingRangeIndex] = rangeData;
@@ -306,7 +342,22 @@ function loadRanges() {
         rangeList.innerHTML = '';
 
         let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
-        const filteredRanges = savedRanges.filter(range => range.position === currentPosition && range.stackSize == currentStackSize);
+        let filteredRanges = [];
+
+        if (currentPreflopRangeType === 'todos') {
+            // Show all ranges for the current position and stack size
+            filteredRanges = savedRanges.filter(range =>
+                range.position === currentPosition &&
+                range.stackSize == currentStackSize
+            );
+        } else {
+            // Show ranges for the selected position, stack size, and range type
+            filteredRanges = savedRanges.filter(range =>
+                range.position === currentPosition &&
+                range.stackSize == currentStackSize &&
+                range.rangeType === currentPreflopRangeType
+            );
+        }
 
         if (filteredRanges.length > 0) {
             filteredRanges.forEach((range, index) => {
@@ -317,6 +368,37 @@ function loadRanges() {
                 rangeButton.addEventListener('click', () => selectRange(range, rangeButton, index));
                 rangeButton.textContent = `${range.name}`;
                 rangeButtonContainer.appendChild(rangeButton);
+
+                // Conditionally add dropdown for recategorization
+                if (currentPreflopRangeType === 'todos') {
+                    const categorySelect = document.createElement('select');
+                    categorySelect.classList.add('category-select');
+
+                    // Add options for each category (OR, Vs OR, Vs 3bet)
+                    preflopRangeTypes
+                        .filter(type => type.key !== 'todos') // Exclude 'todos'
+                        .forEach(type => {
+                            const option = document.createElement('option');
+                            option.value = type.key;
+                            option.textContent = type.name;
+                            categorySelect.appendChild(option);
+                        });
+
+                    // Set the current category as the selected option, if applicable
+                    if (range.rangeType && preflopRangeTypes.some(type => type.key === range.rangeType)) {
+                        categorySelect.value = range.rangeType;
+                    } else {
+                        categorySelect.value = 'or'; // Default to OR
+                    }
+
+                    // Attach event listener to update the range's category
+                    categorySelect.addEventListener('change', (event) => {
+                        const newRangeType = event.target.value;
+                        changeRangeType(range, newRangeType, range);
+                    });
+
+                    rangeButtonContainer.appendChild(categorySelect);  // Add dropdown to the container
+                }
 
                 const deleteButton = createElement('span', ['delete-range-button'], 'X');
                 deleteButton.addEventListener('click', (event) => {
@@ -341,7 +423,7 @@ function loadRanges() {
                 clearCardSelections();
             }
         } else {
-            rangeList.textContent = 'No hay rangos guardados para esta posición y cantidad de ciegas.';
+            rangeList.textContent = 'No hay rangos guardados para esta posición, cantidad de ciegas y tipo de rango.';
             activeRangeButton = null;
             clearCardSelections();
         }
@@ -352,12 +434,36 @@ function loadRanges() {
     }
 }
 
+// Function to change the range type
+function changeRangeType(rangeToUpdate, newRangeType, range) {
+    let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
+
+    // Find the range to update
+    const rangeIndex = savedRanges.findIndex(r =>
+        r.position === rangeToUpdate.position &&
+        r.stackSize === rangeToUpdate.stackSize &&
+        r.rangeType === rangeToUpdate.rangeType &&
+        r.name === rangeToUpdate.name
+    );
+
+    if (rangeIndex !== -1) {
+        // Update the range type
+        savedRanges[rangeIndex].rangeType = newRangeType;
+
+        localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
+        loadRanges(); // Reload the ranges to reflect the change
+    }
+}
+
 // Function to delete a Range
 function deleteRange(rangeToDelete) {
     if (confirm(`¿Estás seguro de que quieres eliminar el rango "${rangeToDelete.name}"?`)) {
         let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
         savedRanges = savedRanges.filter(range =>
-            !(range.position === rangeToDelete.position && range.stackSize == rangeToDelete.stackSize && range.name === rangeToDelete.name)
+            !(range.position === rangeToDelete.position &&
+                range.stackSize == rangeToDelete.stackSize &&
+                range.rangeType === rangeToDelete.rangeType &&
+                range.name === rangeToDelete.name)
         );
         localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
         loadRanges();
@@ -375,6 +481,9 @@ function selectRange(range, button, index) {
     updateEloDisplay(currentRange.elo);
     updateEloProgressBar(currentRange.elo);
     displayStreakInformation(currentRange.correctStreak, currentRange.incorrectStreak);
+
+    const badges = loadBadges();
+    applyBadges(badges); // Apply badges for the selected range
 }
 
 // Function to display the legend Editor
@@ -404,7 +513,7 @@ function displayLegendEditor(range) {
             displayLegend(range);
             saveRangesToLocalStorage();
         });
-        itemContainer.appendChild(colorInput);
+        itemContainer.appendChild(textInput); // Appended here
 
         const deleteButton = createElement('button', [], 'Eliminar');
         deleteButton.addEventListener('click', () => {
@@ -432,7 +541,11 @@ function displayLegendEditor(range) {
 function saveRangesToLocalStorage() {
     let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
     const rangeIndex = savedRanges.findIndex(range =>
-        range.position === currentPosition && range.stackSize === currentStackSize && range.name === document.getElementById('range-name').value);
+        range.position === currentPosition &&
+        range.stackSize === currentStackSize &&
+        range.rangeType === currentPreflopRangeType &&
+        range.name === document.getElementById('range-name').value
+    );
 
     if (rangeIndex !== -1) {
         savedRanges[rangeIndex] = currentRange;
@@ -524,6 +637,141 @@ function setActiveRangeButton(button) {
     activeRangeButton.classList.add('active');
 }
 
+// Key for localStorage to store badges, now including the current position, stacksize and rangetype
+function getBadgeStorageKey() {
+    return `pokerBadges_${currentPosition}_${currentStackSize}_${currentPreflopRangeType}`;
+}
+
+// Function to load badges from localStorage
+function loadBadges() {
+    try {
+        const badgeStorageKey = getBadgeStorageKey();
+        const badges = JSON.parse(localStorage.getItem(badgeStorageKey)) || {};
+        return badges;  // Return the loaded badges for use elsewhere
+    } catch (error) {
+        console.error('Error loading badges:', error);
+        return {}; // Return an empty object in case of error
+    }
+}
+
+// Function to save badges to localStorage
+function saveBadges(badges) {
+    try {
+        const badgeStorageKey = getBadgeStorageKey();
+        localStorage.setItem(badgeStorageKey, JSON.stringify(badges));
+    } catch (error) {
+        console.error('Error saving badges:', error);
+    }
+}
+
+// Function to apply badges to the card matrix
+function applyBadges(badges) {
+    document.querySelectorAll('.card-combo').forEach(cardDiv => {
+        const combo = cardDiv.dataset.combo;
+        removeBadge(cardDiv); // Ensure no badges are left from other ranges
+        if (badges[combo]) {
+            addBadge(cardDiv, badges[combo]);
+        }
+    });
+}
+
+// Function to add a badge to a card combo
+function addBadge(cardDiv, emoji) {
+    removeBadge(cardDiv); // Remove any existing badge first
+
+    const badge = document.createElement('span');
+    badge.classList.add('badge');
+    badge.textContent = emoji;
+    cardDiv.appendChild(badge);
+}
+
+// Function to remove a badge from a card combo
+function removeBadge(cardDiv) {
+    const existingBadge = cardDiv.querySelector('.badge');
+    if (existingBadge) {
+        cardDiv.removeChild(existingBadge);
+    }
+}
+
+// Function to toggle a badge (add if it doesn't exist, remove if it does)
+function toggleBadge(cardDiv, emoji, badges) {
+    const combo = cardDiv.dataset.combo;
+
+    if (badges[combo]) {
+        // Badge exists, remove it
+        delete badges[combo];
+        removeBadge(cardDiv);
+    } else {
+        // Badge doesn't exist, add it
+        badges[combo] = emoji;
+        addBadge(cardDiv, emoji);
+    }
+
+    saveBadges(badges); // Save changes to local storage
+}
+
+// Function to show a context menu for adding/removing badges
+function showContextMenu(event, cardDiv, badges) {
+    event.preventDefault();  // Prevent the default context menu
+
+    // Remove any existing context menu
+    const existingMenu = document.querySelector('.context-menu');
+    if (existingMenu) {
+        existingMenu.remove();
+    }
+
+    const contextMenu = document.createElement('div');
+    contextMenu.classList.add('context-menu');
+    contextMenu.style.left = `${event.pageX}px`;
+    contextMenu.style.top = `${event.pageY}px`;
+
+    // Array of emoji choices
+    const emojis = ['💰', '😈', '🔥', '🚩', '🚨'];
+
+    emojis.forEach(emoji => {
+        const menuItem = document.createElement('div');
+        menuItem.classList.add('context-menu-item');
+        menuItem.textContent = `Añadir ${emoji}`;
+        menuItem.addEventListener('click', () => {
+            toggleBadge(cardDiv, emoji, badges);
+            contextMenu.remove(); // Close the menu after selection
+        });
+        contextMenu.appendChild(menuItem);
+    });
+
+    // Option to remove badge
+    const removeMenuItem = document.createElement('div');
+    removeMenuItem.classList.add('context-menu-item');
+    removeMenuItem.textContent = 'Quitar Badge';
+    removeMenuItem.addEventListener('click', () => {
+        removeBadge(cardDiv);
+        delete badges[cardDiv.dataset.combo]; // Remove from data
+        saveBadges(badges); // Save changes
+        contextMenu.remove();
+    });
+
+    contextMenu.appendChild(removeMenuItem);
+
+    document.body.appendChild(contextMenu);
+
+    // Close the context menu when clicking outside of it
+    document.addEventListener('click', function closeMenu(e) {
+        if (!contextMenu.contains(e.target)) {
+            contextMenu.remove();
+            document.removeEventListener('click', closeMenu); // Remove the listener
+        }
+    });
+
+    // Prevent context menu from going off-screen
+    const rect = contextMenu.getBoundingClientRect();
+    if (rect.right > (window.innerWidth || document.documentElement.clientWidth)) {
+        contextMenu.style.left = `${event.pageX - rect.width}px`;
+    }
+    if (rect.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
+        contextMenu.style.top = `${event.pageY - rect.height}px`;
+    }
+}
+
 // Function to generate the card matrix
 function generateCardMatrix() {
     try {
@@ -533,6 +781,9 @@ function generateCardMatrix() {
             return;
         }
         matrix.innerHTML = '';
+
+        // Load existing badges
+        const badges = loadBadges(); // Load here to ensure badges are applied on matrix creation
 
         for (let i = 0; i < 13; i++) {
             for (let j = 0; j < 13; j++) {
@@ -554,7 +805,18 @@ function generateCardMatrix() {
                 cardDiv.dataset.combo = combo;
                 cardDiv.addEventListener('click', toggleCombo);
 
+                // Add context menu listener
+                cardDiv.addEventListener('contextmenu', (event) => {
+                    const badges = loadBadges();
+                    showContextMenu(event, cardDiv, badges);
+                });
+
                 matrix.appendChild(cardDiv);
+
+                // Apply badges if they exist for this combo
+                if (badges[combo]) {
+                    addBadge(cardDiv, badges[combo]);
+                }
             }
         }
 
@@ -570,7 +832,11 @@ function restoreCardSelections() {
         clearCardSelections();
 
         let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
-        let currentRanges = savedRanges.filter(range => range.position === currentPosition && range.stackSize == currentStackSize);
+        let currentRanges = savedRanges.filter(range =>
+            range.position === currentPosition &&
+            range.stackSize == currentStackSize &&
+            range.rangeType === currentPreflopRangeType
+        );
 
         currentRanges.forEach(range => {
             range.combos.forEach(comboData => {
@@ -649,7 +915,7 @@ function getVisualCards(combo) {
         let suit1 = suits[Math.floor(Math.random() * suits.length)];
         let suit2;
         const otherSuits = suits.filter(s => s !== suit1);
-        suit2 = otherSuits[Math.floor(Math.random() * suits.length)];
+        suit2 = otherSuits[Math.floor(Math.random() * otherSuits.length)];
 
         card1 = `<span class="card ${suit1} ${suit1}-color">${rank}</span>`;
         card2 = `<span class="card ${suit2} ${suit2}-color">${rank}</span>`;
@@ -657,9 +923,10 @@ function getVisualCards(combo) {
 
     return {
         card1: card1,
-        card2: card2 
+        card2: card2
     };
 }
+
 // Document Event Listener
 document.addEventListener('DOMContentLoaded', () => {
     try {
@@ -668,9 +935,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updateMatrixColors();
         restoreCardSelections();
 
-        document.querySelector('.stack-size-button[data-stack-size="100"]').classList.add('active');
+        // Set Default Values
+        document.querySelector('.stack-size-button[data-stack-size="50"]').classList.add('active');
         document.querySelector('.position-button[data-position="utg"]').classList.add('active');
+        document.querySelector(`.range-preflop-button[data-range-type="${preflopRangeTypes[0].key}"]`).classList.add('active');
+
         currentPosition = 'utg';
+        currentPreflopRangeType = preflopRangeTypes[0].key;
 
         initializeRangeButtons();
 
@@ -896,7 +1167,7 @@ function checkPracticeAnswer(combo, selectedColor, selectedText) {
         correctColor = comboData.color;
     }
 
-     let eloChange = 0;
+    let eloChange = 0;
 
     if (selectedText === 'Fold') {
         if (!isInRange) {
@@ -1048,11 +1319,15 @@ function updateRangeElo(eloChange) {
 
     let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
     const rangeIndex = savedRanges.findIndex(range =>
-        range.position === currentRange.position && range.stackSize === currentRange.stackSize && range.name === currentRange.name);
+        range.position === currentRange.position &&
+        range.stackSize === currentRange.stackSize &&
+        range.rangeType === currentRange.rangeType &&
+        range.name === currentRange.name
+    );
     if (rangeIndex !== -1) {
         savedRanges[rangeIndex].elo = currentRange.elo;
-	savedRanges[rangeIndex].correctStreak = currentRange.correctStreak;
-	savedRanges[rangeIndex].incorrectStreak = currentRange.incorrectStreak;
+        savedRanges[rangeIndex].correctStreak = currentRange.correctStreak;
+        savedRanges[rangeIndex].incorrectStreak = currentRange.incorrectStreak;
         localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
     }
 
@@ -1081,7 +1356,7 @@ function showCorrectAnswerAndPrepareNext(combo) {
 
     setTimeout(() => {
         clearCardSelections();
-	resultDiv.classList.remove('show');  // Remove fade-in class
+        resultDiv.classList.remove('show');  // Remove fade-in class
         startPracticeRound();
     }, 2000);
 }
