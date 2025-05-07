@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rangos</title>
     <link rel="stylesheet" href="stylo.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
@@ -30,6 +33,10 @@
             <button class="stack-size-button" data-stack-size="10">12-22 BB</button>
         </div>
 
+        <div class="range-preflop-selector" id="range-preflop-selector">
+            <!-- Preflop Range Buttons will be dynamically added here -->
+        </div>
+
         <div class="range-list" id="range-list"></div>
 
         <div class="color-options" id="color-options"></div>
@@ -44,8 +51,9 @@
             </div>
             <!-- Practice Mode Elements -->
             <div id="practice-cards" style="display: none;">
-                 <div id="elo-display"></div> <!-- *** MOVED HERE *** -->
-                 <!-- ELO Progress Bar -->
+                <div id="elo-display"></div>
+                <!-- *** MOVED HERE *** -->
+                <!-- ELO Progress Bar -->
                 <div id="elo-progress-container">
                     <div id="elo-progress-bar"></div>
                 </div>
@@ -66,7 +74,7 @@
             <input type="text" id="range-name" required>
             <button type="button" id="save-range-button">Guardar Rango</button>
         </form>
-		<!-- Add the ELO import/export buttons here -->
+        <!-- Add the ELO import/export buttons here -->
         <div class="elo-import-export">
             <button id="export-elo-button">Exportar ELO</button>
             <input type="file" id="import-elo-file" accept=".json" style="display: none;">
