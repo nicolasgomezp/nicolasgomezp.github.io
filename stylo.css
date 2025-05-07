@@ -1,4 +1,5 @@
 /* General Styles */
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: linear-gradient(to bottom, #34495e, #2c3e50);
@@ -48,6 +49,7 @@ h3 {
 }
 
 /* Position Selector */
+
 .position-selector {
     display: flex;
     justify-content: center;
@@ -79,6 +81,7 @@ h3 {
 }
 
 /* Stack Size Selector */
+
 .stack-size-selector {
     display: flex;
     justify-content: center;
@@ -110,6 +113,7 @@ h3 {
 }
 
 /* Range List */
+
 .range-list {
     display: flex;
     flex-wrap: wrap;
@@ -172,6 +176,7 @@ h3 {
 }
 
 /* Color Options */
+
 .color-options {
     display: flex;
     flex-wrap: wrap;
@@ -228,6 +233,7 @@ h3 {
 }
 
 /* Contenedor Principal */
+
 .card-matrix-container {
     display: flex;
     flex-direction: column;
@@ -238,6 +244,7 @@ h3 {
 }
 
 /* Estilos para la Matriz de Cartas */
+
 .card-matrix {
     display: grid;
     grid-template-columns: repeat(13, 1fr);
@@ -249,6 +256,8 @@ h3 {
 }
 
 .card-combo {
+    position: relative;
+    /* For absolute positioning of the badge */
     padding: 7px;
     text-align: center;
     border: none;
@@ -265,7 +274,25 @@ h3 {
     transform: scale(1.8);
 }
 
+/* Badge Styles */
+
+.badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 0.8em;
+    /* Adjust as needed */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
+    color: white;
+    padding: 2px 4px;
+    border-radius: 4px;
+    pointer-events: none;
+    /* Allows clicks to pass through */
+}
+
 /* Botón para Vaciar Rango */
+
 .container>button {
     padding: 10px 20px;
     border: none;
@@ -296,6 +323,7 @@ h3 {
 }
 
 /* Save Range Form */
+
 #save-range-form {
     margin-top: 20px;
     text-align: center;
@@ -341,6 +369,7 @@ h3 {
 }
 
 /* Import/Export Buttons */
+
 .import-export {
     margin-top: 30px;
     display: flex;
@@ -349,6 +378,7 @@ h3 {
 }
 
 /* Contenedor de Leyenda (Row) */
+
 .legend-row {
     display: flex;
     /* Disponer los elementos en fila */
@@ -366,6 +396,7 @@ h3 {
 }
 
 /* Elemento de Leyenda Individual */
+
 .legend-item {
     display: flex;
     align-items: center;
@@ -386,6 +417,7 @@ h3 {
 }
 
 /* Editor de Leyenda */
+
 .legend-editor {
     width: 250px;
     padding: 10px;
@@ -472,6 +504,7 @@ h3 {
 }
 
 /* Toggle Button Styles */
+
 #toggle-color-options {
     padding: 10px 20px;
     border: none;
@@ -490,6 +523,7 @@ h3 {
 }
 
 /* Practice Mode Styles */
+
 #practice-cards {
     margin-top: 20px;
     width: 100%;
@@ -503,7 +537,8 @@ h3 {
     /* Sombreado suave */
     text-align: center;
     /* Centrar el texto */
-    display: flex; /* Use flexbox to align items */
+    display: flex;
+    /* Use flexbox to align items */
     justify-content: center;
     align-items: center;
     /* Arrange elements in a row */
@@ -523,6 +558,7 @@ h3 {
 }
 
 /* Individual Card Containers */
+
 #practice-card1,
 #practice-card2 {
     display: inline-flex;
@@ -578,6 +614,7 @@ h3 {
 }
 
 /* Add a glow effect on hover */
+
 .practice-choice-button::before {
     content: '';
     position: absolute;
@@ -599,6 +636,7 @@ h3 {
 }
 
 /* Estilos específicos para el botón de Fold */
+
 .fold-button {
     background-color: #777474;
     /* Rojo anaranjado */
@@ -613,6 +651,7 @@ h3 {
 }
 
 /* Estilos para el resultado de la práctica */
+
 #practice-result {
     margin-top: 20px;
     /* Espacio desde las opciones */
@@ -636,12 +675,14 @@ h3 {
 }
 
 /* Level Name */
+
 .level-name {
     font-style: italic;
     color: #ddd;
 }
 
 /* styles for Cards */
+
 .card {
     display: inline-block;
     width: 60px;
@@ -667,6 +708,7 @@ h3 {
 }
 
 /* Add suit symbols */
+
 .card::after {
     position: absolute;
     top: 5px;
@@ -695,22 +737,27 @@ h3 {
 }
 
 /* Suit colors */
-.card.h{
+
+.card.h {
     color: red;
 }
+
 .card.d {
     color: blue;
 }
 
 /* hearts and diamonds */
+
 .card.c {
     color: green;
 }
+
 .card.s {
     color: black;
 }
 
 /* clubs and spades */
+
 .matrix-and-practice {
     display: flex;
     /*  Horizontal  */
@@ -791,33 +838,41 @@ h3 {
     0% {
         transform: translate(1px, 1px) rotate(0deg);
     }
+
     10% {
         transform: translate(-1px, -2px) rotate(-1deg);
     }
+
     20% {
         transform: translate(-3px, 0px) rotate(1deg);
-    }
-    30% {
+    }    30% {
         transform: translate(3px, 2px) rotate(0deg);
     }
+
     40% {
         transform: translate(1px, -1px) rotate(1deg);
     }
+
     50% {
         transform: translate(-1px, 2px) rotate(-1deg);
     }
+
     60% {
         transform: translate(-3px, 1px) rotate(0deg);
     }
+
     70% {
         transform: translate(3px, 1px) rotate(-1deg);
     }
+
     80% {
         transform: translate(-1px, -1px) rotate(1deg);
     }
+
     90% {
         transform: translate(1px, 2px) rotate(0deg);
     }
+
     100% {
         transform: translate(1px, -2px) rotate(-1deg);
     }
@@ -839,6 +894,7 @@ h3 {
         transform: translate(0, 0) scale(1);
         opacity: 1;
     }
+
     100% {
         transform: translate(var(--x), var(--y)) scale(0);
         /* Use CSS variables for random direction */
@@ -847,6 +903,7 @@ h3 {
 }
 
 /* ELO Progress Bar Styles */
+
 #elo-progress-container {
     width: 100%;
     height: 20px;
@@ -878,7 +935,9 @@ h3 {
     left: 0;
     right: 0;
 }
+
 /* styles for Cards */
+
 .card {
     display: inline-block;
     width: 60px;
@@ -903,6 +962,7 @@ h3 {
 }
 
 /* Add suit symbols */
+
 .card::after {
     position: absolute;
     top: -25px;
@@ -934,4 +994,106 @@ h3 {
     color: black;
 }
 
-/* Quitamos los Bloques Suit Colors*/
+/* Preflop Range Selector */
+
+.range-preflop-selector {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.range-preflop-button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(79, 129, 189, 0.7);
+    /* Similar to ELO buttons */
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+}
+
+.range-preflop-button:hover {
+    background-color: rgba(79, 129, 189, 1);
+}
+
+.range-preflop-button.active {
+    background-color: #e74c3c;
+    /* Intense red */
+    color: #fff;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+.context-menu {
+    position: absolute;
+    background-color: rgba(52, 73, 94, 0.9);
+    color: #fff;
+    border: 1px solid #7f8c8d;
+    border-radius: 5px;
+    padding: 5px;
+    z-index: 1000;
+    /* Add these styles for a better appearance */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    font-size: 14px;
+    /* Adjust as needed */
+}
+
+.context-menu-item {
+    padding: 5px;
+    cursor: pointer;
+    /* Add hover effect */
+    transition: background-color 0.2s ease;
+}
+
+.context-menu-item:hover {
+    background-color: rgba(41, 128, 185, 0.7);
+}
+
+.context-menu {
+    position: absolute;
+    background-color: rgba(52, 73, 94, 0.9);
+    color: #fff;
+    border: 1px solid #7f8c8d;
+    border-radius: 8px;
+    /* Rounded corners */
+    padding: 8px 12px;
+    /* Increased padding */
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    /* More pronounced shadow */
+    font-size: 16px;
+    /* Increased font size */
+    min-width: 150px;
+    /* Minimum width for readability */
+}
+
+.context-menu-item {
+    padding: 8px 12px;
+    /* Increased padding */
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    /* Smooth transition */
+    border-radius: 5px;
+    /* Rounded corners for items */
+}
+
+.context-menu-item:hover {
+    background-color: rgba(41, 128, 185, 0.9);
+    /* More intense hover color */
+    color: #fff;
+    /* Ensure text is white on hover */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    /* Shadow on hover */
+}
+
+/* Add a separator line between items if needed */
+
+.context-menu-item+.context-menu-item {
+    margin-top: 5px;
+    /* Add space between items */
+    border-top: 1px solid #7f8c8d;
+    /* Add a subtle separator */
+}
