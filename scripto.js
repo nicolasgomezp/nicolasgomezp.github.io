@@ -28,7 +28,7 @@ const preflopRangeTypes = [
     { name: 'OR', key: 'or' },
     { name: 'Vs OR', key: 'vs_or' },
     { name: 'Vs 3bet', key: 'vs_3bet' },
-    { name: 'Todos', key: 'todos' } // Added 'Todos' option
+    { name: 'Todos', key: 'todos' }
 ];
 
 const levels = [
@@ -53,6 +53,64 @@ function createElement(type, classes = [], text = '', attributes = {}) {
     return element;
 }
 
+// Function to copy a range
+function copyRange() {
+    if (!currentRange) {
+        alert('Por favor, selecciona un rango para copiar.');
+        return;
+    }
+
+    // Store the range data in a global variable or localStorage
+    localStorage.setItem('copiedRange', JSON.stringify(currentRange));
+    alert(`Rango "${currentRange.name}" copiado.`);
+}
+
+// Function to paste a range
+function pasteRange() {
+    if (!currentPosition) {
+        alert('Por favor, selecciona una posición primero.');
+        return;
+    }
+
+    if (!currentStackSize) {
+        alert('Por favor, selecciona un tamaño de stack primero.');
+        return;
+    }
+    if (!currentPreflopRangeType) {
+        alert('Por favor, selecciona un tipo de rango (OR, Vs OR, Vs 3bet, Todos) primero.');
+        return;
+    }
+
+
+    const copiedRangeJson = localStorage.getItem('copiedRange');
+    if (!copiedRangeJson) {
+        alert('No hay ningún rango copiado para pegar.');
+        return;
+    }
+
+    const copiedRange = JSON.parse(copiedRangeJson);
+
+    // Create a new range based on the copied range, but with the current position and stack size
+    const newRange = {
+        name: copiedRange.name + ' (Copia)', // Or any other naming convention
+        position: currentPosition,
+        stackSize: currentStackSize,
+        rangeType: currentPreflopRangeType,
+        combos: copiedRange.combos,
+        legend: copiedRange.legend,
+        elo: copiedRange.elo || 0,
+        correctStreak: copiedRange.correctStreak || 0,
+        incorrectStreak: copiedRange.incorrectStreak || 0
+    };
+
+    // Save the new range to localStorage
+    let savedRanges = JSON.parse(localStorage.getItem('pokerRanges')) || [];
+    savedRanges.push(newRange);
+    localStorage.setItem('pokerRanges', JSON.stringify(savedRanges));
+
+    loadRanges();
+    alert(`Rango "${newRange.name}" pegado a la posición ${currentPosition} y stack size ${currentStackSize}.`);
+}
 // Function to attach all event listeners to the document
 function attachEventListeners() {
     try {
@@ -168,6 +226,16 @@ function attachEventListeners() {
 
         const importEloButton = document.getElementById('import-elo-button');
         if (importEloButton) importEloButton.addEventListener('click', () => importEloFileElement.click());
+
+        // **COPY AND PASTE BUTTONS**
+        const copyRangeButton = createElement('button', [], 'Copiar Rango');
+        copyRangeButton.addEventListener('click', copyRange);
+        container.insertBefore(copyRangeButton, document.getElementById('save-range-form'));
+
+        const pasteRangeButton = createElement('button', [], 'Pegar Rango');
+        pasteRangeButton.addEventListener('click', pasteRange);
+        container.insertBefore(pasteRangeButton, document.getElementById('save-range-form'));
+
 
     } catch (error) {
         console.error('Error attaching event listeners:', error);
@@ -828,7 +896,7 @@ function generateCardMatrix() {
     }
 }
 
-// Function to restore card selection
+// Function to// Function to restore card selection
 function restoreCardSelections() {
     try {
         clearCardSelections();
